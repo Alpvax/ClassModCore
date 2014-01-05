@@ -1,4 +1,6 @@
 ClassModCore
 ============
 
-Core ClassMod
+Core Playerclass Mod.
+Requires AlpCore.
+Required for any Class Expansions
