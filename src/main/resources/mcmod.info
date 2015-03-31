@@ -1,0 +1,16 @@
+[
+{
+  "modid": "${modid}",
+  "name": "${name}",
+  "description": "TODO",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Alpvax"],
+  "credits": "TODO",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": ["alpcore"]
+}
+]
