@@ -12,17 +12,15 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import alpvax.common.mods.ModData;
 import alpvax.mod.classmodcore.block.Blocks;
 import alpvax.mod.classmodcore.classes.PlayerClassRegistry;
 import alpvax.mod.classmodcore.command.CommandChangeClass;
 import alpvax.mod.classmodcore.network.CommonProxy;
-import alpvax.mod.classmodcore.network.packet.ClassSelectPacket;
 
-@Mod(modid = ModData.classModID, name = ModData.classModName, version = ModData.classModVersion)//, acceptedMinecraftVersions = "[1.4]")
+@Mod(modid = ModInfo.MOD_ID, name = ModInfo.MOD_NAME, version = ModInfo.MOD_VERSION)//, acceptedMinecraftVersions = "[1.4]")
 public class ClassMod
 {
-	@Instance(ModData.classModID)
+	@Instance(ModInfo.MOD_ID)
 	public static ClassMod instance;
 	
 	@SidedProxy(clientSide = "alpvax.classmod.network.ClientProxy", serverSide = "alpvax.classmod.network.CommonProxy")
@@ -30,6 +28,11 @@ public class ClassMod
 
 	private static Configuration config;
 	public static File configDir;
+	
+	public static final String CONFIG_ORE = "oregen";
+	public static final String CONFIG_DECOR = "decoration";
+	public static final String CONFIG_RARE = "spawns";
+	public static final String CONFIG_BLOCK = "block";
 	
 	//Rules
 	public static boolean lockClasses;
