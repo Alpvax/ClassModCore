@@ -41,5 +41,4 @@ public class PlayerClassSaveData extends WorldSavedData
 		// TODO Auto-generated method stub
 		
 	}
-
 }

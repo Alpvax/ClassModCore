@@ -14,19 +14,20 @@ public class PlayerClassHelper
 		return player.getDisplayNameString();
 	}
 	
-	public static PlayerClass getPlayerClass(EntityPlayer player)
+	public static IPlayerClass getPlayerClass(EntityPlayer player)
 	{
 		return getPlayerClass(player, player.worldObj);
 	}
 	
-	public static PlayerClass getPlayerClass(EntityPlayer player, World world)
+	public static IPlayerClass getPlayerClass(EntityPlayer player, World world)
 	{
 		String name = getPlayerName(player);
         PlayerClassSaveData data = (PlayerClassSaveData) world.loadItemData(PlayerClassSaveData.class, name);
         if(data == null)
         {
-            data = new PlayerClassSaveData();
-            world.setItemData(event.ownerNetwork, data);
+            data = new PlayerClassSaveData(name);
+            world.setItemData(name, data);
         }
+		return PlayerClassRegistry.getPlayerClass(data.id);
 	}
 }

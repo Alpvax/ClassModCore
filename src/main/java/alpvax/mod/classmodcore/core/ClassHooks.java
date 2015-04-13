@@ -1,6 +1,5 @@
 package alpvax.mod.classmodcore.core;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -8,10 +7,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
-import net.minecraftforge.common.AlpFieldAccessor;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -21,18 +16,15 @@ import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
-import net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod.EventHandler;
 import alpvax.mod.classmodcore.playerclass.ExtendedPlayer;
 import alpvax.mod.classmodcore.playerclass.PlayerClass;
-import alpvax.mod.classmodcore.power.PowerMine;
-import alpvax.mod.classmodcore.power.PowerMineSpeed;
 import alpvax.mod.classmodcore.power.PowerResistance;
-import cpw.mods.fml.common.FMLCommonHandler;
 
 public class ClassHooks
 {
-	@ForgeSubscribe
+	@EventHandler
 	public void onEntityConstructing(EntityConstructing event)
 	{
 		if (event.entity instanceof EntityPlayer && ExtendedPlayer.get((EntityPlayer) event.entity) == null)
@@ -41,7 +33,7 @@ public class ClassHooks
 		}
 	}
 	
-	@ForgeSubscribe
+	@EventHandler
 	public void onSpawn(EntityJoinWorldEvent event)
 	{
 		if(event.entity instanceof EntityPlayer)
@@ -53,7 +45,7 @@ public class ClassHooks
 		}
 	}
 
-	@ForgeSubscribe
+	@EventHandler
 	public void onEntityDeath(LivingDeathEvent e)
 	{
 		if(!e.isCanceled() && e.entity instanceof EntityPlayer)
@@ -69,7 +61,7 @@ public class ClassHooks
 		}
 	}
 
-	@ForgeSubscribe
+	@EventHandler
 	public void handleDropsOnPlayerDeath(PlayerDropsEvent e)
 	{
 		EntityPlayer player = e.entityPlayer;
@@ -85,7 +77,7 @@ public class ClassHooks
 		}
 	}
 
-	@ForgeSubscribe
+	@EventHandler
 	public void onPlayerUpdate(LivingUpdateEvent e)
 	{
 		if(!e.isCanceled() && e.entityLiving instanceof EntityPlayer)
@@ -99,7 +91,7 @@ public class ClassHooks
 		}
 	}
 	
-	@ForgeSubscribe
+	@EventHandler
 	public void onPlayerJump(LivingJumpEvent e)
 	{
 		if(!e.isCanceled() && e.entityLiving instanceof EntityPlayer)
@@ -120,7 +112,7 @@ public class ClassHooks
 		}
 	}
 	
-	@ForgeSubscribe
+	/*@EventHandler
 	public void onPlayerMine(HarvestCheck e)
 	{
 		ExtendedPlayer ep = ExtendedPlayer.get(e.entityPlayer);
@@ -141,7 +133,7 @@ public class ClassHooks
 		}
 	}
 	
-	@ForgeSubscribe
+	@EventHandler
 	public void onPlayerDig(BreakSpeed e)
 	{
 		ExtendedPlayer ep = ExtendedPlayer.get(e.entityPlayer);
@@ -161,9 +153,9 @@ public class ClassHooks
 				}
 			}
 		}
-	}
+	}*/
 	
-	@ForgeSubscribe
+	@EventHandler
 	public void onPlayerFall(LivingFallEvent e)
 	{
 		if(!e.isCanceled() && e.entityLiving instanceof EntityPlayer)
@@ -178,7 +170,7 @@ public class ClassHooks
 		}
 	}
 	
-	@ForgeSubscribe
+	@EventHandler
 	public void onPlayerHit(LivingHurtEvent e)
 	{
 		if(!e.isCanceled())
@@ -226,7 +218,7 @@ public class ClassHooks
 	/**
 	 * Only triggered when entity uses the Task System
 	 */
-	@ForgeSubscribe
+	@EventHandler
 	public void onTargetPlayer(LivingSetAttackTargetEvent e)
 	{
 		if(!e.isCanceled() && e.target instanceof EntityPlayer && e.isCancelable())

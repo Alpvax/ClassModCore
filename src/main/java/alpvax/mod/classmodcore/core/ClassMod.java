@@ -2,30 +2,24 @@ package alpvax.mod.classmodcore.core;
 
 import java.io.File;
 
-import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import alpvax.common.mods.ModData;
-import alpvax.common.network.AlpModPacket;
-import alpvax.common.network.PacketHandler;
 import alpvax.mod.classmodcore.block.Blocks;
+import alpvax.mod.classmodcore.classes.PlayerClassRegistry;
 import alpvax.mod.classmodcore.command.CommandChangeClass;
 import alpvax.mod.classmodcore.network.CommonProxy;
 import alpvax.mod.classmodcore.network.packet.ClassSelectPacket;
-import alpvax.mod.classmodcore.network.packet.DataStringPacket;
-import alpvax.mod.classmodcore.playerclass.PlayerClassRegistry;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.network.NetworkMod;
-import cpw.mods.fml.common.network.NetworkRegistry;
 
 @Mod(modid = ModData.classModID, name = ModData.classModName, version = ModData.classModVersion)//, acceptedMinecraftVersions = "[1.4]")
-@NetworkMod(clientSideRequired=true,serverSideRequired=false, channels = {AlpModPacket.channel}, packetHandler = PacketHandler.class, connectionHandler = ConnectionHandler.class)
 public class ClassMod
 {
 	@Instance(ModData.classModID)
@@ -87,7 +81,7 @@ public class ClassMod
 	@EventHandler
 	public void Init(FMLInitializationEvent event)
 	{
-		NetworkRegistry.instance().registerGuiHandler(this, proxy);
+		//TODO: register proxy: NetworkRegistry.instance().registerGuiHandler(this, proxy);
 		//NetworkRegistry.instance().registerConnectionHandler(new ConnectionHandler());
 		proxy.registerClientHandlers();
 		proxy.registerRenderInformation();
@@ -106,10 +100,11 @@ public class ClassMod
 	    event.registerServerCommand(new CommandChangeClass());
     }
 	
+	/**TODO:*/
 	private void initPackets()
 	{
 		//AlpModPacket.registerPacket(packetClass);
-		AlpModPacket.registerPacket(ClassSelectPacket.class);
+		//AlpModPacket.registerPacket(ClassSelectPacket.class);
 		//AlpModPacket.registerPacket(DataStringPacket.class);
 		//AlpModPacket.registerPacket(OpenGUIPacket.class);
 		/*packets.put(0, ClassSelectPacket.class);

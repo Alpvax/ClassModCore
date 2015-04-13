@@ -8,19 +8,18 @@ import static alpvax.mod.classmodcore.core.ClassUtil.POWER_TAG;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeInstance;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.RangedAttribute;
+import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
+import net.minecraftforge.common.util.Constants.NBT;
 import alpvax.common.mods.ModData;
 import alpvax.mod.classmodcore.core.ClassMod;
 import alpvax.mod.classmodcore.core.ClassUtil;
@@ -111,7 +110,7 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 				}
 			}
 		}
-		compound.setCompoundTag(BASE_TAG, nbt);
+		compound.setTag(BASE_TAG, nbt);
 	}
 	
 	@Override
@@ -134,11 +133,11 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 				}
 				if(nbt.hasKey(POWER_TAG))
 				{
-					NBTTagList list = nbt.getTagList(POWER_TAG);
+					NBTTagList list = nbt.getTagList(POWER_TAG, NBT.TAG_COMPOUND);
 					powers = new PowerEntry[list.tagCount()];
 					for(int i = 0; i < list.tagCount(); i++)
 					{
-						powers[i] = new PowerEntry((NBTTagCompound)list.tagAt(i));
+						powers[i] = new PowerEntry((NBTTagCompound)list.getCompoundTagAt(i));
 					}
 				}
 			}
@@ -165,9 +164,9 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 	/**
 	 * @param operation 0 => add modifier to base, 1 => multiply base by modifier, 2 => multiply final result by modifier.
 	 */
-	private void updateAttribute(Attribute a, double modifier, int operation)
+	private void updateAttribute(IAttribute a, double modifier, int operation)
 	{
-		AttributeInstance att = player.getAttributeMap().getAttributeInstance(a);
+		IAttributeInstance att = player.getAttributeMap().getAttributeInstance(a);
 		AttributeModifier m = att.getModifier(ClassUtil.attModIDClass);
 		if(m != null)
 		{

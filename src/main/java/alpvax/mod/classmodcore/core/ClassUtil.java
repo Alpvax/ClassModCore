@@ -3,13 +3,12 @@ package alpvax.mod.classmodcore.core;
 import java.io.File;
 import java.util.UUID;
 
-import cpw.mods.fml.common.registry.LanguageRegistry;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.registry.LanguageRegistry;
 import alpvax.common.mods.ModData;
 import alpvax.mod.classmodcore.playerclass.ExtendedPlayer;
-import alpvax.mod.classmodcore.playerclass.PlayerClass;
 
 public final class ClassUtil
 {
@@ -125,6 +124,7 @@ public final class ClassUtil
 		config.save();
 		addLocalisations(LanguageRegistry.instance());
 	}
+	/**TODO:*/
 	private static void addLocalisations(LanguageRegistry lr)
 	{
 		lr.addStringLocalization(COMMANDUSAGE, "/playerclass <class>");

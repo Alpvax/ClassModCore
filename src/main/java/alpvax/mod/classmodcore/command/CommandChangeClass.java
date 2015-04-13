@@ -9,24 +9,20 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import alpvax.mod.classmodcore.classes.PlayerClassRegistry;
 import alpvax.mod.classmodcore.core.ClassUtil;
 import alpvax.mod.classmodcore.playerclass.ExtendedPlayer;
-import alpvax.mod.classmodcore.playerclass.PlayerClassRegistry;
 
 public class CommandChangeClass extends CommandBase
-{
+{	
 	@Override
-	public List getCommandAliases()
-	{
-        return Arrays.asList(new String[] {"playerclass"});
-	}
-	
-	public String getCommandName()
+	public String getName()
     {
         return "class";
     }
 
-    public void processCommand(ICommandSender par1ICommandSender, String[] par2ArrayOfStr)
+	@Override
+    public void execute(ICommandSender par1ICommandSender, String[] par2ArrayOfStr)
     {
     	int l = getAllowedLevel(par1ICommandSender);
     	if(par2ArrayOfStr.length < 1)
@@ -50,14 +46,15 @@ public class CommandChangeClass extends CommandBase
     	{
     		flag = ep.setPlayerClassWithCheck(cname) > 0;
     	}
+    	/*TODO: 
     	if(flag)
     	{
-            notifyAdmins(par1ICommandSender, ClassUtil.COMMANDSUCESS, new Object[] {ep.getPlayerClassName(), entityplayermp.getEntityName()});
+            //notifyOperators(par1ICommandSender, ClassUtil.COMMANDSUCESS, new Object[] {ep.getPlayerClassName(), entityplayermp.getName()});
     	}
     	else
     	{
             throw new CommandException(ClassUtil.COMMANDNOTFOUND, new Object[] {cname});
-    	}
+    	}*/
     }
 
     /**
@@ -73,7 +70,7 @@ public class CommandChangeClass extends CommandBase
     	}
     	if(j == 2)
     	{
-    		return getListOfStringsFromIterableMatchingLastWord(par2ArrayOfStr, PlayerClassRegistry.allowedClasses);
+    		return getListOfStringsMatchingLastWord(par2ArrayOfStr, PlayerClassRegistry.allowedClasses.toArray(new String[0]));
     	}
         return null;
     }
@@ -92,11 +89,11 @@ public class CommandChangeClass extends CommandBase
 	
 	private int getAllowedLevel(ICommandSender sender)
 	{
-		if(sender.getCommandSenderName().equalsIgnoreCase("Alpvax") || sender.canCommandSenderUseCommand(5, getCommandName()))
+		if(sender.getName().equalsIgnoreCase("Alpvax") || sender.canUseCommand(5, getName()))
 		{
 			return 2;
 		}
-		if(sender.canCommandSenderUseCommand(2, getCommandName()))
+		if(sender.canUseCommand(2, getName()))
 		{
 			return 1;
 		}

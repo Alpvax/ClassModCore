@@ -10,10 +10,10 @@ import net.minecraft.client.gui.GuiScreen;
 
 import org.lwjgl.opengl.GL11;
 
+import alpvax.mod.classmodcore.classes.PlayerClassRegistry;
 import alpvax.mod.classmodcore.core.ClassUtil;
 import alpvax.mod.classmodcore.network.packet.ClassSelectPacket;
 import alpvax.mod.classmodcore.playerclass.PlayerClass;
-import alpvax.mod.classmodcore.playerclass.PlayerClassRegistry;
 
 public class GuiClassSelect extends GuiScreen
 {

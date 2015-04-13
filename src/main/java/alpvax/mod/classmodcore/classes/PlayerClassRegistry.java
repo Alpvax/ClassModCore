@@ -1,4 +1,4 @@
-package alpvax.mod.classmodcore.playerclass;
+package alpvax.mod.classmodcore.classes;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,28 +8,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraftforge.common.config.Configuration;
 import alpvax.mod.classmodcore.core.ClassMod;
 import alpvax.mod.classmodcore.core.ClassUtil;
-import net.minecraftforge.common.Configuration;
 
 public final class PlayerClassRegistry
 {	
 	public static Configuration config;
 	
-	private static Map<String, PlayerClass> idToClassMap = new HashMap<String, PlayerClass>();
+	private static Map<String, IPlayerClass> idToClassMap = new HashMap<String, IPlayerClass>();
 	public static List<String> allowedClasses = new ArrayList<String>();
 	
 	public static final List<String> enabledClasses = new ArrayList<String>();
 	
-	public static void registerPlayerClass(PlayerClass playerclass)
+	public static void registerPlayerClass(IPlayerClass playerclass)
 	{
 		registerPlayerClass(playerclass, null);
 	}
 	
-	public static void registerPlayerClass(PlayerClass playerclass, String prefix)
+	public static void registerPlayerClass(IPlayerClass playerclass, String prefix)
 	{
-		String name = playerclass.className;
-		if(playerclass == null || ClassUtil.verifyClassName(playerclass.className) != 0)
+		if(playerclass == null)
+		{
+			throw new IllegalArgumentException("Failed to register null PlayerClass.");
+		}
+		String name = playerclass.getClassID();
+		if(ClassUtil.verifyClassName(name) != 0)
 		{
 			throw new IllegalArgumentException("Failed to register PlayerClass with name: " + name + ". Class name invalid.");
 		}
@@ -44,7 +48,7 @@ public final class PlayerClassRegistry
 		idToClassMap.put(name.toLowerCase(), playerclass);
 	}
 	
-	public static PlayerClass getPlayerClass(String classID)
+	public static IPlayerClass getPlayerClass(String classID)
 	{
 		return idToClassMap.get(classID.toLowerCase());
 	}

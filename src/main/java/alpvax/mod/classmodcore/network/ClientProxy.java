@@ -1,14 +1,8 @@
 package alpvax.mod.classmodcore.network;
 
-import net.minecraft.world.World;
-import net.minecraftforge.client.MinecraftForgeClient;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.registry.KeyBindingRegistry;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
 
-@SideOnly(Side.CLIENT)
+@net.minecraftforge.fml.relauncher.SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy
 {
 	@Override

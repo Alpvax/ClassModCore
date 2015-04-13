@@ -7,41 +7,25 @@ package alpvax.mod.classmodcore.powers;
 public class PowerType
 {
 	/** No user input required, either automatically activated or always active */
-	public static final byte PASSIVE = 0b000;
+	public static final byte PASSIVE = 0b0;
 	/** Can be activated by the player */
-	public static final byte ACTIVE = 0b001;
-	/** When triggered, does something, then stops
-	 * (Has no Duration)
+	public static final byte ACTIVE = 0b1;
+	/** Is active for a limited time-frame<br>
+	 * (has limited duration)
 	 */
-	public static final byte INSTANT = 0b010;
-	/** Is constantly active or active until another event occurs (e.g. speed boost in a certain fluid)
-	 * (Has variable Duration)
+	public static final byte TIMED = 0b10;
+	/** Cannot be triggered, either by the player or passively, overrides {@link #ACTIVE}<br>
+	 * (no cooldown)
 	 */
 	public static final byte CONTINUOUS = 0b100;
-
-	public static boolean PASSIVE(int type)
+	
+	public static boolean hasCooldown(byte flags)
 	{
-		return check((byte)type, PASSIVE);
-	}
-	public static boolean ACTIVE(int type)
-	{
-		return check((byte)type, ACTIVE);
-	}
-	public static boolean INSTANT(int type)
-	{
-		return check((byte)type, INSTANT);
-	}
-	/**
-	 * Checks to see if the flags contain {@link #CONTINUOUS}
-	 * @param type
-	 */
-	public static boolean CONTINUOUS(int type)
-	{
-		return check((byte)type, CONTINUOUS);
+		return (flags & CONTINUOUS) == 0; 
 	}
 	
-	private static boolean check(byte flags, byte type)
+	public static boolean hasDuration(byte flags)
 	{
-		return (flags & type) == type;
+		return (flags & TIMED) == TIMED;
 	}
 }
