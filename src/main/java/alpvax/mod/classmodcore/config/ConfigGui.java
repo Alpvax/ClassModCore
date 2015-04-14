@@ -14,11 +14,11 @@ import net.minecraftforge.fml.client.config.GuiConfigEntries;
 import net.minecraftforge.fml.client.config.GuiConfigEntries.CategoryEntry;
 import net.minecraftforge.fml.client.config.GuiConfigEntries.SelectValueEntry;
 import net.minecraftforge.fml.client.config.IConfigElement;
-import alpvax.common.util.SaveHelper;
 import alpvax.mod.classmodcore.core.ClassMod;
 import alpvax.mod.classmodcore.core.ModInfo;
 import alpvax.mod.common.config.CategoryConfigGui;
 import alpvax.mod.common.config.SimpleCategoryElement;
+import alpvax.mod.common.util.SaveHelper;
 
 public class ConfigGui extends GuiConfig
 {

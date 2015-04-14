@@ -7,8 +7,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.registry.LanguageRegistry;
-import alpvax.common.mods.ModData;
 import alpvax.mod.classmodcore.playerclass.ExtendedPlayer;
+import alpvax.mod.common.mods.ModData;
 
 public final class ClassUtil
 {

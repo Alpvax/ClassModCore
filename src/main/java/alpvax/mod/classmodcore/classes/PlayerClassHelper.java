@@ -1,6 +1,6 @@
 package alpvax.mod.classmodcore.classes;
 
-import alpvax.common.util.PlayerHelper;
+import alpvax.mod.common.util.PlayerHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 

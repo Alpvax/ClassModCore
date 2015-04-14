@@ -11,11 +11,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
-import alpvax.common.mods.ModData;
 import alpvax.mod.classmodcore.classes.PlayerClassRegistry;
 import alpvax.mod.classmodcore.core.ClassUtil;
 import alpvax.mod.classmodcore.power.IPowerActive;
 import alpvax.mod.classmodcore.power.PowerRegistry;
+import alpvax.mod.common.mods.ModData;
 
 public abstract class PlayerClass
 {
