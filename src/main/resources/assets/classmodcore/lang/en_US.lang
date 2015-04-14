@@ -1,5 +1,10 @@
-classmodcore.configtitle.default=Global Configuration (Values will be used as defaults for any new worlds generated)
+classmodcore.configtitle.default1=Global Configuration
+classmodcore.configtitle.default2=(Values will be used as defaults for any new worlds generated)
 classmodcore.configtitle.world=Configuration for world "%0$s"
+
+classmodcore.configtitle.category.rules=Rules
+classmodcore.configtitle.category.classes=Active Classes
+classmodcore.configtitle.category.modules=Active Modules
 
 classmodcore.config.rule.classselect.once.name=Once
 classmodcore.config.rule.classselect.once.desc=Once you have picked, you are stuck as that class from now on
