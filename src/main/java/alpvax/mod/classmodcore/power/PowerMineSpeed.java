@@ -15,12 +15,13 @@ public class PowerMineSpeed extends Power
 		digSpeed = speed;
 		tools.add(toolClass);
 	}
+
 	public PowerMineSpeed(int id, String[] toolClasses, float speed)
 	{
 		digSpeed = speed;
 		tools = Arrays.asList(toolClasses);
 	}
-	
+
 	@Override
 	public String getDisplayName()
 	{

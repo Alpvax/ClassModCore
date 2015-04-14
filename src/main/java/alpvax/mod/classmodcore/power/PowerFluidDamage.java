@@ -5,14 +5,13 @@ import net.minecraft.entity.player.EntityPlayer;
 public class PowerFluidDamage extends Power implements IPowerTriggeredActive
 {
 	public PowerFluidDamage(int[] blockIDs)
-	{
-	}
+	{}
 
 	@Override
 	public void onUpdate(EntityPlayer player)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -26,7 +25,7 @@ public class PowerFluidDamage extends Power implements IPowerTriggeredActive
 	public void trigger(EntityPlayer player)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -40,6 +39,6 @@ public class PowerFluidDamage extends Power implements IPowerTriggeredActive
 	public void reset(EntityPlayer player)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 }

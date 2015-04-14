@@ -11,5 +11,6 @@ import alpvax.mod.classmodcore.powers.IPower;
 public interface IPlayerClass
 {
 	public String getClassID();
+
 	public List<IPower> getPowers();
 }

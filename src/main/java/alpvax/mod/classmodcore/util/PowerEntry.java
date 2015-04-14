@@ -11,17 +11,18 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class PowerEntry
 {
-		private int slot = -1;
-		private int cooldown = -1;
-		private int duration = -1;
-		private String data = "";
-	
+	private int slot = -1;
+	private int cooldown = -1;
+	private int duration = -1;
+	private String data = "";
+
 	public PowerEntry(int i, int j)
 	{
 		slot = i;
 		cooldown = j;
 		duration = 0;
 	}
+
 	public PowerEntry(String s)
 	{
 		String[] s1 = s.split(PWR_SUBSPLIT);
@@ -45,6 +46,7 @@ public class PowerEntry
 			}
 		}
 	}
+
 	public PowerEntry(NBTTagCompound tag)
 	{
 		if(tag.hasKey(PWR_SLOT_TAG))
@@ -64,7 +66,7 @@ public class PowerEntry
 			data = tag.getString(PWR_DATA_TAG);
 		}
 	}
-	
+
 	public NBTTagCompound toNBT()
 	{
 		NBTTagCompound tag = new NBTTagCompound();
@@ -81,43 +83,42 @@ public class PowerEntry
 		}
 		return tag;
 	}
-	
+
 	public int getSlot()
 	{
 		return slot;
 	}
-	
+
 	public int getCooldown()
 	{
 		return cooldown;
 	}
-	
+
 	public int getDuration()
 	{
 		return duration;
 	}
-	
+
 	public String getAdditionalData()
 	{
 		return data;
 	}
-	
-	
+
 	public void setCooldown(int i)
 	{
 		cooldown = i;
 	}
-	
+
 	public void setDuration(int i)
 	{
 		duration = i;
 	}
-	
+
 	public void setAdditionalData(String s)
 	{
 		data = s;
 	}
-	
+
 	@Override
 	public String toString()
 	{

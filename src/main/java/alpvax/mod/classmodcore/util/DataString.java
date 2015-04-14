@@ -13,13 +13,12 @@ import java.util.regex.Pattern;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import alpvax.mod.classmodcore.core.ClassMod;
 import alpvax.mod.classmodcore.playerclass.PlayerClass;
-import alpvax.mod.classmodcore.playerclass.PlayerClassRegistry;
 
 public class DataString
 {
 	private String[] names;
 	private PowerEntry[] powers;
-	
+
 	/**
 	 * Initialisation of null values
 	 */
@@ -27,8 +26,10 @@ public class DataString
 	{
 		this(null);
 	}
+
 	/**
 	 * Functional method.
+	 *
 	 * @param data the string to read the values from
 	 */
 	public DataString(String data)
@@ -56,54 +57,58 @@ public class DataString
 		}
 		System.out.println("LOC: DSCon; SIDE: " + FMLCommonHandler.instance().getEffectiveSide() + "; " + toString());
 	}
+
 	/**
 	 * Method to simplify the creation of this. Simply calls this(data) with the string read from the players DataWatcher
+	 *
 	 * @param player the player to call this class on
 	 */
-	/*public DataString(EntityPlayer player)
-	{
-		this(player.getDataWatcher().getWatchableObjectString(CLASS_WATCHER));
-	}*/
-	
+	/*
+	 * public DataString(EntityPlayer player) { this(player.getDataWatcher().getWatchableObjectString(CLASS_WATCHER)); }
+	 */
+
 	private String[] getArray(String data)
 	{
 		return data.split(CLASS_SPLIT);
 	}
+
 	private String[] getNameArray(String data)
 	{
 		return Arrays.copyOfRange(getArray(data), 0, 2);
 	}
+
 	private PowerEntry[] getPowers(String data)
 	{
 		String s = getArray(data)[2];
 		if(!s.equals(NULL_CHAR))
 		{
 			Matcher m = Pattern.compile("(\\[(\\d+" + PWR_SUBSPLIT + ")+\\w*\\])+").matcher(s);
-			if (m.matches())
+			if(m.matches())
 			{
-			    System.out.println("SIDE: " + FMLCommonHandler.instance().getEffectiveSide() + "; Whole String matched: " + m.group());
-			    // resets matcher
-			    m.reset();
-			    List<String> list = new ArrayList<String>();
-			    // iterates over found
-			    while(m.find())
-			    {
-			        System.out.println("Found: " + m.group(1));
-			        list.add(m.group(1));
-			    }
-			    if(list.size() > 0)
-			    {
+				System.out.println("SIDE: " + FMLCommonHandler.instance().getEffectiveSide() + "; Whole String matched: " + m.group());
+				// resets matcher
+				m.reset();
+				List<String> list = new ArrayList<String>();
+				// iterates over found
+				while(m.find())
+				{
+					System.out.println("Found: " + m.group(1));
+					list.add(m.group(1));
+				}
+				if(list.size() > 0)
+				{
 					PowerEntry[] pe = new PowerEntry[list.size()];
-					for(int i = 0; i < list.size(); i++)
+					for(int i = 0; i < list.size(); i++ )
 					{
 						pe[i] = new PowerEntry(list.get(i));
 					}
 					return pe;
-			    }
+				}
 			}
 		}
 		return null;
 	}
+
 	private PowerEntry[] getPowersForClass()
 	{
 		PlayerClass pc = PlayerClassRegistry.getPlayerClass(names[0]);
@@ -112,7 +117,7 @@ public class DataString
 		{
 			System.out.println(pc.className + ": " + pc.getNumPowers());
 			PowerEntry[] p = new PowerEntry[pc.getNumPowers()];
-			for(int i = 0; i < pc.getNumPowers(); i++)
+			for(int i = 0; i < pc.getNumPowers(); i++ )
 			{
 				p[i] = new PowerEntry(i, ClassMod.startOnCooldown ? pc.getPowerCooldown(i) : 0);
 				System.out.println(p[i].toString());
@@ -129,6 +134,7 @@ public class DataString
 	{
 		return names[0];
 	}
+
 	/**
 	 * Automatically updates the next class ID to be the same
 	 */
@@ -146,6 +152,7 @@ public class DataString
 	{
 		return names[1];
 	}
+
 	public void setNextClass(String ID)
 	{
 		names[1] = PlayerClassRegistry.getPlayerClass(ID) != null ? ID : names[1];
@@ -155,6 +162,7 @@ public class DataString
 	{
 		return powers[slot].getCooldown();
 	}
+
 	public void setCooldown(int slot, int cooldown)
 	{
 		powers[slot].setCooldown(cooldown);
@@ -164,6 +172,7 @@ public class DataString
 	{
 		return powers[slot].getDuration();
 	}
+
 	public void setDuration(int slot, int duration)
 	{
 		powers[slot].setDuration(duration);
@@ -173,13 +182,12 @@ public class DataString
 	{
 		return powers[slot].getAdditionalData();
 	}
+
 	public void setAdditionalData(int slot, String data)
 	{
 		powers[slot].setAdditionalData(data);
 	}
-	
-	
-	
+
 	@Override
 	public String toString()
 	{

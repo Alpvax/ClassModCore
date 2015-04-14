@@ -1,0 +1,22 @@
+classmodcore.configtitle.default=Global Configuration (Values will be used as defaults for any new worlds generated)
+classmodcore.configtitle.world=Configuration for world "%0$s"
+
+classmodcore.config.rule.classselect.once.name=Once
+classmodcore.config.rule.classselect.once.desc=Once you have picked, you are stuck as that class from now on
+classmodcore.config.rule.classselect.on_death.name=On Death
+classmodcore.config.rule.classselect.on_death.desc=You can change class, but it will only take effect after you next die
+classmodcore.config.rule.classselect.always.name=Any Time
+classmodcore.config.rule.classselect.always.desc=You are free to change class at any point
+
+item.ichor.name=Ichor
+item.obsidianShard.name=Obsidian Shard
+item.duskIron.name=Dusk Iron Ingot
+item.dawnGold.name=Dawn Gold Ingot
+
+block.shrine.name=Shrine
+
+container.mythoShrine=Shrine
+
+label.tier=Tier
+
+tooltip.ichorLevel=Ichor: %0$d (Fluid: %1$d; Solid: %2$d)

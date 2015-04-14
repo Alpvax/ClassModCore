@@ -20,6 +20,7 @@ public class PowerResistance extends Power
 		resistance = amount;
 		damagetypes.add(damagesource);
 	}
+
 	/**
 	 * @param amount the amount of resistance: 0 = no resistance, 1 = 100% resistance
 	 */

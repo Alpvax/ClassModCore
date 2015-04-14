@@ -26,61 +26,58 @@ import alpvax.mod.classmodcore.core.ClassUtil;
 import alpvax.mod.classmodcore.network.CommonProxy;
 import alpvax.mod.classmodcore.power.IPowerActive;
 import alpvax.mod.classmodcore.power.IPowerTriggeredActive;
-import alpvax.mod.classmodcore.power.Power;
 import alpvax.mod.classmodcore.power.PowerRegistry;
 import alpvax.mod.classmodcore.util.PowerEntry;
 
 public class ExtendedPlayer implements IExtendedEntityProperties
 {
-	// I always include the entity to which the properties belong for easy access
+	// I always include the entity to which the properties belong for easy
+	// access
 	// It's final because we won't be changing which player it is
 	private final EntityPlayer player;
 
 	private String[] classIDs = null;
 	private PowerEntry[] powers = null;
-	
+
 	public ExtendedPlayer(EntityPlayer entityplayer)
 	{
 		player = entityplayer;
 	}
-	
+
 	/**
-	* Used to register these extended properties for the player during EntityConstructing event
-	* This method is for convenience only;
-	*/
+	 * Used to register these extended properties for the player during EntityConstructing event This method is for convenience only;
+	 */
 	public static final void register(EntityPlayer player)
 	{
 		player.registerExtendedProperties(BASE_TAG, new ExtendedPlayer(player));
 	}
-	
+
 	/**
-	* Returns ExtendedPlayer properties for player
-	* This method is for convenience only;
-	*/
+	 * Returns ExtendedPlayer properties for player This method is for convenience only;
+	 */
 	public static final ExtendedPlayer get(EntityPlayer player)
 	{
 		return (ExtendedPlayer)player.getExtendedProperties(BASE_TAG);
 	}
-	
+
 	private String getProxySaveKey()
 	{
 		return player.username + ":" + BASE_TAG;
-	}	
+	}
 
 	/**
-	* This cleans up the onEntityDeath event by replacing most of the code
-	* with a single line: ExtendedPlayer.saveProxyData();
-	*/
+	 * This cleans up the onEntityDeath event by replacing most of the code with a single line: ExtendedPlayer.saveProxyData();
+	 */
 	public void saveProxyData()
 	{
 		NBTTagCompound savedData = new NBTTagCompound();
 		saveNBTData(savedData);
 		CommonProxy.storeEntityData(getProxySaveKey(), savedData);
 	}
+
 	/**
-	* This cleans up the onEntityJoinWorld event by replacing most of the code
-	* with a single line: ExtendedPlayer.loadProxyData();
-	*/
+	 * This cleans up the onEntityJoinWorld event by replacing most of the code with a single line: ExtendedPlayer.loadProxyData();
+	 */
 	public void loadProxyData()
 	{
 		NBTTagCompound savedData = CommonProxy.getEntityData(getProxySaveKey());
@@ -89,7 +86,7 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 			loadNBTData(savedData);
 		}
 	}
-	
+
 	@Override
 	public void saveNBTData(NBTTagCompound compound)
 	{
@@ -112,7 +109,7 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 		}
 		compound.setTag(BASE_TAG, nbt);
 	}
-	
+
 	@Override
 	public void loadNBTData(NBTTagCompound compound)
 	{
@@ -135,9 +132,9 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 				{
 					NBTTagList list = nbt.getTagList(POWER_TAG, NBT.TAG_COMPOUND);
 					powers = new PowerEntry[list.tagCount()];
-					for(int i = 0; i < list.tagCount(); i++)
+					for(int i = 0; i < list.tagCount(); i++ )
 					{
-						powers[i] = new PowerEntry((NBTTagCompound)list.getCompoundTagAt(i));
+						powers[i] = new PowerEntry(list.getCompoundTagAt(i));
 					}
 				}
 			}
@@ -148,7 +145,7 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 			System.out.println("[PlayerClassProps] Class from NBT not loaded for player: " + player);
 		}
 	}
-	
+
 	@Override
 	public void init(Entity entity, World world)
 	{
@@ -157,10 +154,10 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 			updateAttribute(SharedMonsterAttributes.movementSpeed, getPlayerClass().speedModifier, 2);
 			updateAttribute(SharedMonsterAttributes.maxHealth, getPlayerClass().healthModifier, 2);
 			updateAttribute(SharedMonsterAttributes.knockbackResistance, getPlayerClass().knockResist, 0);
-			//updateAttribute(nightvision, getPlayerClass().nightVision, 0);
+			// updateAttribute(nightvision, getPlayerClass().nightVision, 0);
 		}
 	}
-	
+
 	/**
 	 * @param operation 0 => add modifier to base, 1 => multiply base by modifier, 2 => multiply final result by modifier.
 	 */
@@ -174,25 +171,25 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 		}
 		att.applyModifier(new AttributeModifier(ClassUtil.attModIDClass, ModData.classModID, modifier - (operation == 2 ? 1D : 0D), operation));
 	}
-	
-	
-	
-	//****************PlayerClass Methods****************
+
+	// ****************PlayerClass Methods****************
 	public String getPlayerClassName()
 	{
 		return hasClassName() ? classIDs[0] : null;
 	}
+
 	private void setPlayerClass(String classID)
 	{
 		classIDs[0] = classID;
 		init(player, player.getEntityWorld());
 		startPowerDelay();
 	}
-	
+
 	private String getNextClass()
 	{
 		return hasClassName() ? classIDs[1] : null;
 	}
+
 	private void setNextClass(String classID)
 	{
 		classIDs[1] = classID;
@@ -200,6 +197,7 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 
 	/**
 	 * Sets the player's class depending on whether they are allowed to change
+	 *
 	 * @param id the ID of the class to change to.
 	 * @return 0 if the class was not set, 1 if it was set to change when the player respawns, 2 if it has been set straight away.
 	 */
@@ -220,6 +218,7 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 		}
 		return i;
 	}
+
 	private int checkCanChangeClass(String classID)
 	{
 		if(ClassUtil.verifyClassName(classID) > 0)
@@ -246,15 +245,17 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 		}
 		return PlayerClassRegistry.getPlayerClass(name);
 	}
+
 	public boolean hasPlayerClass()
 	{
 		return hasClassName() && getPlayerClass() != null;
 	}
+
 	private boolean hasClassName()
 	{
 		return classIDs != null && classIDs.length == 2;
 	}
-	
+
 	public void changeClassOnDeath()
 	{
 		String next = getNextClass();
@@ -263,7 +264,7 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 			setPlayerClass(next);
 		}
 	}
-	
+
 	public boolean getIsOblivious(Entity entity)
 	{
 		return hasPlayerClass() && getPlayerClass().getIsOblivious(entity);
@@ -277,7 +278,7 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 		}
 		return 0F;
 	}
-	
+
 	private void startPowerDelay()
 	{
 		if(hasPlayerClass())
@@ -286,7 +287,7 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 			boolean flag = ClassMod.startDelay > 0;
 			if(flag || ClassMod.startOnCooldown)
 			{
-				for(int i = 0; i < pc.getNumPowers(); i++)
+				for(int i = 0; i < pc.getNumPowers(); i++ )
 				{
 					if(flag && ClassMod.delayAllPassive && pc.getPower(i) instanceof IPowerActive)
 					{
@@ -305,15 +306,16 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 			}
 		}
 	}
-	
-	
 
-	//****************Power Methods****************
+	// ****************Power Methods****************
 	public int getPowerCooldown(int slot)
 	{
-		//System.out.println("SIDE: " + FMLCommonHandler.instance().getEffectiveSide() + "; Slot: " + slot + ", Data: " + getDataString().toString());
+		// System.out.println("SIDE: " +
+		// FMLCommonHandler.instance().getEffectiveSide() + "; Slot: " + slot +
+		// ", Data: " + getDataString().toString());
 		return powers[slot].getCooldown();
 	}
+
 	public void setPowerCooldown(int slot, int cooldown)
 	{
 		powers[slot].setCooldown(cooldown);
@@ -323,6 +325,7 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 	{
 		return powers[slot].getDuration();
 	}
+
 	public void setPowerDuration(int slot, int duration)
 	{
 		powers[slot].setDuration(duration);
@@ -332,12 +335,11 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 	{
 		return powers[slot].getAdditionalData();
 	}
+
 	public void setPowerData(int slot, String powerData)
 	{
 		powers[slot].setAdditionalData(powerData);
 	}
-	
-
 
 	public List<IPowerActive> getActivePowers()
 	{
@@ -360,21 +362,13 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 				}
 			}
 		}
-		/*for(int i = 0; i < pc.getNumPowers(); i++)
-		{
-			Power p = pc.getPower(i);
-			System.out.println(p + " " + i + "/" + (pc.getNumPowers() -1));
-			if(p instanceof IPowerActive)
-			{
-				if(getPowerDuration(i) > 0 || pc.isPowerConstant(i))
-				{
-					list.add((IPowerActive)p);
-				}
-			}
-		}*/
+		/*
+		 * for(int i = 0; i < pc.getNumPowers(); i++) { Power p = pc.getPower(i); System.out.println(p + " " + i + "/" + (pc.getNumPowers() -1)); if(p instanceof IPowerActive) { if(getPowerDuration(i) > 0 || pc.isPowerConstant(i)) { list.add((IPowerActive)p); } } }
+		 */
 		return list;
 	}
-	public <T extends Power> List<T> getActivePowers(Class<T> powerclass)
+
+	public <T extends Power>List<T> getActivePowers(Class<T> powerclass)
 	{
 		List<T> powers = new ArrayList<T>();
 		Iterator<IPowerActive> i = getActivePowers().iterator();
@@ -389,15 +383,19 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 		}
 		return powers;
 	}
+
 	public boolean isPowerActive(Power power)
 	{
 		return getActivePowers().contains(power);
 	}
+
 	public boolean isPowerActive(int powerID)
 	{
 		return isPowerActive(PowerRegistry.getPower(powerID));
 	}
-	
-	//Static Attributes
-    //public static final Attribute nightvision = (new RangedAttribute("generic.nightVision", 0F, 0.0D, 1F)).func_111117_a("Night Vision").setShouldWatch(true);
+
+	// Static Attributes
+	// public static final Attribute nightvision = (new
+	// RangedAttribute("generic.nightVision", 0F, 0.0D,
+	// 1F)).func_111117_a("Night Vision").setShouldWatch(true);
 }

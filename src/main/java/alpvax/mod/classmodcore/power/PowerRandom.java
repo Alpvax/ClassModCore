@@ -7,6 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 public abstract class PowerRandom extends Power implements IPowerActive
 {
 	private Random random;
+
 	public PowerRandom(Random rand)
 	{
 		random = rand;

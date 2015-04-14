@@ -13,19 +13,19 @@ import alpvax.mod.classmodcore.core.ClassMod;
 import alpvax.mod.classmodcore.core.ClassUtil;
 
 public final class PlayerClassRegistry
-{	
+{
 	public static Configuration config;
-	
+
 	private static Map<String, IPlayerClass> idToClassMap = new HashMap<String, IPlayerClass>();
 	public static List<String> allowedClasses = new ArrayList<String>();
-	
+
 	public static final List<String> enabledClasses = new ArrayList<String>();
-	
+
 	public static void registerPlayerClass(IPlayerClass playerclass)
 	{
 		registerPlayerClass(playerclass, null);
 	}
-	
+
 	public static void registerPlayerClass(IPlayerClass playerclass, String prefix)
 	{
 		if(playerclass == null)
@@ -47,17 +47,17 @@ public final class PlayerClassRegistry
 		}
 		idToClassMap.put(name.toLowerCase(), playerclass);
 	}
-	
+
 	public static IPlayerClass getPlayerClass(String classID)
 	{
 		return idToClassMap.get(classID.toLowerCase());
 	}
-	
+
 	public static Set<String> getCompleteClassList()
 	{
 		return idToClassMap.keySet();
 	}
-	
+
 	public static void setEnabledClasses()
 	{
 		if(config == null)
@@ -65,7 +65,7 @@ public final class PlayerClassRegistry
 			init(ClassMod.configDir);
 		}
 		config.load();
-		//Set<String> list = PlayerClass.getCompleteClassList();
+		// Set<String> list = PlayerClass.getCompleteClassList();
 		Iterator<String> i = getCompleteClassList().iterator();
 		while(i.hasNext())
 		{
@@ -88,12 +88,12 @@ public final class PlayerClassRegistry
 		config.get("Classes", classID, true).getBoolean(true);
 		config.save();
 	}
-	
+
 	public static boolean isClassEnabled(String className)
 	{
 		return enabledClasses.contains(className.toLowerCase());
 	}
-	
+
 	private static void init(File configDir)
 	{
 		config = new Configuration(new File(configDir, "Classes.cfg"));

@@ -21,6 +21,7 @@ public class PowerRegistry
 		}
 		return power;
 	}
+
 	public static String getPowerID(IPower power)
 	{
 		if(power == null)
@@ -33,7 +34,7 @@ public class PowerRegistry
 		}
 		return powerToIDMap.get(power);
 	}
-	
+
 	public static IPower registerPower(IPower power, String id)
 	{
 		if(power == null)

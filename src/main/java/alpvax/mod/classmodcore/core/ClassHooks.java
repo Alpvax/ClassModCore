@@ -27,12 +27,12 @@ public class ClassHooks
 	@EventHandler
 	public void onEntityConstructing(EntityConstructing event)
 	{
-		if (event.entity instanceof EntityPlayer && ExtendedPlayer.get((EntityPlayer) event.entity) == null)
+		if(event.entity instanceof EntityPlayer && ExtendedPlayer.get((EntityPlayer)event.entity) == null)
 		{
-			ExtendedPlayer.register((EntityPlayer) event.entity);
+			ExtendedPlayer.register((EntityPlayer)event.entity);
 		}
 	}
-	
+
 	@EventHandler
 	public void onSpawn(EntityJoinWorldEvent event)
 	{
@@ -41,7 +41,7 @@ public class ClassHooks
 			EntityPlayer player = (EntityPlayer)event.entity;
 			ExtendedPlayer ep = ExtendedPlayer.get(player);
 			ep.loadProxyData();
-			//ClassUtil.openGUI(player);
+			// ClassUtil.openGUI(player);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class ClassHooks
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerJump(LivingJumpEvent e)
 	{
@@ -100,61 +100,24 @@ public class ClassHooks
 			if(ExtendedPlayer.get(player).hasPlayerClass())
 			{
 				if(player.isPotionActive(Potion.jump))
-		        {
-					player.motionY -= (double)((float)(player.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F);
-		        }
+				{
+					player.motionY -= (player.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F;
+				}
 				player.motionY = Math.sqrt(ExtendedPlayer.get(player).getPlayerClass().jumpHeight * 0.16F);
 				if(player.isPotionActive(Potion.jump))
-		        {
-					player.motionY += (double)((float)(player.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F);
-		        }
-			}
-		}
-	}
-	
-	/*@EventHandler
-	public void onPlayerMine(HarvestCheck e)
-	{
-		ExtendedPlayer ep = ExtendedPlayer.get(e.entityPlayer);
-		if(!e.isCanceled() && e.success == false && ep.hasPlayerClass())
-		{
-			System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; HarvestCheck");
-			Iterator<PowerMine> i = ep.getActivePowers(PowerMine.class).iterator();
-			while(e.success == false && i.hasNext())
-			{
-				PowerMine power = i.next();
-				System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; " + power);
-				//PowerMine p = (PowerMine)power;
-				if(MinecraftForge.getBlockHarvestLevel(e.block, -1, power.tool) <= power.level)
 				{
-					e.success = true;
+					player.motionY += (player.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F;
 				}
 			}
 		}
 	}
-	
-	@EventHandler
-	public void onPlayerDig(BreakSpeed e)
-	{
-		ExtendedPlayer ep = ExtendedPlayer.get(e.entityPlayer);
-		if(!e.isCanceled() && ep.hasPlayerClass())
-		{
-			Iterator<PowerMineSpeed> i = ep.getActivePowers(PowerMineSpeed.class).iterator();
-			while(i.hasNext())
-			{
-				PowerMineSpeed power = i.next();
-				System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; " + power);
-				for(int j = 0; j < power.tools.size(); j++)
-				{
-					if(AlpFieldAccessor.getToolEffectiveness().contains(Arrays.asList(e.block, e.metadata, power.tools.get(j))))
-					{
-						e.newSpeed *= power.digSpeed;
-					}
-				}
-			}
-		}
-	}*/
-	
+
+	/*
+	 * @EventHandler public void onPlayerMine(HarvestCheck e) { ExtendedPlayer ep = ExtendedPlayer.get(e.entityPlayer); if(!e.isCanceled() && e.success == false && ep.hasPlayerClass()) { System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; HarvestCheck"); Iterator<PowerMine> i = ep.getActivePowers(PowerMine.class).iterator(); while(e.success == false && i.hasNext()) { PowerMine power = i.next(); System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; " + power); //PowerMine p = (PowerMine)power; if(MinecraftForge.getBlockHarvestLevel(e.block, -1, power.tool) <= power.level) { e.success = true; } } } }
+	 * 
+	 * @EventHandler public void onPlayerDig(BreakSpeed e) { ExtendedPlayer ep = ExtendedPlayer.get(e.entityPlayer); if(!e.isCanceled() && ep.hasPlayerClass()) { Iterator<PowerMineSpeed> i = ep.getActivePowers(PowerMineSpeed.class).iterator(); while(i.hasNext()) { PowerMineSpeed power = i.next(); System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; " + power); for(int j = 0; j < power.tools.size(); j++) { if(AlpFieldAccessor.getToolEffectiveness().contains(Arrays.asList(e.block, e.metadata, power.tools.get(j)))) { e.newSpeed *= power.digSpeed; } } } } }
+	 */
+
 	@EventHandler
 	public void onPlayerFall(LivingFallEvent e)
 	{
@@ -169,7 +132,7 @@ public class ClassHooks
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerHit(LivingHurtEvent e)
 	{
@@ -195,7 +158,7 @@ public class ClassHooks
 							}
 							else
 							{
-								e.ammount *= (1 - power.resistance);
+								e.ammount *= 1 - power.resistance;
 							}
 						}
 					}
@@ -214,7 +177,7 @@ public class ClassHooks
 			}
 		}
 	}
-	
+
 	/**
 	 * Only triggered when entity uses the Task System
 	 */

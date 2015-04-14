@@ -18,11 +18,12 @@ public final class PowerRegistry
 	{
 		return idToPowerMap.get(Integer.valueOf(id));
 	}
+
 	public static int getPowerID(Power power)
 	{
 		return powerToIdMap.get(power);
 	}
-	
+
 	public static void triggerPower(int id, EntityPlayer player)
 	{
 		IPowerTriggered power = triggerablePowerMap.get(Integer.valueOf(id));
@@ -31,22 +32,24 @@ public final class PowerRegistry
 			power.trigger(player);
 		}
 	}
-	
-	//***************Static ID Methods***************
+
+	// ***************Static ID Methods***************
 	private static int nextID = 0;
 
 	public static final int getNextID()
 	{
 		while(getPower(nextID) != null)
 		{
-			nextID++;
+			nextID++ ;
 		}
 		return nextID;
 	}
+
 	public static void registerPower(Power power)
 	{
 		registerPower(power, getNextID());
 	}
+
 	public static void registerPower(Power power, int id)
 	{
 		if(power == null || idToPowerMap.containsKey(Integer.valueOf(id)))
