@@ -20,7 +20,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import net.minecraftforge.common.util.Constants.NBT;
-import alpvax.common.mods.ModData;
+import scala.tools.nsc.interpreter.Power;
+import alpvax.mod.classmodcore.classes.PlayerClassRegistry;
 import alpvax.mod.classmodcore.core.ClassMod;
 import alpvax.mod.classmodcore.core.ClassUtil;
 import alpvax.mod.classmodcore.network.CommonProxy;
@@ -28,6 +29,7 @@ import alpvax.mod.classmodcore.power.IPowerActive;
 import alpvax.mod.classmodcore.power.IPowerTriggeredActive;
 import alpvax.mod.classmodcore.power.PowerRegistry;
 import alpvax.mod.classmodcore.util.PowerEntry;
+import alpvax.mod.common.mods.ModData;
 
 public class ExtendedPlayer implements IExtendedEntityProperties
 {

@@ -8,12 +8,12 @@ import java.util.Map;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import alpvax.mod.classmodcore.core.ClassUtil;
 import alpvax.mod.classmodcore.permissions.IPlayerClassPermission;
 import alpvax.mod.classmodcore.permissions.SimpleClassPermission;
 import alpvax.mod.common.util.SaveHelper;
@@ -21,6 +21,7 @@ import alpvax.mod.common.util.SaveHelper;
 public final class PlayerClassRegistry
 {
 	private static Map<String, IPlayerClass> idToClassMap = new HashMap<String, IPlayerClass>();
+	private static Map<String, String> modIDMap = new HashMap<String, String>();
 	private static Map<String, IPlayerClassPermission> classStates = new HashMap<String, IPlayerClassPermission>();
 	
 	private static boolean DONE = false;
@@ -29,32 +30,32 @@ public final class PlayerClassRegistry
 	{
 		registerPlayerClass(playerclass, null);
 	}
-
-	public static void registerPlayerClass(IPlayerClass playerclass, String prefix)
+	public static void registerPlayerClass(IPlayerClass playerclass, String group)
 	{
 		if(playerclass == null)
 		{
 			throw new IllegalArgumentException("Failed to register null PlayerClass.");
 		}
-		String name = playerclass.getClassID();
+		String id = playerclass.getClassID();
 		if(DONE)
 		{
 			//TODO:Change to logging warning and continuing
-			throw new RuntimeException("Classes must be registered before FMLPostInitialisation event is fired. Skipping PlayerClass with name: " + name + ".");
+			throw new RuntimeException("Classes must be registered before FMLPostInitialisation event is fired. Skipping PlayerClass with id: " + id + ".");
 		}
-		if(ClassUtil.verifyClassName(name) != 0)
+		if(id == null || id.length() < 1)
 		{
-			throw new IllegalArgumentException("Failed to register PlayerClass with name: " + name + ". Class name invalid.");
+			throw new IllegalArgumentException("Failed to register PlayerClass with no id: " + id + ". Class id invalid.");
 		}
-		if(prefix != null)
+		if(group != null)
 		{
-			name = prefix + name;
+			id = group + id;
 		}
-		if(idToClassMap.containsKey(name.toLowerCase()))
+		if(idToClassMap.containsKey(id.toLowerCase()))
 		{
-			throw new IllegalArgumentException("Failed to register PlayerClass with name: " + name + ". Class with that name already exists.");
+			throw new IllegalArgumentException("Failed to register PlayerClass with id: " + id + ". Class with that id already exists.");
 		}
-		idToClassMap.put(name.toLowerCase(), playerclass);
+		idToClassMap.put(id.toLowerCase(), playerclass);
+		modIDMap.put(id.toLowerCase(), Loader.instance().activeModContainer().getModId());
 	}
 
 	public static IPlayerClass getPlayerClass(String classID)
@@ -132,5 +133,10 @@ public final class PlayerClassRegistry
 		String key = classID.substring(i + 1);
 		Property p = defConfig.get(category, key, true);
 		return config != null ? config.get(category, key, p.getBoolean()) : p;
+	}
+
+	public static ResourceLocation getClassImage(String classID)
+	{
+		return new ResourceLocation(modIDMap.get(classID) + ":textures/classes/" + classID.replace(".", "/") + ".png");
 	}
 }

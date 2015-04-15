@@ -13,6 +13,10 @@ classmodcore.config.rule.classselect.on_death.desc=You can change class, but it 
 classmodcore.config.rule.classselect.always.name=Any Time
 classmodcore.config.rule.classselect.always.desc=You are free to change class at any point
 
+classmodcore.gui.prev=<
+classmodcore.gui.next=>
+classmodcore.gui.selectclass=Select a class
+
 item.ichor.name=Ichor
 item.obsidianShard.name=Obsidian Shard
 item.duskIron.name=Dusk Iron Ingot

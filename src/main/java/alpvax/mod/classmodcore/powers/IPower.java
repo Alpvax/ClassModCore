@@ -35,4 +35,9 @@ public interface IPower
 	 * Needs an implementation if it isn't an instant effect power
 	 */
 	public void onTick(EntityPlayer player);
+	
+	/**
+	 * Only required if the power will show on GUI
+	 */
+	public String getDisplayName();
 }

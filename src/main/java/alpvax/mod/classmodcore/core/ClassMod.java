@@ -9,9 +9,14 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.relauncher.Side;
 import alpvax.mod.classmodcore.classes.PlayerClassRegistry;
 import alpvax.mod.classmodcore.command.CommandChangeClass;
 import alpvax.mod.classmodcore.network.CommonProxy;
+import alpvax.mod.classmodcore.network.packets.ClassChangePacket;
+import alpvax.mod.common.network.AlpPacketManager;
 
 @Mod(modid = ModInfo.MOD_ID, name = ModInfo.MOD_NAME, version = ModInfo.MOD_VERSION)//TODO:Finish config, canBeDeactivated = true, guiFactory = "alpvax.mod.classmodcore.config.ConfigGuiFactory")
 // , acceptedMinecraftVersions = "[1.4]")
@@ -22,6 +27,8 @@ public class ClassMod
 
 	@SidedProxy(clientSide = "alpvax.classmod.network.ClientProxy", serverSide = "alpvax.classmod.network.CommonProxy")
 	public static CommonProxy proxy;
+	
+	public static SimpleNetworkWrapper packetHandler;
 
 	//private static Configuration defaultConfig;
 
@@ -31,9 +38,6 @@ public class ClassMod
 	public static boolean startOnCooldown;
 	public static boolean delayPassive;
 	public static boolean delayAllPassive;*/
-
-	public static int selectGUIMaxC = 4;//TODO:Config
-	public static int selectGUIMaxR = 1;//TODO:Config
 
 	// Modules
 	public static boolean blocks;
@@ -46,7 +50,7 @@ public class ClassMod
 		defaultConfig.addCustomCategoryComment(ConfigConstants.CATEGORY_RULES, "Rules");
 		defaultConfig.addCustomCategoryComment(ConfigConstants.CATEGORY_CLASSES, "Enabled Classes");
 		defaultConfig.addCustomCategoryComment(ConfigConstants.CATEGORY_MODULES, "Enabled Modules");*/
-
+		packetHandler = new AlpPacketManager(ModInfo.MOD_ID);
 		initPackets();
 		instance = this;
 
@@ -82,7 +86,7 @@ public class ClassMod
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event)
 	{
-		PlayerClassRegistry.setEnabledClasses();
+		PlayerClassRegistry.setClassStates();
 		//TODO:defaultConfig.save();
 	}
 
@@ -95,6 +99,7 @@ public class ClassMod
 	/** TODO: */
 	private void initPackets()
 	{
+		packetHandler.registerMessage(ClassChangePacket.Handler.class, ClassChangePacket.class, 0, Side.SERVER);
 		// AlpModPacket.registerPacket(packetClass);
 		// AlpModPacket.registerPacket(ClassSelectPacket.class);
 		// AlpModPacket.registerPacket(DataStringPacket.class);

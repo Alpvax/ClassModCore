@@ -39,10 +39,6 @@ public final class ClassUtil
 	public static final String PWR_END = "]";
 	public static final String PWR_SUBSPLIT = ";";
 
-	// private static final String[] disallowed = new String[]{NULL_CHAR,
-	// CLASS_SPLIT, /*CLASS_PWR_SPLIT, */PWR_SPLIT, PWR_SUBSPLIT};
-	private static final String[] disallowed = new String[]{NULL_CHAR, CLASS_SPLIT, PWR_START, PWR_END, PWR_SUBSPLIT};
-
 	public static UUID attModIDClass;
 	public static UUID attModIDPower;
 
@@ -52,62 +48,6 @@ public final class ClassUtil
 
 	public static final String classIconPath = "textures/gui/";
 	public static final ResourceLocation classGUIMain = new ResourceLocation(ModData.classModID, classIconPath + "class_select.png");
-
-	/**
-	 * @return 0 = valid; else throw error using throwNameError
-	 */
-	public static int verifyClassName(String name)
-	{
-		if(name == null || name.length() < 1)
-		{
-			return 1;
-		}
-		if(name.contains(" "))
-		{
-			return 2;
-		}
-		for(String s : disallowed)
-		{
-			if(name.contains(s))
-			{
-				return 3;
-			}
-		}
-		return 0;
-	}
-
-	public static void throwClassNameError(String name)
-	{
-		int i = verifyClassName(name);
-		switch(i)
-		{
-			case 0:
-				return;
-			case 1:
-				throw new IllegalArgumentException("The name of the class must be unique (case insensitive) and not null or an empty string.");
-			case 2:
-				throw new IllegalArgumentException("The name of the class cannot contain spaces.");
-			case 3:
-				throw new IllegalArgumentException("The name of the class cannot contain any of these strings: " + getDisallowed());
-		}
-	}
-
-	public static String getDisallowed()
-	{
-		StringBuilder s = new StringBuilder();
-		for(int i = 0; i < disallowed.length; i++ )
-		{
-			s.append("\"" + disallowed[i] + "\"");
-			if(i < disallowed.length - 1)
-			{
-				s.append(", ");
-			}
-		}
-		/*
-		 * s.append(NULL_CHAR).append("\", \""); s.append(CLASS_SPLIT).append("\", \""); //s.append(CLASS_PWR_SPLIT).append("\", \""); s.append(PWR_SPLIT).append("\", \""); s.append(PWR_SUBSPLIT);
-		 */
-		return s.toString();
-	}
 
 	public static void openGUI(EntityPlayer player)
 	{

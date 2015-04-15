@@ -1,12 +1,10 @@
 package alpvax.mod.classmodcore.config;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.config.DummyConfigElement.DummyCategoryElement;
 import net.minecraftforge.fml.client.config.GuiConfig;
@@ -14,7 +12,6 @@ import net.minecraftforge.fml.client.config.GuiConfigEntries;
 import net.minecraftforge.fml.client.config.GuiConfigEntries.CategoryEntry;
 import net.minecraftforge.fml.client.config.GuiConfigEntries.SelectValueEntry;
 import net.minecraftforge.fml.client.config.IConfigElement;
-import alpvax.mod.classmodcore.core.ClassMod;
 import alpvax.mod.classmodcore.core.ModInfo;
 import alpvax.mod.common.config.CategoryConfigGui;
 import alpvax.mod.common.config.SimpleCategoryElement;
@@ -52,8 +49,7 @@ public class ConfigGui extends GuiConfig
 
 	private static Configuration getConfig()
 	{
-		File save = DimensionManager.getCurrentSaveRootDirectory();
-		return save != null ? new Configuration(new File(save, "config/ClassMod.cfg")) : ClassMod.defaultConfig;
+		return SaveHelper.getCurrentConfig("ClassMod", "ClassMod.cfg");
 	}
 
 	private class RulesEntry extends CategoryEntry
