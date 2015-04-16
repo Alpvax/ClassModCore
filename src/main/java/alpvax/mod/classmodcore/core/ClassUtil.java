@@ -3,11 +3,9 @@ package alpvax.mod.classmodcore.core;
 import java.io.File;
 import java.util.UUID;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.registry.LanguageRegistry;
-import alpvax.mod.classmodcore.playerclass.ExtendedPlayer;
 import alpvax.mod.common.mods.ModData;
 
 public final class ClassUtil
@@ -48,16 +46,6 @@ public final class ClassUtil
 
 	public static final String classIconPath = "textures/gui/";
 	public static final ResourceLocation classGUIMain = new ResourceLocation(ModData.classModID, classIconPath + "class_select.png");
-
-	public static void openGUI(EntityPlayer player)
-	{
-		ExtendedPlayer ep = ExtendedPlayer.get(player);
-		System.out.println("Opening GUI: Player: " + player + ", Current class: " + ep.getPlayerClass());
-		if(!ep.hasPlayerClass())
-		{
-			player.openGui(ClassMod.instance, ClassUtil.classGUIID, player.worldObj, (int)player.posX, (int)player.posY, (int)player.posZ);
-		}
-	}
 
 	public static void init(File configDir)
 	{

@@ -26,7 +26,7 @@ public class ChangeClassEvent extends PlayerEvent
 {
 	public IPlayerClass playerclass;
 	public final ICommandSender setSource;
-	
+
 	/**
 	 * @param player
 	 */

@@ -10,6 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 public interface IPlayerClassPermission
 {
 	public boolean isAvailableInGui(EntityPlayer player);
-	
+
 	public boolean isAvailableForCommand(ICommandSender commandSender);
 }

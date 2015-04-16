@@ -1,5 +1,7 @@
 package alpvax.mod.classmodcore.core;
 
+import java.util.List;
+
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -9,14 +11,15 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import alpvax.mod.classmodcore.classes.PlayerClassRegistry;
 import alpvax.mod.classmodcore.command.CommandChangeClass;
 import alpvax.mod.classmodcore.network.CommonProxy;
 import alpvax.mod.classmodcore.network.packets.ClassChangePacket;
+import alpvax.mod.classmodcore.playerclass.SimplePlayerClass;
+import alpvax.mod.classmodcore.powers.PowerEntry;
 import alpvax.mod.common.network.AlpPacketManager;
+import alpvax.mod.common.network.OpenGuiPacket;
 
 @Mod(modid = ModInfo.MOD_ID, name = ModInfo.MOD_NAME, version = ModInfo.MOD_VERSION)//TODO:Finish config, canBeDeactivated = true, guiFactory = "alpvax.mod.classmodcore.config.ConfigGuiFactory")
 // , acceptedMinecraftVersions = "[1.4]")
@@ -28,7 +31,7 @@ public class ClassMod
 	@SidedProxy(clientSide = "alpvax.classmod.network.ClientProxy", serverSide = "alpvax.classmod.network.CommonProxy")
 	public static CommonProxy proxy;
 	
-	public static SimpleNetworkWrapper packetHandler;
+	public static AlpPacketManager packetHandler;
 
 	//private static Configuration defaultConfig;
 
@@ -79,6 +82,14 @@ public class ClassMod
 		// NetworkRegistry.instance().registerGuiHandler(this, proxy);
 		// NetworkRegistry.instance().registerConnectionHandler(new
 		// ConnectionHandler());
+		PlayerClassRegistry.registerPlayerClass(new SimplePlayerClass(""){
+			
+			@Override
+			public List<PowerEntry> getPowers()
+			{
+				return null;
+			}
+		}.setDisplayName("Steve"));
 		proxy.registerClientHandlers();
 		proxy.registerRenderInformation();
 	}
@@ -99,7 +110,8 @@ public class ClassMod
 	/** TODO: */
 	private void initPackets()
 	{
-		packetHandler.registerMessage(ClassChangePacket.Handler.class, ClassChangePacket.class, 0, Side.SERVER);
+		packetHandler.register2WayMessage(ClassChangePacket.ClientHandler.class, ClassChangePacket.ServerHandler.class, ClassChangePacket.class);
+		packetHandler.registerMessage(OpenGuiPacket.Handler.class, OpenGuiPacket.class, Side.CLIENT);
 		// AlpModPacket.registerPacket(packetClass);
 		// AlpModPacket.registerPacket(ClassSelectPacket.class);
 		// AlpModPacket.registerPacket(DataStringPacket.class);

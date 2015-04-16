@@ -23,7 +23,7 @@ public class CommandChangeClass extends CommandBase
 	@Override
 	public void execute(ICommandSender par1ICommandSender, String[] par2ArrayOfStr)
 	{
-		int l = getAllowedLevel(par1ICommandSender);
+		/*int l = getAllowedLevel(par1ICommandSender);
 		if(par2ArrayOfStr.length < 1)
 		{
 			throw new WrongUsageException(getCommandUsage(par1ICommandSender), new Object[0]);
@@ -53,7 +53,7 @@ public class CommandChangeClass extends CommandBase
 	/**
 	 * Adds the strings available in this command to the given list of tab completion options.
 	 */
-	public List addTabCompletionOptions(ICommandSender par1ICommandSender, String[] par2ArrayOfStr)
+	/*public List addTabCompletionOptions(ICommandSender par1ICommandSender, String[] par2ArrayOfStr)
 	{
 		int i = getAllowedLevel(par1ICommandSender);
 		int j = par2ArrayOfStr.length;
@@ -66,7 +66,7 @@ public class CommandChangeClass extends CommandBase
 			return getListOfStringsMatchingLastWord(par2ArrayOfStr, PlayerClassRegistry.allowedClasses.toArray(new String[0]));
 		}
 		return null;
-	}
+	}*/
 
 	@Override
 	public String getCommandUsage(ICommandSender icommandsender)

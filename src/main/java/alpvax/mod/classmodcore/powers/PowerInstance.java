@@ -1,5 +1,7 @@
 package alpvax.mod.classmodcore.powers;
 
+import java.util.Map;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
@@ -8,90 +10,79 @@ import alpvax.mod.classmodcore.events.TriggerPowerEvent;
 import alpvax.mod.classmodcore.events.TriggerPowerEvent.ResetPowerEvent;
 import alpvax.mod.classmodcore.events.TriggerPowerEvent.TriggerPowerTimedEvent;
 
-/**
- * @author Alpvax
- *
- */
 public class PowerInstance
 {
-	private static final String KEY_TYPE = "Type";
-	private static final String KEY_POWER = "Power";
+	private static final String KEY_ACTIVE = "Active";
 	private static final String KEY_CD = "Cooldown";
 	private static final String KEY_DUR = "Duration";
 	private static final String KEY_DATA = "Data";
-
+	
+	
 	private final IPower power;
-	private EntityPlayer player;
-	private int maxCD;
-	private int cooldown;
-	private int maxDur;
-	private int duration;
+	private final EnumPowerType type;
+	public final boolean manual;
 	private boolean active;
-	private final byte type;
-	private NBTTagCompound data = null;
-
-	/**
-	 * An instance of an IPower
-	 * @param power the {@link IPower} this is an instance of
-	 * @param type the combination of {@link PowerType}s this instance is categorised as
-	 * @param timers the max cooldown and max duration, in that order, but only if there is a cooldown or duration respectively.
-	 */
-	protected PowerInstance(IPower power, EntityPlayer entityplayer, byte type, int... timers)
+	private int maxCD;
+	private int maxDur;
+	private int cooldown = 0;
+	private int duration = 0;
+	protected Map<String, Object> data;
+	
+	protected PowerInstance(IPower power, EnumPowerType type, boolean manualTrigger, Map<String, Object> additionalData)
 	{
 		this.power = power;
-		player = entityplayer;
-		this.type = PowerType.validate(type);
-		active = (type & PowerType.EFFECT_MASK) == PowerType.CONTINUOUS;
-		int idx = 0;
-		if(hasCooldown())
-		{
-			maxCD = timers[idx];
-		}
-		if(hasDuration())
-		{
-			maxDur = timers[idx];
-		}
+		this.type = type;
+		data = additionalData;
+		active = type == EnumPowerType.CONTINUOUS;
+		manual = !active && manualTrigger;
+		maxCD = data.containsKey(PowerEntry.KEY_COOLDOWN) ? ((Integer)data.get(PowerEntry.KEY_COOLDOWN)).intValue() : -1;
+		maxDur = data.containsKey(PowerEntry.KEY_DURATION) ? ((Integer)data.get(PowerEntry.KEY_DURATION)).intValue() : -1;
+		power.initialise(data);
 	}
 
-	public void tickPower()
+	public void tickPower(EntityPlayer player)
 	{
 		if(hasDuration() && duration > 0)
 		{
 			if( --duration < 0)
 			{
 				duration = 0;
-				if((type & PowerType.EFFECT_MASK) != PowerType.CONTINUOUS)
+				if(type != EnumPowerType.CONTINUOUS)
 				{
-					resetPower();
+					resetPower(player);
 				}
 			}
 		}
 		if(active)
 		{
-			power.onTick(player);
+			power.onTick(player, data);
 		}
-		if(hasCooldown())
+		if(triggerable())
 		{
 			if(cooldown > 0)
 			{
 				cooldown-- ;
 			}
-			if(PowerType.automaticActivation(type))
+			if(!manual)
 			{
-				if((type & PowerType.EFFECT_MASK) != PowerType.CONTINUOUS && power.shouldTrigger(player))
+				if(!active && type != EnumPowerType.CONTINUOUS && power.shouldTrigger(player, data))
 				{
-					triggerPower();
+					triggerPower(player);
 				}
-				if((type & PowerType.EFFECT_MASK) == PowerType.TOGGLED && power.shouldReset(player))
+				if(active && type  == EnumPowerType.TOGGLED && power.shouldReset(player, data))
 				{
-					resetPower();
+					resetPower(player);
 				}
 			}
 		}
 	}
 
-	public void triggerPower()
+	public boolean triggerPower(EntityPlayer player)
 	{
+		if(!canTrigger())
+		{
+			return false;
+		}
 		TriggerPowerEvent e;
 		if(hasDuration())
 		{
@@ -101,18 +92,20 @@ public class PowerInstance
 		{
 			e = new TriggerPowerEvent(player, power, cooldown + maxCD, data);
 		}
-		if(MinecraftForge.EVENT_BUS.post(e))
+		if(MinecraftForge.EVENT_BUS.post(e) || !power.triggerPower(player, data))
 		{
-			return;
+			return false;
 		}
-		if((type & PowerType.EFFECT_MASK) != PowerType.INSTANT)
+		
+		if(type != EnumPowerType.INSTANT)
 		{
 			active = true;
 		}
-		power.triggerPower(player);
+		
+		return true;
 	}
 	
-	public void resetPower()
+	public void resetPower(EntityPlayer player)
 	{
 		ResetPowerEvent e = new ResetPowerEvent(player, power, cooldown, data);
 		if(MinecraftForge.EVENT_BUS.post(e))
@@ -120,7 +113,7 @@ public class PowerInstance
 			return;
 		}
 		active = false;
-		power.resetPower(player);
+		power.resetPower(player, data);
 	}
 	
 	public boolean isActive()
@@ -130,23 +123,28 @@ public class PowerInstance
 
 	public boolean canTrigger()
 	{
-		return hasCooldown() && cooldown < 1;
+		return triggerable() && cooldown < 1;
 	}
 
 	private boolean hasDuration()
 	{
-		return PowerType.hasDuration(type);
+		return maxDur >= 0;
 	}
-	
-	public boolean hasCooldown()
+
+	private boolean hasCooldown()
 	{
-		return PowerType.triggerable(type);
+		return maxCD > 0;
+	}
+	private boolean triggerable()
+	{
+		return type != EnumPowerType.CONTINUOUS;
 	}
 
 	public void readFromNBT(NBTTagCompound nbt)
 	{
 		//type = nbt.getByte(KEY_TYPE);
 		//power = PowerRegistry.getPower(nbt.getString(KEY_POWER));
+		active = nbt.getBoolean(KEY_ACTIVE);
 		if(nbt.hasKey(KEY_DUR, NBT.TAG_ANY_NUMERIC))
 		{
 			duration = nbt.getInteger(KEY_DUR);
@@ -155,12 +153,15 @@ public class PowerInstance
 		{
 			cooldown = nbt.getInteger(KEY_CD);
 		}
+		if(power instanceof IExtendedPower)
+		{
+			NBTTagCompound tag = nbt.getCompoundTag(KEY_DATA);
+			((IExtendedPower)power).readFromNBT(tag);
+		}
 	}
 
 	public void writeToNBT(NBTTagCompound nbt)
 	{
-		nbt.setByte(KEY_TYPE, type);
-		nbt.setString(KEY_POWER, PowerRegistry.getPowerID(power));
 		if(hasDuration())
 		{
 			nbt.setInteger(KEY_DUR, duration);
@@ -169,9 +170,11 @@ public class PowerInstance
 		{
 			nbt.setInteger(KEY_CD, cooldown);
 		}
-		if(data != null)
+		if(power instanceof IExtendedPower)
 		{
-			nbt.setTag(KEY_DATA, data);
+			NBTTagCompound tag = new NBTTagCompound();
+			((IExtendedPower)power).writeToNBT(tag);
+			nbt.setTag(KEY_DATA, tag);
 		}
 	}
 }

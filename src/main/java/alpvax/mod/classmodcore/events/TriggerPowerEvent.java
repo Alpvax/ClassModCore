@@ -1,7 +1,8 @@
 package alpvax.mod.classmodcore.events;
 
+import java.util.Map;
+
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
@@ -28,9 +29,9 @@ public class TriggerPowerEvent extends PlayerEvent
 {
 	public final IPower power;
 	public int cooldown;
-	public NBTTagCompound additionalData;
+	public Map<String, Object> additionalData;
 	
-	public TriggerPowerEvent(EntityPlayer player, IPower power, int cooldown, NBTTagCompound data)
+	public TriggerPowerEvent(EntityPlayer player, IPower power, int cooldown, Map<String, Object> data)
 	{
 		super(player);
 		this.power = power;
@@ -47,13 +48,8 @@ public class TriggerPowerEvent extends PlayerEvent
 	public static class TriggerPowerTimedEvent extends TriggerPowerEvent
 	{
 		public int duration;
-		
-		public TriggerPowerTimedEvent(TriggerPowerEvent e, int duration)
-		{
-			this(e.entityPlayer, e.power, e.cooldown, duration, e.additionalData);
-		}
 
-		public TriggerPowerTimedEvent(EntityPlayer player, IPower power, int cooldown, int duration, NBTTagCompound data)
+		public TriggerPowerTimedEvent(EntityPlayer player, IPower power, int cooldown, int duration, Map<String, Object> data)
 		{
 			super(player, power, cooldown, data);
 			this.duration = duration;
@@ -70,7 +66,7 @@ public class TriggerPowerEvent extends PlayerEvent
 	@Cancelable
 	public static class ResetPowerEvent extends TriggerPowerEvent
 	{
-		public ResetPowerEvent(EntityPlayer player, IPower power, int cooldown, NBTTagCompound data)
+		public ResetPowerEvent(EntityPlayer player, IPower power, int cooldown, Map<String, Object> data)
 		{
 			super(player, power, cooldown, data);
 		}

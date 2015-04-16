@@ -63,9 +63,9 @@ public class ConfigGui extends GuiConfig
 		protected GuiScreen buildChildScreen()
 		{
 			List<IConfigElement> list = new ArrayList<IConfigElement>();
-            
-            list.add(new DummyCategoryElement("classSelection", "classmodcore.rules.classSelection", SelectValueEntry.class));
-            
+
+			list.add(new DummyCategoryElement("classSelection", "classmodcore.rules.classSelection", SelectValueEntry.class));
+
 			return new CategoryConfigGui(owningScreen, config.getCategory(ConfigConstants.CATEGORY_RULES), list, configElement, title);
 		}
 	}

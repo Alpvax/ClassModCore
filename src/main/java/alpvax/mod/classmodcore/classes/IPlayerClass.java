@@ -2,7 +2,7 @@ package alpvax.mod.classmodcore.classes;
 
 import java.util.List;
 
-import alpvax.mod.classmodcore.powers.IPower;
+import alpvax.mod.classmodcore.powers.PowerEntry;
 
 /**
  * @author Alpvax
@@ -17,6 +17,6 @@ public interface IPlayerClass
 	
 	public String getDisplayName();
 
-	public List<IPower> getPowers();
+	public List<PowerEntry> getPowers();
 
 }

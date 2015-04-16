@@ -7,11 +7,10 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
 import alpvax.mod.classmodcore.classes.IPlayerClass;
 import alpvax.mod.classmodcore.classes.PlayerClassHelper;
+import alpvax.mod.classmodcore.classes.PlayerClassRegistry;
 import alpvax.mod.classmodcore.core.ClassMod;
-import alpvax.mod.common.util.EntityHelper;
 
 /**
  * @author Alpvax
@@ -19,8 +18,7 @@ import alpvax.mod.common.util.EntityHelper;
  */
 public class ClassChangePacket implements IMessage
 {
-	private int playerID;
-	private int dimension;
+	private String username;
 	private String classID;
 
 	public ClassChangePacket()
@@ -28,7 +26,7 @@ public class ClassChangePacket implements IMessage
 	}
 	public ClassChangePacket(EntityPlayer player, IPlayerClass playerclass)
 	{
-		playerID = player.getEntityId();
+		username = player.getName();
 		classID = playerclass.getClassID();
 	}
 	
@@ -36,14 +34,14 @@ public class ClassChangePacket implements IMessage
 	@Override
 	public void fromBytes(ByteBuf buf)
 	{
-		playerID = buf.readInt();
+		username = ByteBufUtils.readUTF8String(buf);
 		classID = ByteBufUtils.readUTF8String(buf);
 	}
 	
 	@Override
 	public void toBytes(ByteBuf buf)
 	{
-		buf.writeInt(playerID);
+		ByteBufUtils.writeUTF8String(buf, username);
 		ByteBufUtils.writeUTF8String(buf, classID);
 	}
 
@@ -52,9 +50,8 @@ public class ClassChangePacket implements IMessage
 		@Override
 		public IMessage onMessage(ClassChangePacket message, MessageContext ctx)
 		{
-			MinecraftServer.getServer().get
-			EntityPlayer player = EntityHelper.getEntityByID(message.playerID, world);
-			PlayerClassHelper.setPlayerClass()
+			EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(message.username);
+			PlayerClassHelper.setPlayerClass(PlayerClassRegistry.getPlayerClass(message.classID), player);
 			return null;
 		}
 	}
@@ -64,17 +61,14 @@ public class ClassChangePacket implements IMessage
 		@Override
 		public IMessage onMessage(ClassChangePacket message, MessageContext ctx)
 		{
-			MinecraftServer.getServer().get
-			EntityPlayer player = EntityHelper.getEntityByID(message.playerID, world);
-			if(ctx.side == Side.CLIENT)
-			{
-				PlayerClassHelper.setPlayerClass()
-				return null;
-			}
-			if(UPDATE_ALL_CLIENTS)
+			EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(message.username);
+			PlayerClassHelper.setPlayerClass(PlayerClassRegistry.getPlayerClass(message.classID), player, ctx.getServerHandler().playerEntity);
+			if(PlayerClassHelper.UPDATE_ALL_CLIENTS)
 			{
 				ClassMod.packetHandler.sendToAll(message);
+				return null;
 			}
+			return message;
 		}
 	}
 }
