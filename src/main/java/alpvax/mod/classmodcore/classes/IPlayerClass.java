@@ -2,6 +2,7 @@ package alpvax.mod.classmodcore.classes;
 
 import java.util.List;
 
+import net.minecraft.entity.player.EntityPlayer;
 import alpvax.mod.classmodcore.powers.PowerEntry;
 
 /**
@@ -18,5 +19,15 @@ public interface IPlayerClass
 	public String getDisplayName();
 
 	public List<PowerEntry> getPowers();
+
+	/**
+	 * Set player attributes etc.
+	 */
+	public void setup(EntityPlayer player);
+
+	/**
+	 * Restore player attributes to without a class etc.
+	 */
+	public void reset(EntityPlayer player);
 
 }

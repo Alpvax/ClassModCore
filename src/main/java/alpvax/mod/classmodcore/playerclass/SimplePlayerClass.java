@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.entity.player.EntityPlayer;
 import alpvax.mod.classmodcore.classes.IPlayerClass;
 import alpvax.mod.classmodcore.powers.PowerEntry;
 
@@ -12,28 +13,29 @@ public abstract class SimplePlayerClass implements IPlayerClass
 {
 	// **********PlayerClass Handling**********
 	/** Also doubles as unique class id */
-	private final String className;
+	private final String classID;
 	private String displayName;
 
+	//TODO:attributes
 	/** Jump height in blocks */
-	public float jumpHeight = 1F;
+	//public float jumpHeight = 1F;
 	/** Movement speed multiplier */
-	public float speedModifier = 1F;
+	//public float speedModifier = 1F;
 	/** Maximum health multiplier */
-	public float healthModifier = 1F;
+	//public float healthModifier = 1F;
 	/** Knockback resistance (1 = immune) */
-	public float knockResist = 0F;
+	//public float knockResist = 0F;
 	/** Reach extension (default 4.5 in s,a. 5 in c). Added to base value */
-	public float reachModifier = 0F;
+	//public float reachModifier = 0F;
 	/** Should show player names */
-	public float trackDistance = 0.0F;
-	public float trackDistanceSneak = -1.0F;
+	//public float trackDistance = 0.0F;
+	//public float trackDistanceSneak = -1.0F;
 	/** Nightvision level 1 = potion */
-	public float nightVision = 0F;
+	//public float nightVision = 0F;
 
 	public SimplePlayerClass(String name)
 	{
-		className = name;
+		classID = name;
 	}
 
 	/*public void onUpdate(EntityPlayer player)
@@ -65,9 +67,9 @@ public abstract class SimplePlayerClass implements IPlayerClass
 	 */
 	public IPlayerClass setDisplayName(String name)
 	{
-		if(name != null && !name.equals(""))
+		if(name == null || name.equals(""))
 		{
-			displayName = className;
+			displayName = classID;
 		}
 		else
 		{
@@ -79,21 +81,21 @@ public abstract class SimplePlayerClass implements IPlayerClass
 	@Override
 	public String getClassID()
 	{
-		return className;
+		return classID;
 	}
 
 	/**
-	 * @return the display name or className if none found
+	 * @return the display name or classID if none found
 	 */
 	@Override
 	public String getDisplayName()
 	{
-		return displayName == null ? className : displayName;
+		return displayName == null ? classID.substring(classID.lastIndexOf('.')) : displayName;
 	}
 
 	/*public ResourceLocation getIcon()
 	{
-		return new ResourceLocation(ModData.classModID, ClassUtil.classIconPath + className.toLowerCase());
+		return new ResourceLocation(ModData.classModID, ClassUtil.classIconPath + classID.toLowerCase());
 	}*/
 
 	// **********Power Handling**********
@@ -116,4 +118,9 @@ public abstract class SimplePlayerClass implements IPlayerClass
 
 	@Override
 	public abstract List<PowerEntry> getPowers();
+	
+	@Override
+	public abstract void setup(EntityPlayer player);
+	@Override
+	public abstract void reset(EntityPlayer player);
 }

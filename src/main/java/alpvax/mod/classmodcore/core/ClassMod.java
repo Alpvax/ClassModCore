@@ -2,7 +2,9 @@ package alpvax.mod.classmodcore.core;
 
 import java.util.List;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -11,6 +13,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import alpvax.mod.classmodcore.classes.PlayerClassRegistry;
 import alpvax.mod.classmodcore.command.CommandChangeClass;
@@ -28,7 +31,7 @@ public class ClassMod
 	@Instance(ModInfo.MOD_ID)
 	public static ClassMod instance;
 
-	@SidedProxy(clientSide = "alpvax.classmod.network.ClientProxy", serverSide = "alpvax.classmod.network.CommonProxy")
+	@SidedProxy(clientSide = "alpvax.mod.classmodcore.network.ClientProxy", serverSide = "alpvax.mod.classmodcore.network.CommonProxy")
 	public static CommonProxy proxy;
 	
 	public static AlpPacketManager packetHandler;
@@ -72,24 +75,30 @@ public class ClassMod
 		delayPassive = defaultConfig.get("Rules", "Delay Triggerable Passive Powers", false).getBoolean(false);
 		delayPassive = defaultConfig.get("Rules", "Delay All Passive Powers", false).getBoolean(false);*/
 
-		MinecraftForge.EVENT_BUS.register(new ClassHooks());
+		NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
+		ClassHooks hooks = new ClassHooks();
+		MinecraftForge.EVENT_BUS.register(hooks);
+		FMLCommonHandler.instance().bus().register(hooks);
 	}
 
 	@EventHandler
 	public void Init(FMLInitializationEvent event)
 	{
-		// TODO: register proxy:
-		// NetworkRegistry.instance().registerGuiHandler(this, proxy);
-		// NetworkRegistry.instance().registerConnectionHandler(new
-		// ConnectionHandler());
-		PlayerClassRegistry.registerPlayerClass(new SimplePlayerClass(""){
+		PlayerClassRegistry.registerNullClass(new SimplePlayerClass(""){
 			
 			@Override
 			public List<PowerEntry> getPowers()
 			{
 				return null;
 			}
+
+			@Override
+			public void setup(EntityPlayer player){}
+
+			@Override
+			public void reset(EntityPlayer player){}
 		}.setDisplayName("Steve"));
+		System.err.println(PlayerClassRegistry.getPlayerClass("").getDisplayName());//XXX
 		proxy.registerClientHandlers();
 		proxy.registerRenderInformation();
 	}
@@ -107,7 +116,6 @@ public class ClassMod
 		event.registerServerCommand(new CommandChangeClass());
 	}
 
-	/** TODO: */
 	private void initPackets()
 	{
 		packetHandler.register2WayMessage(ClassChangePacket.ClientHandler.class, ClassChangePacket.ServerHandler.class, ClassChangePacket.class);

@@ -3,21 +3,31 @@ package alpvax.mod.classmodcore.core;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import alpvax.mod.classmodcore.classes.IPlayerClass;
 import alpvax.mod.classmodcore.classes.PlayerClassHelper;
+import alpvax.mod.classmodcore.events.ChangeClassEvent;
 import alpvax.mod.common.network.OpenGuiPacket;
 
 public class ClassHooks
 {
-	@EventHandler
+	@SubscribeEvent
 	public void onLogIn(PlayerLoggedInEvent e)
 	{
-		ClassMod.packetHandler.sendTo(new OpenGuiPacket(ModInfo.MOD_ID, 0), (EntityPlayerMP)e.player);
+		System.err.println("Player " + e.player.getDisplayNameString() + " has logged in as a " + PlayerClassHelper.getPlayerClass(e.player).getDisplayName());//XXX
+		if(!PlayerClassHelper.hasPlayerClass(e.player))
+		{
+			ClassMod.packetHandler.sendTo(new OpenGuiPacket(ModInfo.MOD_ID, 0), (EntityPlayerMP)e.player);
+		}
+	}
+	@SubscribeEvent
+	public void onChangeClass(ChangeClassEvent e)
+	{
+		System.err.println("Player: " + e.entityPlayer.getDisplayNameString() + " has become a " + e.playerclass.getDisplayName());//XXX
 	}
 
-	/*TODO:@EventHandler
+	/*TODO:@SubscribeEvent
 	public void onSpawn(EntityJoinWorldEvent event)
 	{
 		if(event.entity instanceof EntityPlayer)
@@ -29,7 +39,7 @@ public class ClassHooks
 		}
 	}
 
-	/*@EventHandler
+	/*@SubscribeEvent
 	public void onEntityDeath(LivingDeathEvent e)
 	{
 		if(!e.isCanceled() && e.entity instanceof EntityPlayer)
@@ -45,7 +55,7 @@ public class ClassHooks
 		}
 	}
 
-	@EventHandler
+	@SubscribeEvent
 	public void handleDropsOnPlayerDeath(PlayerDropsEvent e)
 	{
 		EntityPlayer player = e.entityPlayer;
@@ -61,7 +71,7 @@ public class ClassHooks
 		}
 	}*/
 
-	@EventHandler
+	@SubscribeEvent
 	public void onPlayerUpdate(LivingUpdateEvent e)
 	{
 		if(!e.isCanceled() && e.entityLiving instanceof EntityPlayer)
@@ -75,7 +85,7 @@ public class ClassHooks
 		}
 	}
 
-	/*@EventHandler
+	/*@SubscribeEvent
 	public void onPlayerJump(LivingJumpEvent e)
 	{
 		if(!e.isCanceled() && e.entityLiving instanceof EntityPlayer)
@@ -97,12 +107,12 @@ public class ClassHooks
 	}
 
 	/*
-	 * @EventHandler public void onPlayerMine(HarvestCheck e) { ExtendedPlayer ep = ExtendedPlayer.get(e.entityPlayer); if(!e.isCanceled() && e.success == false && ep.hasPlayerClass()) { System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; HarvestCheck"); Iterator<PowerMine> i = ep.getActivePowers(PowerMine.class).iterator(); while(e.success == false && i.hasNext()) { PowerMine power = i.next(); System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; " + power); //PowerMine p = (PowerMine)power; if(MinecraftForge.getBlockHarvestLevel(e.block, -1, power.tool) <= power.level) { e.success = true; } } } }
+	 * @SubscribeEvent public void onPlayerMine(HarvestCheck e) { ExtendedPlayer ep = ExtendedPlayer.get(e.entityPlayer); if(!e.isCanceled() && e.success == false && ep.hasPlayerClass()) { System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; HarvestCheck"); Iterator<PowerMine> i = ep.getActivePowers(PowerMine.class).iterator(); while(e.success == false && i.hasNext()) { PowerMine power = i.next(); System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; " + power); //PowerMine p = (PowerMine)power; if(MinecraftForge.getBlockHarvestLevel(e.block, -1, power.tool) <= power.level) { e.success = true; } } } }
 	 * 
-	 * @EventHandler public void onPlayerDig(BreakSpeed e) { ExtendedPlayer ep = ExtendedPlayer.get(e.entityPlayer); if(!e.isCanceled() && ep.hasPlayerClass()) { Iterator<PowerMineSpeed> i = ep.getActivePowers(PowerMineSpeed.class).iterator(); while(i.hasNext()) { PowerMineSpeed power = i.next(); System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; " + power); for(int j = 0; j < power.tools.size(); j++) { if(AlpFieldAccessor.getToolEffectiveness().contains(Arrays.asList(e.block, e.metadata, power.tools.get(j)))) { e.newSpeed *= power.digSpeed; } } } } }
+	 * @SubscribeEvent public void onPlayerDig(BreakSpeed e) { ExtendedPlayer ep = ExtendedPlayer.get(e.entityPlayer); if(!e.isCanceled() && ep.hasPlayerClass()) { Iterator<PowerMineSpeed> i = ep.getActivePowers(PowerMineSpeed.class).iterator(); while(i.hasNext()) { PowerMineSpeed power = i.next(); System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; " + power); for(int j = 0; j < power.tools.size(); j++) { if(AlpFieldAccessor.getToolEffectiveness().contains(Arrays.asList(e.block, e.metadata, power.tools.get(j)))) { e.newSpeed *= power.digSpeed; } } } } }
 	 */
 
-	/*@EventHandler
+	/*@SubscribeEvent
 	public void onPlayerFall(LivingFallEvent e)
 	{
 		if(!e.isCanceled() && e.entityLiving instanceof EntityPlayer)
@@ -117,7 +127,7 @@ public class ClassHooks
 		}
 	}
 
-	@EventHandler
+	@SubscribeEvent
 	public void onPlayerHit(LivingHurtEvent e)
 	{
 		if(!e.isCanceled())
@@ -165,7 +175,7 @@ public class ClassHooks
 	/**
 	 * Only triggered when entity uses the Task System
 	 */
-	/*@EventHandler
+	/*@SubscribeEvent
 	public void onTargetPlayer(LivingSetAttackTargetEvent e)
 	{
 		if(!e.isCanceled() && e.target instanceof EntityPlayer && e.isCancelable())

@@ -1,23 +1,15 @@
 package alpvax.mod.classmodcore.command;
 
-import java.util.Arrays;
-import java.util.List;
-
+import net.minecraft.client.resources.I18n;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.command.WrongUsageException;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
-import alpvax.mod.classmodcore.classes.PlayerClassRegistry;
-import alpvax.mod.classmodcore.core.ClassUtil;
-import alpvax.mod.classmodcore.playerclass.ExtendedPlayer;
 
 public class CommandChangeClass extends CommandBase
 {
 	@Override
 	public String getName()
 	{
-		return "class";
+		return "playerclass";
 	}
 
 	@Override
@@ -71,7 +63,7 @@ public class CommandChangeClass extends CommandBase
 	@Override
 	public String getCommandUsage(ICommandSender icommandsender)
 	{
-		return getAllowedLevel(icommandsender) > 0 ? ClassUtil.COMMANDUSAGEFULL : ClassUtil.COMMANDUSAGE;
+		return I18n.format("command.changeclass.usage", getName());
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.common.registry.LanguageRegistry;
 import alpvax.mod.common.mods.ModData;
 
 public final class ClassUtil
@@ -21,11 +20,7 @@ public final class ClassUtil
 	public static final String PWR_CD_TAG = "Cooldown";
 	public static final String PWR_DUR_TAG = "Duration";
 	public static final String PWR_DATA_TAG = "Data";
-
-	public static final String COMMANDUSAGE = "command.changeclass.usage";
-	public static final String COMMANDUSAGEFULL = "command.changeclass.usage";
-	public static final String COMMANDSUCESS = "command.changeclass.sucess";
-	public static final String COMMANDNOTFOUND = "command.changeclass.notfound";
+	
 	// public static final String COMMANDIDFLAG = "-i";
 
 	public static int CLASS_WATCHER;
@@ -58,15 +53,5 @@ public final class ClassUtil
 		// "ID for nightvision Attribute",
 		// UUID.randomUUID().toString()).getString());
 		config.save();
-		addLocalisations(LanguageRegistry.instance());
-	}
-
-	/** TODO: */
-	private static void addLocalisations(LanguageRegistry lr)
-	{
-		lr.addStringLocalization(COMMANDUSAGE, "/playerclass <class>");
-		lr.addStringLocalization(COMMANDUSAGEFULL, "/playerclass [player] <class>");
-		lr.addStringLocalization(COMMANDSUCESS, "Set %2$s's class to %1$s");
-		lr.addStringLocalization(COMMANDNOTFOUND, "Cannot find class %s");
 	}
 }

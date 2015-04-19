@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
@@ -19,14 +17,8 @@ import alpvax.mod.classmodcore.network.packets.ClassChangePacket;
 
 public class GuiClassSelect extends GuiScreen
 {
-	private static int padX = 10;
-	private static int padY = 10;
-
-	/** Button width in pixels */
-	protected static int btnWidth = 64;
-
-	/** Button height in pixels */
-	protected static int btnHeight = 100;
+	private static int minPadX = 10;
+	private static int minPadY = 10;
 
 	/** Page area width in pixels */
 	public int pageAreaWidth;
@@ -40,56 +32,57 @@ public class GuiClassSelect extends GuiScreen
 	private List<Page> pages = new ArrayList<Page>();
 	private int currentPage = 0;
 
-	private int maxHorz;
-	private int maxVert;
+	private int maxRows;
+	private int maxColumns;
 
 	/**
 	 * Adds the buttons (and other controls) to the screen in question.
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui()
 	{
 		int i = (int)(width / 3F);
 		int j = height / 2 + 60;
-		buttonList.add(new GuiButton(1, i, j, 20, 20, I18n.format("classmodcore.gui.prev")));
+		String s = I18n.format("classmodcore.gui.select");
+		buttonList.add(new GuiButton(0, (width - (fontRendererObj.getStringWidth(s) + 6)) / 2, j, fontRendererObj.getStringWidth(s) + 12, 20, s));
+		buttonList.add(new GuiButton(1, i - 20, j, 20, 20, I18n.format("classmodcore.gui.prev")));
 		buttonList.add(new GuiButton(2, width - i, j, 20, 20, I18n.format("classmodcore.gui.next")));
 
 		pageAreaWidth = 2 * (int)(width * 0.4F);// Ensures even spacing both sides (realistically about 80% of screen width)
+		pageAreaX = (width - pageAreaWidth) / 2;
 		pageAreaY = height / 10;
-		pageAreaHeight = j - pageAreaY - 2 * padY;
-		pageAreaX = pageAreaWidth / 2;
+		pageAreaHeight = j - pageAreaY - 2 * minPadY;
 
-		maxHorz = (pageAreaWidth + padX) / (btnWidth + padX);
-		maxVert = (pageAreaHeight + padY) / (btnHeight + padY);
+		maxRows = (pageAreaHeight - minPadY) / (GuiClassButton.btnHeight + minPadY);
+		maxColumns = (pageAreaWidth - minPadX) / (GuiClassButton.btnWidth + minPadX);
 
-		if(pages.isEmpty())
+		List<IPlayerClass> classes = PlayerClassRegistry.availableClassesForGUI(mc.thePlayer);
+		i = maxRows * maxColumns;
+		j = 0;
+		while(j < classes.size())
 		{
-			List<IPlayerClass> classes = PlayerClassRegistry.availableClassesForGUI(mc.thePlayer);
-			i = 0;
-			j = maxVert * maxHorz;
-			while(!classes.isEmpty())
-			{
-				int start = i * j++ ;// Increment i after using value
-				pages.add(new Page(classes.subList(start, Math.min(start + i, classes.size()))));
-			}
+			pages.add(new Page(classes.subList(j, Math.min(j + i, classes.size()))));
+			j = j + i;
 		}
 		changePage(currentPage);
 	}
 
 	private void changePage(int pageNo)
 	{
-		if(pageNo != currentPage)
+		if(pageNo < 0 || pageNo > pages.size() - 1)
 		{
-			// Clear all ClassButtons, leave the rest
-			buttonList.subList(3, buttonList.size()).clear();
-
-			// Enable/disable the "prev" button
-			((GuiButton)buttonList.get(1)).enabled = pageNo > 0;
-			// Enable/disable the "next" button
-			((GuiButton)buttonList.get(2)).enabled = pageNo < pages.size() - 1;
-
-			currentPage = pageNo;
+			return;
 		}
+		// Clear all ClassButtons, leave the rest
+		//buttonList.subList(3, buttonList.size()).clear();
+
+		// Enable/disable the "prev" button
+		((GuiButton)buttonList.get(1)).enabled = pageNo > 0;
+		// Enable/disable the "next" button
+		((GuiButton)buttonList.get(2)).enabled = pageNo < pages.size() - 1;
+
+		currentPage = pageNo;
 	}
 
 	/**
@@ -104,7 +97,7 @@ public class GuiClassSelect extends GuiScreen
 			((GuiButton)buttonList.get(i)).drawButton(mc, mouseX, mouseY);
 		}
 		GL11.glPushMatrix();
-		drawCenteredString(fontRendererObj, I18n.format("classmodcore.gui.selectclass"), width / 2, pageAreaY - padY, 16777215);
+		drawCenteredString(fontRendererObj, I18n.format("classmodcore.gui.selectclass"), width / 2, pageAreaY - minPadY, 16777215);
 		GL11.glPopMatrix();
 		pages.get(currentPage).draw(mouseX, mouseY);
 	}
@@ -115,7 +108,7 @@ public class GuiClassSelect extends GuiScreen
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 		for(GuiClassButton btn : pages.get(currentPage).buttons)
 		{
-			if(btn.mousePressed(mc, mouseX, mouseY))
+			if(mouseButton == 0 && btn.mousePressed(mc, mouseX, mouseY))
 			{
 				ClassMod.packetHandler.sendToServer(new ClassChangePacket(mc.thePlayer, btn.playerclass));
 			}
@@ -131,6 +124,7 @@ public class GuiClassSelect extends GuiScreen
 		switch(button.id)
 		{
 			case 0:// Done, select class
+				mc.setIngameFocus();
 				break;
 			case 1:// Prev
 				changePage(currentPage - 1);
@@ -160,20 +154,26 @@ public class GuiClassSelect extends GuiScreen
 
 		private Page(List<IPlayerClass> classes)
 		{
+			System.err.printf("Total screen size: %dx%d; Page area: %d+%dx%d+%d;%n", width, height, pageAreaWidth, pageAreaX, pageAreaHeight, pageAreaY);
 			pageClasses = classes;
-			int i1 = 1 + pageClasses.size() / maxHorz;
-
-			int k = 0;
-			for(int i = 0; i < i1; i++ )
-			{// For each row
-				int j1 = numForRow(i);
-				int gapY = (width - j1 * btnWidth) / j1;
-				for(int j = 0; j < j1; j++ )
-				{
-					int gapX = (height - i1 * btnHeight) / i1;
-					buttons.add(new GuiClassButton(i * j1 + j, i * (btnWidth + gapX), j * (btnWidth + gapY), pageClasses.get(k++ )));
+			int numR = (maxColumns + pageClasses.size() - 1)/ maxColumns;
+			int gapY = (pageAreaHeight - numR * GuiClassButton.btnHeight) / (numR + 1);
+			int i = 0;
+			for(int rowNum = 0; rowNum < numR; rowNum++)
+			{//For each row
+				int numC = numForRow(rowNum);
+				int gapX = (pageAreaWidth - numC * GuiClassButton.btnWidth) / (numC + 1);
+				for(int colNum = 0; colNum < numC; colNum++)
+				{//For each button in row
+					addButton(i++, colNum, rowNum, gapX, gapY);//Use index before incrementing
 				}
 			}
+		}
+		
+		private void addButton(int id, int colNum, int rowNum, int xGap, int yGap)
+		{
+			buttons.add(new GuiClassButton(id, pageAreaX + xGap + colNum * (GuiClassButton.btnWidth + xGap), pageAreaY + yGap + rowNum * (GuiClassButton.btnHeight + yGap), pageClasses.get(id)));
+			System.err.printf("Adding button (%1$s) at: %2$d,%3$d {%4$d + %5$d + %6$d(%7$d + %5$d), %8$d + %9$d + %10$d(%11$d + %9$d)};%n", pageClasses.get(id).getDisplayName(), buttons.get(id).xPosition, buttons.get(id).yPosition, pageAreaX, xGap, colNum, GuiClassButton.btnWidth, pageAreaY, yGap, rowNum, GuiClassButton.btnHeight);//XXX
 		}
 
 		public void draw(int mouseX, int mouseY)
@@ -186,31 +186,7 @@ public class GuiClassSelect extends GuiScreen
 
 		public int numForRow(int row)
 		{
-			return pageClasses.size() - row * maxHorz;
-		}
-	}
-
-	public class GuiClassButton extends GuiButton
-	{
-		/** The IPlayerClass of this button. */
-		public IPlayerClass playerclass;
-
-		public GuiClassButton(int id, int x, int y, IPlayerClass playerClass)
-		{
-			super(id, x, y, btnWidth, btnHeight, null);
-			playerclass = playerClass;
-		}
-
-		public void draw(Minecraft mc, int mouseX, int mouseY)
-		{
-			mc.getTextureManager().bindTexture(PlayerClassRegistry.getClassImage(playerclass.getClassID()));
-			drawTexturedModalRect(xPosition, yPosition, 0, 0, width, height);
-			/*
-			 * TODO: textures drawTexturedModalRect(xPosition + 8, yPosition + 12, 0, 0, 46, 73);//Class image mc.getTextureManager().bindTexture(ClassUtil.classGUIMain); drawTexturedModalRect(xPosition, yPosition, 0, 0, 62, 96);//Border if(isMouseOver()) { drawTexturedModalRect(xPosition - 10, yPosition - 10, 62, 0, 86, 118);//SelectionBox }
-			 */
-			FontRenderer fr = mc.fontRendererObj;
-			String s = playerclass.getDisplayName();
-			fr.drawStringWithShadow(s, xPosition + width / 2 - fr.getStringWidth(s) / 2, yPosition + 85, 16777215);
+			return Math.min(maxColumns, pageClasses.size() - row * maxRows);
 		}
 	}
 }

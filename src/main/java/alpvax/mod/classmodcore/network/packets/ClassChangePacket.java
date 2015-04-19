@@ -1,8 +1,10 @@
 package alpvax.mod.classmodcore.network.packets;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -51,6 +53,7 @@ public class ClassChangePacket implements IMessage
 		public IMessage onMessage(ClassChangePacket message, MessageContext ctx)
 		{
 			EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(message.username);
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(message.username + " has become a " + PlayerClassRegistry.getPlayerClass(message.classID).getDisplayName()));//XXX
 			PlayerClassHelper.setPlayerClass(PlayerClassRegistry.getPlayerClass(message.classID), player);
 			return null;
 		}
@@ -62,13 +65,16 @@ public class ClassChangePacket implements IMessage
 		public IMessage onMessage(ClassChangePacket message, MessageContext ctx)
 		{
 			EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(message.username);
-			PlayerClassHelper.setPlayerClass(PlayerClassRegistry.getPlayerClass(message.classID), player, ctx.getServerHandler().playerEntity);
-			if(PlayerClassHelper.UPDATE_ALL_CLIENTS)
+			if(PlayerClassHelper.setPlayerClass(PlayerClassRegistry.getPlayerClass(message.classID), player, ctx.getServerHandler().playerEntity))
 			{
-				ClassMod.packetHandler.sendToAll(message);
-				return null;
+				if(PlayerClassHelper.UPDATE_ALL_CLIENTS)
+				{
+					ClassMod.packetHandler.sendToAll(message);
+					return null;
+				}
+				return message;
 			}
-			return message;
+			return null;
 		}
 	}
 }

@@ -13,7 +13,7 @@ import alpvax.mod.classmodcore.powers.PowerInstance;
  * @author Alpvax
  *
  */
-public class PlayerClassSaveData extends WorldSavedData
+class PlayerClassSaveData extends WorldSavedData
 {
 	private static final String KEY_ID = "ClassID";
 	private static final String KEY_POWERS = "Powers";
@@ -27,12 +27,17 @@ public class PlayerClassSaveData extends WorldSavedData
 	public PlayerClassSaveData(String name)
 	{
 		super(name);
-		id = "";
+		id = null;
 	}
 
 	public IPlayerClass getPlayerClass()
 	{
-		return PlayerClassRegistry.getPlayerClass(id);
+		return id != null ? PlayerClassRegistry.getPlayerClass(id) : null;
+	}
+	
+	public boolean hasPlayerClass()
+	{
+		return id != null;
 	}
 	
 	public void setPlayerClass(IPlayerClass playerclass)
@@ -56,11 +61,12 @@ public class PlayerClassSaveData extends WorldSavedData
 			powers[i] = list.get(i).createInstance();
 		}
 	}
+	
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbt)
 	{
-		id = nbt.hasKey(KEY_ID, NBT.TAG_STRING) ? nbt.getString(KEY_ID) : "";
+		id = nbt.hasKey(KEY_ID, NBT.TAG_STRING) ? nbt.getString(KEY_ID) : null;
 		if(powers != null)
 		{
 			NBTTagList list = nbt.getTagList(KEY_POWERS, NBT.TAG_COMPOUND);
@@ -74,7 +80,10 @@ public class PlayerClassSaveData extends WorldSavedData
 	@Override
 	public void writeToNBT(NBTTagCompound nbt)
 	{
-		nbt.setString(KEY_ID, id);
+		if(id != null)
+		{
+			nbt.setString(KEY_ID, id);
+		}
 		NBTTagList list = new NBTTagList();
 		for(PowerInstance p : powers)
 		{

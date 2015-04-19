@@ -6,11 +6,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.Level;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -26,25 +29,32 @@ public final class PlayerClassRegistry
 	
 	private static boolean DONE = false;
 
-	public static void registerPlayerClass(IPlayerClass playerclass)
+	public static IPlayerClass registerPlayerClass(IPlayerClass playerclass)
 	{
-		registerPlayerClass(playerclass, null);
+		return registerPlayerClass(playerclass, null);
 	}
-	public static void registerPlayerClass(IPlayerClass playerclass, String group)
+	public static IPlayerClass registerPlayerClass(IPlayerClass playerclass, String group)
+	{
+		return registerPlayerClass(playerclass, group, null);
+	}
+	public static IPlayerClass registerPlayerClass(IPlayerClass playerclass, String group, IPlayerClassPermission permission)
 	{
 		if(playerclass == null)
 		{
-			throw new IllegalArgumentException("Failed to register null PlayerClass.");
+			FMLLog.log("ClassMod", Level.WARN, new IllegalArgumentException(), "Failed to register PlayerClass: playerclass cannot be null.");
+			return null;
 		}
 		String id = playerclass.getClassID();
+		String name = playerclass.getDisplayName();
 		if(DONE)
 		{
-			//TODO:Change to logging warning and continuing
-			throw new RuntimeException("Classes must be registered before FMLPostInitialisation event is fired. Skipping PlayerClass with id: " + id + ".");
+			FMLLog.log("ClassMod", Level.WARN, "Classes must be registered before FMLPostInitialisation event is fired. Skipping PlayerClass: \"%1$s\" with id: \"%2$s\".", name, id);
+			return null;
 		}
 		if(id == null || id.length() < 1)
 		{
-			throw new IllegalArgumentException("Failed to register PlayerClass with no id: " + id + ". Class id invalid.");
+			FMLLog.log("ClassMod", Level.WARN, new IllegalArgumentException(), "Failed to register PlayerClass: \"%1$s\" with no id. Class id invalid." , name);
+			return null;
 		}
 		if(group != null)
 		{
@@ -52,15 +62,49 @@ public final class PlayerClassRegistry
 		}
 		if(idToClassMap.containsKey(id.toLowerCase()))
 		{
-			throw new IllegalArgumentException("Failed to register PlayerClass with id: " + id + ". Class with that id already exists.");
+			FMLLog.log("ClassMod", Level.WARN, new IllegalArgumentException(), "Failed to register PlayerClass: \"%1$s\" with id: \"%2$s\". Class with that id already exists.", name, id);
+			return null;
 		}
-		idToClassMap.put(id.toLowerCase(), playerclass);
-		modIDMap.put(id.toLowerCase(), Loader.instance().activeModContainer().getModId());
+		do_register(id.toLowerCase(), playerclass, permission);
+		return playerclass;
 	}
 
+	private static void do_register(String classID, IPlayerClass playerclass, IPlayerClassPermission permission)
+	{
+		idToClassMap.put(classID, playerclass);
+		modIDMap.put(classID, Loader.instance().activeModContainer().getModId());
+		classStates.put(classID, permission);
+	}
+	
+	/**
+	 * Registers a default or null playerclass. Normally "Steve", who is nothing special. (Has no powers or attributes)
+	 * @param playerclass
+	 */
+	public static void registerNullClass(IPlayerClass playerclass)
+	{
+		if(playerclass == null)
+		{
+			FMLLog.log("ClassMod", Level.WARN, new IllegalArgumentException(), "Failed to register null PlayerClass: playerclass cannot be null.");
+		}
+		do_register("", playerclass, new IPlayerClassPermission(){
+			
+			@Override
+			public boolean isAvailableInGui(EntityPlayer player)
+			{
+				return true;
+			}
+			
+			@Override
+			public boolean isAvailableForCommand(ICommandSender commandSender)
+			{
+				return true;
+			}
+		});
+	}
+	
 	public static IPlayerClass getPlayerClass(String classID)
 	{
-		return idToClassMap.get(classID.toLowerCase());
+		return idToClassMap.get(classID);
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -112,8 +156,10 @@ public final class PlayerClassRegistry
 		while(i.hasNext())
 		{
 			String classID = i.next();
-			//TODO:More complex class permissions in config
-			classStates.put(classID, new SimpleClassPermission(getProperty(classID, defConfig, config).getBoolean()));
+			if(classStates.get(classID) == null)
+			{
+				classStates.put(classID, new SimpleClassPermission(getProperty(classID, defConfig, config).getBoolean()));
+			}
 		}
 		if(config != null)
 		{
@@ -129,7 +175,7 @@ public final class PlayerClassRegistry
 	private static Property getProperty(String classID, Configuration defConfig, Configuration config)
 	{
 		int i = classID.lastIndexOf('.');
-		String category = classID.substring(0, i);
+		String category = i >= 0 ? classID.substring(0, i) : "";
 		String key = classID.substring(i + 1);
 		Property p = defConfig.get(category, key, true);
 		return config != null ? config.get(category, key, p.getBoolean()) : p;
@@ -137,6 +183,6 @@ public final class PlayerClassRegistry
 
 	public static ResourceLocation getClassImage(String classID)
 	{
-		return new ResourceLocation(modIDMap.get(classID) + ":textures/classes/" + classID.replace(".", "/") + ".png");
+		return new ResourceLocation(modIDMap.get(classID) + ":textures/classes/" + (classID.length() < 1 ? "Steve" : classID.replace(".", "/")) + ".png");
 	}
 }
