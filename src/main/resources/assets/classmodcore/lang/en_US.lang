@@ -18,7 +18,7 @@ classmodcore.gui.next=>
 classmodcore.gui.select=Done
 classmodcore.gui.selectclass=Select a class
 
-command.changeclass.usage=/%0$s <class> [player]
+command.changeclass.usage=/%0$s [class] [player]
 command.changeclass.success=Set %1$s's class to %0$s
 command.changeclass.notfound=Cannot find class %0$s
 

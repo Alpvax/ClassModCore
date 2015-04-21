@@ -51,7 +51,7 @@ public final class PlayerClassRegistry
 			FMLLog.log("ClassMod", Level.WARN, "Classes must be registered before FMLPostInitialisation event is fired. Skipping PlayerClass: \"%1$s\" with id: \"%2$s\".", name, id);
 			return null;
 		}
-		if(id == null || id.length() < 1)
+		if(id == null || id.length() < 1 || id.equalsIgnoreCase("null"))
 		{
 			FMLLog.log("ClassMod", Level.WARN, new IllegalArgumentException(), "Failed to register PlayerClass: \"%1$s\" with no id. Class id invalid." , name);
 			return null;
@@ -86,7 +86,7 @@ public final class PlayerClassRegistry
 		{
 			FMLLog.log("ClassMod", Level.WARN, new IllegalArgumentException(), "Failed to register null PlayerClass: playerclass cannot be null.");
 		}
-		do_register("", playerclass, new IPlayerClassPermission(){
+		IPlayerClassPermission nullPerm = new IPlayerClassPermission(){
 			
 			@Override
 			public boolean isAvailableInGui(EntityPlayer player)
@@ -99,7 +99,9 @@ public final class PlayerClassRegistry
 			{
 				return true;
 			}
-		});
+		};
+		do_register("", playerclass, nullPerm);
+		do_register("null", playerclass, nullPerm);
 	}
 	
 	public static IPlayerClass getPlayerClass(String classID)

@@ -1,10 +1,23 @@
 package alpvax.mod.classmodcore.command;
 
+import java.util.List;
+
+import org.apache.commons.lang3.ClassUtils;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.BlockPos;
+import net.minecraftforge.common.MinecraftForge;
+import alpvax.mod.classmodcore.classes.PlayerClassRegistry;
+import alpvax.mod.classmodcore.core.ClassMod;
+import alpvax.mod.classmodcore.core.ModInfo;
 
-public class CommandChangeClass extends CommandBase
+public class CommandChangeClass extends CommandForceClass
 {
 	@Override
 	public String getName()
@@ -13,25 +26,24 @@ public class CommandChangeClass extends CommandBase
 	}
 
 	@Override
-	public void execute(ICommandSender par1ICommandSender, String[] par2ArrayOfStr)
+	public void execute(ICommandSender sender, String[] args)
 	{
-		/*int l = getAllowedLevel(par1ICommandSender);
-		if(par2ArrayOfStr.length < 1)
+		if(args.length < 1 && sender.getEntityWorld().isRemote)
 		{
-			throw new WrongUsageException(getCommandUsage(par1ICommandSender), new Object[0]);
+			EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+			player.openGui(ClassMod.instance, 0, player.worldObj, (int)player.posX, (int)player.posY, (int)player.posZ);
 		}
-		EntityPlayerMP entityplayermp;
-		if(par2ArrayOfStr.length > 1 && l > 0)
+		EntityPlayer entityplayermp;
+		if(args.length > 1 && l > 0)
 		{
-			entityplayermp = getPlayer(par1ICommandSender, par2ArrayOfStr[0]);
-			par2ArrayOfStr = Arrays.copyOfRange(par2ArrayOfStr, 1, par2ArrayOfStr.length);
+			entityplayermp = getPlayer(sender, args[0]);
+			args = Arrays.copyOfRange(args, 1, args.length);
 		}
 		else
 		{
-			entityplayermp = getCommandSenderAsPlayer(par1ICommandSender);
+			entityplayermp = getCommandSenderAsPlayer(sender);
 		}
-		String cname = par2ArrayOfStr[0];
-		ExtendedPlayer ep = ExtendedPlayer.get(entityplayermp);
+		String cname = args[0];
 		boolean flag = false;
 		if(l > 1 || PlayerClassRegistry.allowedClasses.contains(cname))
 		{
@@ -42,46 +54,10 @@ public class CommandChangeClass extends CommandBase
 		 */
 	}
 
-	/**
-	 * Adds the strings available in this command to the given list of tab completion options.
-	 */
-	/*public List addTabCompletionOptions(ICommandSender par1ICommandSender, String[] par2ArrayOfStr)
+	/*@Override
+	public List<String> getAliases()
 	{
-		int i = getAllowedLevel(par1ICommandSender);
-		int j = par2ArrayOfStr.length;
-		if(i == 0 || j == 1)
-		{
-			return getListOfStringsMatchingLastWord(par2ArrayOfStr, MinecraftServer.getServer().getAllUsernames());
-		}
-		if(j == 2)
-		{
-			return getListOfStringsMatchingLastWord(par2ArrayOfStr, PlayerClassRegistry.allowedClasses.toArray(new String[0]));
-		}
+		// TODO Aliases
 		return null;
 	}*/
-
-	@Override
-	public String getCommandUsage(ICommandSender icommandsender)
-	{
-		return I18n.format("command.changeclass.usage", getName());
-	}
-
-	@Override
-	public boolean isUsernameIndex(String[] astring, int i)
-	{
-		return i == 0;
-	}
-
-	private int getAllowedLevel(ICommandSender sender)
-	{
-		if(sender.getName().equalsIgnoreCase("Alpvax") || sender.canUseCommand(5, getName()))
-		{
-			return 2;
-		}
-		if(sender.canUseCommand(2, getName()))
-		{
-			return 1;
-		}
-		return 0;
-	}
 }
