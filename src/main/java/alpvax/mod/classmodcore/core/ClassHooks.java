@@ -1,13 +1,20 @@
 package alpvax.mod.classmodcore.core;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import alpvax.mod.classmodcore.classes.IPlayerClass;
 import alpvax.mod.classmodcore.classes.PlayerClassHelper;
+import alpvax.mod.classmodcore.classes.PlayerClassInstance;
 import alpvax.mod.classmodcore.events.ChangeClassEvent;
+import alpvax.mod.classmodcore.events.TriggerPowerEvent;
 import alpvax.mod.common.network.OpenGuiPacket;
 
 public class ClassHooks
@@ -77,7 +84,7 @@ public class ClassHooks
 		if(!e.isCanceled() && e.entityLiving instanceof EntityPlayer)
 		{
 			EntityPlayer player = (EntityPlayer)e.entityLiving;
-			IPlayerClass playerclass = PlayerClassHelper.getPlayerClass(player);
+			PlayerClassInstance playerclass = PlayerClassHelper.getPlayerClass(player);
 			if(playerclass != null)
 			{
 				//TODO:playerclass.onUpdate(player);
@@ -188,4 +195,19 @@ public class ClassHooks
 			}
 		}
 	}*/
+	
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+    public void onKeyInput(KeyInputEvent e)
+	{
+		PlayerClassInstance pci = PlayerClassHelper.getPlayerClass(Minecraft.getMinecraft().thePlayer);
+		for(int i = 0; i < KeyBindings.powerBindings.size(); i++)
+		{
+			KeyBinding kb = KeyBindings.powerBindings.get(i);
+			if(kb.isPressed())
+			{
+				pci.togglePower(i);
+			}
+		}
+    }
 }
