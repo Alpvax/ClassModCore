@@ -2,24 +2,25 @@ package alpvax.mod.classmodcore.permissions;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.common.config.Property;
 
 /**
  * @author Alpvax
  *
  */
 public class SimpleClassPermission implements IPlayerClassPermission
-{
-	private boolean enabled = true;
+{	
+	private boolean enabled;
 	
 	public SimpleClassPermission(boolean enabled)
 	{
 		this.enabled = enabled;
 	}
 
-	public SimpleClassPermission setEnabled(boolean enabled)
+	@Override
+	public void setFromConfig(Property configProperty)
 	{
-		this.enabled = enabled;
-		return this;
+		enabled = configProperty.getBoolean();
 	}
 	
 	@Override
@@ -33,5 +34,4 @@ public class SimpleClassPermission implements IPlayerClassPermission
 	{
 		return enabled;
 	}
-
 }

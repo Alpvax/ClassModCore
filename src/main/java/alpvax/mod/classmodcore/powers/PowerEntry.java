@@ -35,9 +35,9 @@ public abstract class PowerEntry
 		manual = type != CONTINUOUS;
 	}
 	
-	public PowerInstance createInstance()
+	public PowerInstance createInstance(int index)
 	{
-		return new PowerInstance(power, type, manual, data);
+		return new PowerInstance(power, type, manual, index, data);
 	}
 	
 	public static class Passive extends PowerEntry

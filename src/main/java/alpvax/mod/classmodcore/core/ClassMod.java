@@ -114,6 +114,7 @@ public class ClassMod
 	public void onServerStart(FMLServerStartingEvent event)
 	{
 		event.registerServerCommand(new CommandChangeClass());
+		//TODO:event.registerServerCommand(new CommandForceClass());
 	}
 
 	private void initPackets()

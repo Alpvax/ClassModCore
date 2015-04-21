@@ -6,17 +6,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.Level;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import org.apache.logging.log4j.Level;
+
 import alpvax.mod.classmodcore.permissions.IPlayerClassPermission;
 import alpvax.mod.classmodcore.permissions.SimpleClassPermission;
 import alpvax.mod.common.util.SaveHelper;
@@ -24,7 +24,7 @@ import alpvax.mod.common.util.SaveHelper;
 public final class PlayerClassRegistry
 {
 	private static Map<String, IPlayerClass> idToClassMap = new HashMap<String, IPlayerClass>();
-	private static Map<String, String> modIDMap = new HashMap<String, String>();
+	protected static Map<String, String> modIDMap = new HashMap<String, String>();
 	private static Map<String, IPlayerClassPermission> classStates = new HashMap<String, IPlayerClassPermission>();
 	
 	private static boolean DONE = false;
@@ -99,6 +99,8 @@ public final class PlayerClassRegistry
 			{
 				return true;
 			}
+
+			@Override public void setFromConfig(Property configProperty){}
 		};
 		do_register("", playerclass, nullPerm);
 		do_register("null", playerclass, nullPerm);
@@ -160,7 +162,11 @@ public final class PlayerClassRegistry
 			String classID = i.next();
 			if(classStates.get(classID) == null)
 			{
-				classStates.put(classID, new SimpleClassPermission(getProperty(classID, defConfig, config).getBoolean()));
+				classStates.put(classID, new SimpleClassPermission(getProperty(classID, defConfig, config).getBoolean(true)));
+			}
+			else
+			{
+				classStates.get(classID).setFromConfig(getProperty(classID, defConfig, config));
 			}
 		}
 		if(config != null)
@@ -179,12 +185,7 @@ public final class PlayerClassRegistry
 		int i = classID.lastIndexOf('.');
 		String category = i >= 0 ? classID.substring(0, i) : "";
 		String key = classID.substring(i + 1);
-		Property p = defConfig.get(category, key, true);
-		return config != null ? config.get(category, key, p.getBoolean()) : p;
-	}
-
-	public static ResourceLocation getClassImage(String classID)
-	{
-		return new ResourceLocation(modIDMap.get(classID) + ":textures/classes/" + (classID.length() < 1 ? "Steve" : classID.replace(".", "/")) + ".png");
+		Property p = defConfig.getCategory(category).get(key);
+		return config != null ? config.getCategory(category).get(key) : p;
 	}
 }

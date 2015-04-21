@@ -2,6 +2,7 @@ package alpvax.mod.classmodcore.permissions;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.common.config.Property;
 
 /**
  * @author Alpvax
@@ -9,6 +10,8 @@ import net.minecraft.entity.player.EntityPlayer;
  */
 public interface IPlayerClassPermission
 {
+	public void setFromConfig(Property configProperty);
+	
 	public boolean isAvailableInGui(EntityPlayer player);
 
 	public boolean isAvailableForCommand(ICommandSender commandSender);

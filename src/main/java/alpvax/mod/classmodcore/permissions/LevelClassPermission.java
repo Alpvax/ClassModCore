@@ -2,6 +2,7 @@ package alpvax.mod.classmodcore.permissions;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -13,6 +14,7 @@ public class LevelClassPermission implements IPlayerClassPermission
 {
 	private int guiPermLevel;
 	private int cmdPermLevel;
+	private boolean enabled = true;
 	
 	public LevelClassPermission(int permLevel)
 	{
@@ -23,17 +25,23 @@ public class LevelClassPermission implements IPlayerClassPermission
 		this.guiPermLevel = guiPermLevel;
 		this.cmdPermLevel = cmdPermLevel;
 	}
+	
+	@Override
+	public void setFromConfig(Property configProperty)
+	{
+		enabled = configProperty.getBoolean();
+	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean isAvailableInGui(EntityPlayer player)
 	{
-		return player.canUseCommand(guiPermLevel, "");
+		return enabled && player.canUseCommand(guiPermLevel, "forceclass");
 	}
 	
 	@Override
 	public boolean isAvailableForCommand(ICommandSender commandSender)
 	{
-		return commandSender.canUseCommand(cmdPermLevel, "");
+		return enabled && commandSender.canUseCommand(cmdPermLevel, "forceclass");
 	}
 }

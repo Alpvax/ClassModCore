@@ -1,39 +1,44 @@
 package alpvax.mod.classmodcore.powers;
 
+import static alpvax.mod.classmodcore.core.ClassUtil.KEY_ACTIVE;
+import static alpvax.mod.classmodcore.core.ClassUtil.KEY_CD;
+import static alpvax.mod.classmodcore.core.ClassUtil.KEY_DATA;
+import static alpvax.mod.classmodcore.core.ClassUtil.KEY_DUR;
+import static alpvax.mod.classmodcore.core.ClassUtil.KEY_KEYBIND;
+import static alpvax.mod.classmodcore.core.ClassUtil.KEY_SLOT;
+
 import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants.NBT;
-import alpvax.mod.classmodcore.events.TriggerPowerEvent;
-import alpvax.mod.classmodcore.events.TriggerPowerEvent.ResetPowerEvent;
-import alpvax.mod.classmodcore.events.TriggerPowerEvent.TriggerPowerTimedEvent;
+import alpvax.mod.classmodcore.events.ChangePowerStateEvent.ResetPowerEvent;
+import alpvax.mod.classmodcore.events.ChangePowerStateEvent.ResetPowerForClassChangeEvent;
+import alpvax.mod.classmodcore.events.ChangePowerStateEvent.StartContinuousPowerEvent;
+import alpvax.mod.classmodcore.events.ChangePowerStateEvent.TriggerPowerEvent;
+import alpvax.mod.classmodcore.events.ChangePowerStateEvent.TriggerPowerTimedEvent;
 
 public class PowerInstance
 {
-	private static final String KEY_ACTIVE = "Active";
-	private static final String KEY_CD = "Cooldown";
-	private static final String KEY_DUR = "Duration";
-	private static final String KEY_DATA = "Data";
-	
-	
 	private final IPower power;
 	private final EnumPowerType type;
 	public final boolean manual;
-	private boolean active;
+	private final int index;
+	private int keyIndex;
 	private int maxCD;
 	private int maxDur;
+	private boolean active = false;
 	private int cooldown = 0;
 	private int duration = 0;
 	protected Map<String, Object> data;
 	
-	protected PowerInstance(IPower power, EnumPowerType type, boolean manualTrigger, Map<String, Object> additionalData)
+	protected PowerInstance(IPower power, EnumPowerType type, boolean manualTrigger, int index, Map<String, Object> additionalData)
 	{
 		this.power = power;
 		this.type = type;
+		this.index = index;
 		data = additionalData;
-		active = type == EnumPowerType.CONTINUOUS;
 		manual = !active && manualTrigger;
 		maxCD = data.containsKey(PowerEntry.KEY_COOLDOWN) ? ((Integer)data.get(PowerEntry.KEY_COOLDOWN)).intValue() : -1;
 		maxDur = data.containsKey(PowerEntry.KEY_DURATION) ? ((Integer)data.get(PowerEntry.KEY_DURATION)).intValue() : -1;
@@ -57,7 +62,7 @@ public class PowerInstance
 		{
 			power.onTick(player, data);
 		}
-		if(triggerable())
+		if(type != EnumPowerType.CONTINUOUS)
 		{
 			if(cooldown > 0)
 			{
@@ -65,19 +70,47 @@ public class PowerInstance
 			}
 			if(!manual)
 			{
-				if(!active && type != EnumPowerType.CONTINUOUS && power.shouldTrigger(player, data))
+				if(!active && power.shouldTrigger(player, data))
 				{
 					triggerPower(player);
 				}
-				if(active && type  == EnumPowerType.TOGGLED && power.shouldReset(player, data))
+				if(active && type == EnumPowerType.TOGGLED && power.shouldReset(player, data))
 				{
 					resetPower(player);
 				}
 			}
 		}
 	}
+	
+	public void togglePower(EntityPlayer player)
+	{
+		if(active)
+		{
+			resetPower(player);
+		}
+		else
+		{
+			triggerPower(player);
+		}
+	}
+	
+	public void init(EntityPlayer player)
+	{
+		if(type == EnumPowerType.CONTINUOUS)
+		{
+			MinecraftForge.EVENT_BUS.post(new StartContinuousPowerEvent(player, power, data));
+			active = true;
+			power.triggerPower(player, data);
+		}
+	}
+	public void stop(EntityPlayer player)
+	{
+		MinecraftForge.EVENT_BUS.post(new ResetPowerForClassChangeEvent(player, power, 0, data));
+		active = false;
+		power.resetPower(player, data);
+	}
 
-	public boolean triggerPower(EntityPlayer player)
+	private boolean triggerPower(EntityPlayer player)
 	{
 		if(!canTrigger())
 		{
@@ -105,7 +138,7 @@ public class PowerInstance
 		return true;
 	}
 	
-	public void resetPower(EntityPlayer player)
+	private void resetPower(EntityPlayer player)
 	{
 		ResetPowerEvent e = new ResetPowerEvent(player, power, cooldown, data);
 		if(MinecraftForge.EVENT_BUS.post(e))
@@ -123,7 +156,7 @@ public class PowerInstance
 
 	public boolean canTrigger()
 	{
-		return triggerable() && cooldown < 1;
+		return type != EnumPowerType.CONTINUOUS && cooldown < 1;
 	}
 
 	private boolean hasDuration()
@@ -135,9 +168,15 @@ public class PowerInstance
 	{
 		return maxCD > 0;
 	}
-	private boolean triggerable()
+	
+	public boolean setKeybind(int keyIndex)
 	{
-		return type != EnumPowerType.CONTINUOUS;
+		if(manual)
+		{
+			this.keyIndex = keyIndex;
+			return true;
+		}
+		return false;
 	}
 
 	public void readFromNBT(NBTTagCompound nbt)
@@ -153,6 +192,10 @@ public class PowerInstance
 		{
 			cooldown = nbt.getInteger(KEY_CD);
 		}
+		if(nbt.hasKey(KEY_KEYBIND))
+		{
+			keyIndex = nbt.getInteger(KEY_KEYBIND);
+		}
 		if(power instanceof IExtendedPower)
 		{
 			NBTTagCompound tag = nbt.getCompoundTag(KEY_DATA);
@@ -162,6 +205,8 @@ public class PowerInstance
 
 	public void writeToNBT(NBTTagCompound nbt)
 	{
+		nbt.setInteger(KEY_SLOT, index);
+		nbt.setBoolean(KEY_ACTIVE, active);
 		if(hasDuration())
 		{
 			nbt.setInteger(KEY_DUR, duration);
@@ -169,6 +214,10 @@ public class PowerInstance
 		if(hasCooldown())
 		{
 			nbt.setInteger(KEY_CD, cooldown);
+		}
+		if(manual)
+		{
+			nbt.setInteger(KEY_KEYBIND, keyIndex);
 		}
 		if(power instanceof IExtendedPower)
 		{

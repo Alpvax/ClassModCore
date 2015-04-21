@@ -30,7 +30,7 @@ public class PlayerClassHelper
 	 * Gets the class of the specified player. Will never return null, so to check if the class has been set use {@link #hasPlayerClass(EntityPlayer)}
 	 * @return the playerclass, or the default playerclass if the class has not been set yet
 	 */
-	public static IPlayerClass getPlayerClass(EntityPlayer player)
+	public static PlayerClassInstance getPlayerClass(EntityPlayer player)
 	{
 		IPlayerClass pc = getSaveData(player).getPlayerClass();
 		return pc != null ? pc : PlayerClassRegistry.getPlayerClass("");

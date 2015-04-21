@@ -19,18 +19,12 @@ classmodcore.gui.select=Done
 classmodcore.gui.selectclass=Select a class
 
 command.changeclass.usage=/%0$s [class] [player]
+command.changeclass.permission=Either that class is disabled or you do not have permission to use "%0$s"
 command.changeclass.success=Set %1$s's class to %0$s
 command.changeclass.notfound=Cannot find class %0$s
 
-item.ichor.name=Ichor
-item.obsidianShard.name=Obsidian Shard
-item.duskIron.name=Dusk Iron Ingot
-item.dawnGold.name=Dawn Gold Ingot
-
-block.shrine.name=Shrine
-
-container.mythoShrine=Shrine
-
-label.tier=Tier
-
-tooltip.ichorLevel=Ichor: %0$d (Fluid: %1$d; Solid: %2$d)
+key.classmod.powers=Class Power Keybindings
+key.classmod.power1=Active Power 1
+key.classmod.power2=Active Power 2
+key.classmod.power3=Active Power 3
+key.classmod.power4=Active Power 4

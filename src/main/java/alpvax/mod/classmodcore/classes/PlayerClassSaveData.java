@@ -16,7 +16,6 @@ import alpvax.mod.classmodcore.powers.PowerInstance;
 class PlayerClassSaveData extends WorldSavedData
 {
 	private static final String KEY_ID = "ClassID";
-	private static final String KEY_POWERS = "Powers";
 	
 	private String id;
 	protected PowerInstance[] powers;
