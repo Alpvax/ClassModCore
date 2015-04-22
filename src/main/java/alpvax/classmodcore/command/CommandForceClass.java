@@ -13,6 +13,8 @@ import net.minecraft.util.BlockPos;
 import alpvax.classmodcore.api.classes.IPlayerClass;
 import alpvax.classmodcore.api.classes.PlayerClassHelper;
 import alpvax.classmodcore.api.classes.PlayerClassRegistry;
+import alpvax.classmodcore.core.ClassMod;
+import alpvax.classmodcore.network.packets.ClassChangePacket;
 
 
 /**
@@ -89,7 +91,14 @@ public class CommandForceClass extends CommandBase
 
 	protected void do_change(IPlayerClass pc, EntityPlayer player, ICommandSender sender)
 	{
-		PlayerClassHelper.setPlayerClass(pc, player, sender);
+		if(player.worldObj.isRemote)
+		{
+			ClassMod.packetHandler.sendToServer(new ClassChangePacket(player, pc));
+		}
+		else
+		{
+			PlayerClassHelper.setPlayerClass(pc, player, sender);
+		}
 	}
 
 	/**

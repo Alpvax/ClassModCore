@@ -16,11 +16,12 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import alpvax.classmodcore.api.classes.PlayerClassRegistry;
+import alpvax.classmodcore.api.classes.SimplePlayerClass;
 import alpvax.classmodcore.api.powers.PowerEntry;
 import alpvax.classmodcore.command.CommandChangeClass;
 import alpvax.classmodcore.network.CommonProxy;
 import alpvax.classmodcore.network.packets.ClassChangePacket;
-import alpvax.classmodcore.playerclass.SimplePlayerClass;
+import alpvax.classmodcore.network.packets.TriggerPowerPacket;
 import alpvax.common.network.AlpPacketManager;
 import alpvax.common.network.OpenGuiPacket;
 
@@ -127,6 +128,7 @@ public class ClassMod
 	{
 		packetHandler.register2WayMessage(ClassChangePacket.ClientHandler.class, ClassChangePacket.ServerHandler.class, ClassChangePacket.class);
 		packetHandler.registerMessage(OpenGuiPacket.Handler.class, OpenGuiPacket.class, Side.CLIENT);
+		packetHandler.registerMessage(TriggerPowerPacket.Handler.class, TriggerPowerPacket.class, Side.CLIENT);
 		// AlpModPacket.registerPacket(packetClass);
 		// AlpModPacket.registerPacket(ClassSelectPacket.class);
 		// AlpModPacket.registerPacket(DataStringPacket.class);

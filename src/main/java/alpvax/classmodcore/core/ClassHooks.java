@@ -13,6 +13,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import alpvax.classmodcore.api.classes.PlayerClassHelper;
 import alpvax.classmodcore.api.classes.PlayerClassInstance;
 import alpvax.classmodcore.api.events.ChangeClassEvent;
+import alpvax.classmodcore.network.packets.TriggerPowerPacket;
 import alpvax.common.network.OpenGuiPacket;
 
 
@@ -200,13 +201,13 @@ public class ClassHooks
 	@SideOnly(Side.CLIENT)
 	public void onKeyInput(KeyInputEvent e)
 	{
-		PlayerClassInstance pci = PlayerClassHelper.getPlayerClassInstance(Minecraft.getMinecraft().thePlayer);
+		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 		for(int i = 0; i < KeyBindings.powerBindings.size(); i++)
 		{
 			KeyBinding kb = KeyBindings.powerBindings.get(i);
 			if(kb.isPressed())
 			{
-				pci.togglePower(i);
+				ClassMod.packetHandler.sendToServer(new TriggerPowerPacket(player, i));
 			}
 		}
 	}
