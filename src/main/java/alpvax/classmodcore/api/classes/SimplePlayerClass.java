@@ -1,4 +1,4 @@
-package alpvax.classmodcore.playerclass;
+package alpvax.classmodcore.api.classes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
-import alpvax.classmodcore.api.classes.IPlayerClass;
 import alpvax.classmodcore.api.powers.PowerEntry;
 
 
