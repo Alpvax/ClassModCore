@@ -117,7 +117,10 @@ public abstract class SimplePlayerClass implements IPlayerClass
 	}
 
 	@Override
-	public abstract List<PowerEntry> getPowers();
+	public List<PowerEntry> getPowers()
+	{
+		return powers;
+	}
 
 	@Override
 	public abstract void setup(EntityPlayer player);

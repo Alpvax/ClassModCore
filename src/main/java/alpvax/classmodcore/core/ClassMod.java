@@ -1,7 +1,5 @@
 package alpvax.classmodcore.core;
 
-import java.util.List;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -17,7 +15,6 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import alpvax.classmodcore.api.classes.PlayerClassRegistry;
 import alpvax.classmodcore.api.classes.SimplePlayerClass;
-import alpvax.classmodcore.api.powers.PowerEntry;
 import alpvax.classmodcore.command.CommandChangeClass;
 import alpvax.classmodcore.network.CommonProxy;
 import alpvax.classmodcore.network.packets.ClassChangePacket;
@@ -88,22 +85,8 @@ public class ClassMod
 	public void Init(FMLInitializationEvent event)
 	{
 		PlayerClassRegistry.registerNullClass(new SimplePlayerClass(""){
-
-			@Override
-			public List<PowerEntry> getPowers()
-			{
-				return null;
-			}
-
-			@Override
-			public void setup(EntityPlayer player)
-			{
-			}
-
-			@Override
-			public void reset(EntityPlayer player)
-			{
-			}
+			@Override public void setup(EntityPlayer player){}
+			@Override public void reset(EntityPlayer player){}
 		}.setDisplayName("Steve"));
 		System.err.println(PlayerClassRegistry.getPlayerClass("").getDisplayName());//XXX
 		proxy.registerClientHandlers();
