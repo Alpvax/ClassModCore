@@ -2,15 +2,26 @@ package alpvax.classmodcore.api.powers;
 
 import java.util.Map;
 
+import alpvax.classmodcore.api.ClassUtil;
+import alpvax.common.util.EntityHelper;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.DamageSource;
 
-public abstract class PowerResist implements IPower
+/**
+ * @author Alpvax
+ *
+ */
+public class PowerMoveSpeed implements IPower
 {
-	private float multiplier;
+	private double multiplier;
 	private String display;
-	
-	public PowerResist(String displayType)
+
+	public PowerMoveSpeed()
+	{
+		this("");
+	}
+	public PowerMoveSpeed(String displayType)
 	{
 		display = displayType;
 	}
@@ -20,7 +31,7 @@ public abstract class PowerResist implements IPower
 	{
 		return false;
 	}
-
+	
 	@Override
 	public boolean shouldReset(EntityPlayer player, Map<String, Object> additionalData)
 	{
@@ -30,37 +41,34 @@ public abstract class PowerResist implements IPower
 	@Override
 	public boolean triggerPower(EntityPlayer player, Map<String, Object> additionalData)
 	{
-		return false;
+		EntityHelper.applyAttributeModifier(player, SharedMonsterAttributes.movementSpeed, new AttributeModifier(ClassUtil.attModIDPower, "ClassModSpeedBoost", multiplier, 1), 2);
+		return true;
 	}
 
 	@Override
 	public void resetPower(EntityPlayer player, Map<String, Object> additionalData)
 	{
-		// TODO Auto-generated method stub
+		EntityHelper.removeAttributeModifier(player, SharedMonsterAttributes.movementSpeed, new AttributeModifier(ClassUtil.attModIDPower, "ClassModSpeedBoost", multiplier, 1), 2);
 	}
 
 	@Override
 	public void onTick(EntityPlayer player, Map<String, Object> additionalData)
 	{
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public String getDisplayName()
 	{
-		return (display != null ? display + " " : "") + "Resistance";
+		return (display != null ? display + " " : "") + "Move Speed";
 	}
 
+	/* (non-Javadoc)
+	 * @see alpvax.classmodcore.api.powers.IPower#initialise(java.util.Map)
+	 */
 	@Override
 	public void initialise(Map<String, Object> additionalData)
 	{
 		multiplier = additionalData.containsKey("multiplier") ? ((Float)additionalData.get("multiplier")).floatValue() : 1.0F;
 	}
-	
-	public float modifyDamage(DamageSource src, EntityPlayer player, float amount)
-	{
-		return shouldModify(src, player) ? amount * multiplier : amount;
-	}
-	
-	public abstract boolean shouldModify(DamageSource src, EntityPlayer player);
+
 }

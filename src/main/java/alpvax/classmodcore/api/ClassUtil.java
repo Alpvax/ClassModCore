@@ -33,7 +33,6 @@ public final class ClassUtil
 
 	public static final ImmutableList<String> nullKeys = new ImmutableList.Builder<String>().add("", "null", "none").build();
 
-	public static UUID attModIDClass;
 	public static UUID attModIDPower;
 
 	// public static UUID nightvisionAttID;
@@ -47,7 +46,6 @@ public final class ClassUtil
 	{
 		Configuration config = new Configuration(new File(configDir, "ClassMod.util"));
 		config.load();
-		attModIDClass = UUID.fromString(config.get("UUIDs", "Attribute Modifier ID for base changes", UUID.randomUUID().toString()).getString());
 		attModIDPower = UUID.fromString(config.get("UUIDs", "Attribute Modifier ID for power changes", UUID.randomUUID().toString()).getString());
 		// nightvisionAttID = UUID.fromString(config.get("UUIDs",
 		// "ID for nightvision Attribute",
