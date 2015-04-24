@@ -1,6 +1,6 @@
 package alpvax.classmodcore.api.powers;
 
-enum EnumPowerType
+public enum EnumPowerType
 {
 	/**
 	 * Does something instantaneously when triggered<br>

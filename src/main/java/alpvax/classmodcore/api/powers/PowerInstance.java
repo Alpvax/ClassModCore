@@ -7,6 +7,7 @@ import static alpvax.classmodcore.api.ClassUtil.KEY_DUR;
 import static alpvax.classmodcore.api.ClassUtil.KEY_KEYBIND;
 import static alpvax.classmodcore.api.ClassUtil.KEY_SLOT;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,7 +18,6 @@ import alpvax.classmodcore.api.events.ChangePowerStateEvent.ResetPowerEvent;
 import alpvax.classmodcore.api.events.ChangePowerStateEvent.ResetPowerForClassChangeEvent;
 import alpvax.classmodcore.api.events.ChangePowerStateEvent.StartContinuousPowerEvent;
 import alpvax.classmodcore.api.events.ChangePowerStateEvent.TriggerPowerEvent;
-import alpvax.classmodcore.api.events.ChangePowerStateEvent.TriggerPowerTimedEvent;
 
 
 public class PowerInstance
@@ -44,7 +44,6 @@ public class PowerInstance
 		manual = !active && manualTrigger;
 		maxCD = data.containsKey(PowerEntry.KEY_COOLDOWN) ? ((Integer)data.get(PowerEntry.KEY_COOLDOWN)).intValue() : -1;
 		maxDur = data.containsKey(PowerEntry.KEY_DURATION) ? ((Integer)data.get(PowerEntry.KEY_DURATION)).intValue() : -1;
-		power.initialise(data);
 	}
 
 	public void tickPower(EntityPlayer player)
@@ -56,13 +55,13 @@ public class PowerInstance
 				duration = 0;
 				if(type != EnumPowerType.CONTINUOUS)
 				{
-					resetPower(player);
+					resetPower(player, data);
 				}
 			}
 		}
-		if(active)
+		if(active && power instanceof ITickingPower)
 		{
-			power.onTick(player, data);
+			((ITickingPower)power).onTick(player, data);
 		}
 		if(type != EnumPowerType.CONTINUOUS)
 		{
@@ -74,77 +73,89 @@ public class PowerInstance
 			{
 				if(!active && power.shouldTrigger(player, data))
 				{
-					triggerPower(player);
+					triggerPower(player, data);
 				}
 				if(active && type == EnumPowerType.TOGGLED && power.shouldReset(player, data))
 				{
-					resetPower(player);
+					resetPower(player, data);
 				}
 			}
 		}
 		dirty = true;
 	}
 
-	public void togglePower(EntityPlayer player)
+	public Map<String, Object> togglePower(EntityPlayer player, Map<String, Object> instanceData)
 	{
-		dirty = active ? resetPower(player) : triggerPower(player);
+		if(instanceData == null)
+		{
+			instanceData = new HashMap<String, Object>();
+		}
+		instanceData.putAll(data);
+		dirty = active ? resetPower(player, instanceData) : triggerPower(player, instanceData);
+		return instanceData;
 	}
 
-	public void init(EntityPlayer player)
+	public void init(EntityPlayer player, Map<String, Object> instanceData)
 	{
 		if(type == EnumPowerType.CONTINUOUS)
 		{
-			MinecraftForge.EVENT_BUS.post(new StartContinuousPowerEvent(player, power, data));
+			MinecraftForge.EVENT_BUS.post(new StartContinuousPowerEvent(player, this, instanceData));
 			active = true;
-			power.triggerPower(player, data);
+			power.triggerPower(player, instanceData);
 		}
 	}
 
-	public void stop(EntityPlayer player)
+	public void stop(EntityPlayer player, Map<String, Object> instanceData)
 	{
-		MinecraftForge.EVENT_BUS.post(new ResetPowerForClassChangeEvent(player, power, 0, data));
+		MinecraftForge.EVENT_BUS.post(new ResetPowerForClassChangeEvent(player, this, instanceData));
 		active = false;
-		power.resetPower(player, data);
+		power.resetPower(player, instanceData);
 	}
 
-	private boolean triggerPower(EntityPlayer player)
+	private boolean triggerPower(EntityPlayer player, Map<String, Object> instanceData)
 	{
 		if(!canTrigger())
 		{
 			return false;
 		}
-		TriggerPowerEvent e;
-		if(hasDuration())
+		int c = cooldown;
+		int d = duration;
+		cooldown += maxCD;
+		duration += maxDur;
+		TriggerPowerEvent e = new TriggerPowerEvent(player, this, instanceData);
+		if(MinecraftForge.EVENT_BUS.post(e) || !power.triggerPower(player, instanceData))
 		{
-			e = new TriggerPowerTimedEvent(player, power, cooldown + maxCD, duration + maxDur, data);
-		}
-		else
-		{
-			e = new TriggerPowerEvent(player, power, cooldown + maxCD, data);
-		}
-		if(MinecraftForge.EVENT_BUS.post(e) || !power.triggerPower(player, data))
-		{
+			cooldown = c;
+			duration = d;
 			return false;
 		}
-
 		if(type != EnumPowerType.INSTANT)
 		{
 			active = true;
 		}
-
 		return true;
 	}
 
-	private boolean resetPower(EntityPlayer player)
+	private boolean resetPower(EntityPlayer player, Map<String, Object> instanceData)
 	{
-		ResetPowerEvent e = new ResetPowerEvent(player, power, cooldown, data);
+		ResetPowerEvent e = new ResetPowerEvent(player, this, instanceData);
 		if(MinecraftForge.EVENT_BUS.post(e))
 		{
 			return false;
 		}
 		active = false;
-		power.resetPower(player, data);
+		power.resetPower(player, instanceData);
 		return true;
+	}
+	
+	public int getCooldown()
+	{
+		return cooldown;
+	}
+	
+	public int getDurationRemaining()
+	{
+		return duration;
 	}
 
 	public boolean isActive()
@@ -175,6 +186,16 @@ public class PowerInstance
 			return true;
 		}
 		return false;
+	}
+
+	public IPower getPower()
+	{
+		return power;
+	}
+
+	public EnumPowerType getPowerType()
+	{
+		return type;
 	}
 
 	public void readFromNBT(NBTTagCompound nbt)

@@ -37,12 +37,13 @@ public final class PlayerClassRegistry
 		return registerPlayerClass(playerclass, null);
 	}
 
-	public static IPlayerClass registerPlayerClass(IPlayerClass playerclass, String group)
+	/*public static IPlayerClass registerPlayerClass(IPlayerClass playerclass, String group)
 	{
 		return registerPlayerClass(playerclass, group, null);
 	}
 
-	public static IPlayerClass registerPlayerClass(IPlayerClass playerclass, String group, IPlayerClassPermission permission)
+	public static IPlayerClass registerPlayerClass(IPlayerClass playerclass, String group, IPlayerClassPermission permission)*/
+	public static IPlayerClass registerPlayerClass(IPlayerClass playerclass, IPlayerClassPermission permission)
 	{
 		if(playerclass == null)
 		{
@@ -61,10 +62,10 @@ public final class PlayerClassRegistry
 			FMLLog.log("ClassMod", Level.WARN, new IllegalArgumentException(), "Failed to register PlayerClass: \"%1$s\" with no id. Class id invalid.", name);
 			return null;
 		}
-		if(group != null)
+		/*if(group != null)
 		{
-			id = group + id;
-		}
+			id = group + "." + id;
+		}*/
 		if(idToClassMap.containsKey(id.toLowerCase()))
 		{
 			FMLLog.log("ClassMod", Level.WARN, new IllegalArgumentException(), "Failed to register PlayerClass: \"%1$s\" with id: \"%2$s\". Class with that id already exists.", name, id);
@@ -76,6 +77,7 @@ public final class PlayerClassRegistry
 
 	private static void do_register(String classID, IPlayerClass playerclass, IPlayerClassPermission permission)
 	{
+		System.err.println("Mod: \"" + Loader.instance().activeModContainer().getModId() + "\" is registering " + playerclass.getDisplayName() + " with ID \"" + playerclass.getClassID() + "\"");//XXX
 		idToClassMap.put(classID, playerclass);
 		modIDMap.put(classID, Loader.instance().activeModContainer().getModId());
 		classStates.put(classID, permission);
@@ -141,9 +143,9 @@ public final class PlayerClassRegistry
 		return list;
 	}
 
-	public static List<IPlayerClass> availableClasses(ICommandSender commandSender)
+	public static List<String> availableClasses(ICommandSender commandSender)
 	{
-		List<IPlayerClass> list = new ArrayList<IPlayerClass>();
+		List<String> list = new ArrayList<String>();
 		for(String id : idToClassMap.keySet())
 		{
 			if(!DONE)
@@ -152,7 +154,7 @@ public final class PlayerClassRegistry
 			}
 			if(classStates.get(id).isAvailableForCommand(commandSender))
 			{
-				list.add(idToClassMap.get(id));
+				list.add(id);
 			}
 		}
 		return list;

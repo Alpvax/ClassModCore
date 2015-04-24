@@ -4,21 +4,23 @@ import static alpvax.classmodcore.api.ClassUtil.KEY_ID;
 import static alpvax.classmodcore.api.ClassUtil.KEY_POWERS;
 import static alpvax.classmodcore.api.ClassUtil.KEY_SLOT;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
+import alpvax.classmodcore.api.powers.IPower;
 import alpvax.classmodcore.api.powers.PowerEntry;
 import alpvax.classmodcore.api.powers.PowerInstance;
 
 
 public class PlayerClassInstance
 {
-	private final EntityPlayer player;
+	public final EntityPlayer player;
 	private IPlayerClass playerclass = null;
-	private PowerInstance[] powers;
+	private PowerInstance[] powers = new PowerInstance[0];
 	private List<Integer> manualIndexes;
 	private boolean dirty = false;
 
@@ -44,7 +46,9 @@ public class PlayerClassInstance
 			List<PowerEntry> list = playerclass.getPowers();
 			if(list != null)
 			{
-				for(int i = 0; i < list.size(); i++)
+				int num = list.size();
+				powers = new PowerInstance[num];
+				for(int i = 0; i < num; i++)
 				{
 					powers[i] = list.get(i).createInstance(i);
 					powers[i].init(player);
@@ -54,6 +58,7 @@ public class PlayerClassInstance
 					}
 				}
 			}
+			powers = new PowerInstance[0];
 			dirty = true;
 		}
 	}
@@ -79,15 +84,18 @@ public class PlayerClassInstance
 
 	public void writeToNBT(NBTTagCompound nbt)
 	{
-		nbt.setString(KEY_ID, playerclass.getClassID());
-		NBTTagList list = new NBTTagList();
-		for(PowerInstance power : powers)
+		if(playerclass != null)//TODO:null class
 		{
-			NBTTagCompound tag = new NBTTagCompound();
-			power.writeToNBT(tag);
-			list.appendTag(tag);
+			nbt.setString(KEY_ID, playerclass.getClassID());
+			NBTTagList list = new NBTTagList();
+			for(PowerInstance power : powers)
+			{
+				NBTTagCompound tag = new NBTTagCompound();
+				power.writeToNBT(tag);
+				list.appendTag(tag);
+			}
+			nbt.setTag(KEY_POWERS, list);
 		}
-		nbt.setTag(KEY_POWERS, list);
 		dirty = false;
 	}
 
@@ -95,7 +103,7 @@ public class PlayerClassInstance
 	{
 		if(index >= 0 && index < manualIndexes.size())
 		{
-			powers[manualIndexes.get(index).intValue()].togglePower(player);
+			powers[manualIndexes.get(index).intValue()].togglePower(player, null);
 		}
 	}
 
@@ -121,5 +129,18 @@ public class PlayerClassInstance
 			}
 		}
 		return false;
+	}
+
+	public List<PowerInstance> getActivePowers(Class<? extends IPower> powerclass)
+	{
+		List<PowerInstance> list = new ArrayList<PowerInstance>();
+		for(PowerInstance p : powers)
+		{
+			if(p.isActive() && (powerclass == null || powerclass.isAssignableFrom(p.getPower().getClass())))
+			{
+				list.add(p);
+			}
+		}
+		return list;
 	}
 }

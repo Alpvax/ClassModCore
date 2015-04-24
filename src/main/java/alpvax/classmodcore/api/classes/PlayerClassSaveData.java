@@ -17,13 +17,19 @@ import alpvax.classmodcore.api.ClassUtil;
  * @author Alpvax
  *
  */
-class PlayerClassSaveData extends WorldSavedData
+public class PlayerClassSaveData extends WorldSavedData
 {
 	private Map<String, PlayerClassInstance> data = new HashMap<String, PlayerClassInstance>();
-
+	
 	public PlayerClassSaveData()
 	{
-		super("PlayerClass");
+		this("PlayerClass");
+	}
+
+	public PlayerClassSaveData(String mapName)
+	{
+		super(mapName);
+		//super("PlayerClass (" + mapName + ")");
 	}
 
 	public PlayerClassInstance getPlayerClass(String name)

@@ -1,6 +1,6 @@
 classmodcore.configtitle.default1=Global Configuration
 classmodcore.configtitle.default2=(Values will be used as defaults for any new worlds generated)
-classmodcore.configtitle.world=Configuration for world "%0$s"
+classmodcore.configtitle.world=Configuration for world "%1$s"
 
 classmodcore.configtitle.category.rules=Rules
 classmodcore.configtitle.category.classes=Active Classes
@@ -18,10 +18,10 @@ classmodcore.gui.next=>
 classmodcore.gui.select=Done
 classmodcore.gui.selectclass=Select a class
 
-command.changeclass.usage=/%0$s [class] [player]
-command.changeclass.permission=Either that class is disabled or you do not have permission to use "%0$s"
-command.changeclass.success=Set %1$s's class to %0$s
-command.changeclass.notfound=Cannot find class %0$s
+command.changeclass.usage=/%1$s [class] [player]
+command.changeclass.permission=Either that class is disabled or you do not have permission to use "%1$s"
+command.changeclass.success=Set %2$s's class to %1$s
+command.changeclass.notfound=Cannot find class %1$s
 
 key.classmod.powers=Class Power Keybindings
 key.classmod.power1=Active Power 1

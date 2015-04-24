@@ -10,9 +10,10 @@ public abstract class PowerResist implements IPower
 	private float multiplier;
 	private String display;
 	
-	public PowerResist(String displayType)
+	public PowerResist(String displayType, float damageMult)
 	{
 		display = displayType;
+		multiplier = damageMult;
 	}
 	
 	@Override
@@ -30,31 +31,20 @@ public abstract class PowerResist implements IPower
 	@Override
 	public boolean triggerPower(EntityPlayer player, Map<String, Object> additionalData)
 	{
-		return false;
+		DamageSource src = (DamageSource)additionalData.get("dsrc");
+		float amount = ((Float)additionalData.get("amount")).floatValue();
+		float amm1 = modifyDamage(src, player, amount);
+		additionalData.put("RESULT", amm1);
+		return amount == amm1;
 	}
 
 	@Override
-	public void resetPower(EntityPlayer player, Map<String, Object> additionalData)
-	{
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void onTick(EntityPlayer player, Map<String, Object> additionalData)
-	{
-		// TODO Auto-generated method stub
-	}
+	public void resetPower(EntityPlayer player, Map<String, Object> additionalData){}
 
 	@Override
 	public String getDisplayName()
 	{
 		return (display != null ? display + " " : "") + "Resistance";
-	}
-
-	@Override
-	public void initialise(Map<String, Object> additionalData)
-	{
-		multiplier = additionalData.containsKey("multiplier") ? ((Float)additionalData.get("multiplier")).floatValue() : 1.0F;
 	}
 	
 	public float modifyDamage(DamageSource src, EntityPlayer player, float amount)

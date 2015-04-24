@@ -88,7 +88,6 @@ public class ClassMod
 			@Override public void setup(EntityPlayer player){}
 			@Override public void reset(EntityPlayer player){}
 		}.setDisplayName("Steve"));
-		System.err.println(PlayerClassRegistry.getPlayerClass("").getDisplayName());//XXX
 		proxy.registerClientHandlers();
 		proxy.registerRenderInformation();
 	}

@@ -21,6 +21,7 @@ public class SimpleClassPermission implements IPlayerClassPermission
 	@Override
 	public void setFromConfig(Property configProperty)
 	{
+		if(configProperty != null)//TODO:config
 		enabled = configProperty.getBoolean();
 	}
 

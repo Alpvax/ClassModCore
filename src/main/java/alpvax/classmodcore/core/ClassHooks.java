@@ -1,10 +1,16 @@
 package alpvax.classmodcore.core;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
@@ -13,6 +19,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import alpvax.classmodcore.api.classes.PlayerClassHelper;
 import alpvax.classmodcore.api.classes.PlayerClassInstance;
 import alpvax.classmodcore.api.events.ChangeClassEvent;
+import alpvax.classmodcore.api.powers.PowerInstance;
+import alpvax.classmodcore.api.powers.PowerResist;
 import alpvax.classmodcore.network.packets.TriggerPowerPacket;
 import alpvax.common.network.OpenGuiPacket;
 
@@ -33,6 +41,20 @@ public class ClassHooks
 	public void onChangeClass(ChangeClassEvent e)
 	{
 		System.err.println("Player: " + e.entityPlayer.getDisplayNameString() + " has become a " + e.playerclass.getDisplayName());//XXX
+	}
+
+	@SubscribeEvent
+	public void onEvent(LivingEvent e)
+	{
+		PlayerClassInstance pci = PlayerClassHelper.getPlayerClassInstance((EntityPlayer)e.entityLiving);
+		for(PowerInstance p : pci.getActivePowers(IPowerEventListener.class))
+		{
+			IPowerEventListener pow = ((IPowerEventListener)p.getPower());
+			if(p.isActive() && pow.getValidEvents().contains(e.getClass()))
+			{
+				//TODO:e = pow.listenToEvent(e);
+			}
+		}
 	}
 
 	/*TODO:@SubscribeEvent
@@ -82,13 +104,13 @@ public class ClassHooks
 	@SubscribeEvent
 	public void onPlayerUpdate(LivingUpdateEvent e)
 	{
-		if(!e.isCanceled() && e.entityLiving instanceof EntityPlayer)
+		if(e.entityLiving instanceof EntityPlayer)
 		{
 			EntityPlayer player = (EntityPlayer)e.entityLiving;
-			PlayerClassInstance playerclass = PlayerClassHelper.getPlayerClassInstance(player);
-			if(playerclass != null)
+			PlayerClassInstance pci = PlayerClassHelper.getPlayerClassInstance(player);
+			if(pci != null)
 			{
-				//TODO:playerclass.onUpdate(player);
+				pci.tick();
 			}
 		}
 	}
@@ -133,39 +155,45 @@ public class ClassHooks
 				e.distance /= f;
 			}
 		}
-	}
+	}*/
 
 	@SubscribeEvent
 	public void onPlayerHit(LivingHurtEvent e)
 	{
-		if(!e.isCanceled())
+		Map<String, Object> map = new HashMap<String, Object>();
+		if(e.entityLiving instanceof EntityPlayer)
 		{
-			if(e.entityLiving instanceof EntityPlayer)
+			map.put("dsrc", e.source);
+			map.put("amount", Float.valueOf(e.ammount));
+			PlayerClassInstance pci = PlayerClassHelper.getPlayerClassInstance((EntityPlayer)e.entityLiving);
+			for(PowerInstance p : pci.getActivePowers(PowerResist.class))
 			{
-				EntityPlayer player = (EntityPlayer)e.entityLiving;
-				ExtendedPlayer ep = ExtendedPlayer.get(player);
-				PlayerClass playerclass = ep.getPlayerClass();
-				if(playerclass != null)
+				map = p.togglePower(pci.player, map);
+				e.ammount = ((Float)map.get("RESULT")).floatValue();
+			}
+			/*EntityPlayer player = (EntityPlayer)e.entityLiving;
+			ExtendedPlayer ep = ExtendedPlayer.get(player);
+			PlayerClass playerclass = ep.getPlayerClass();
+			if(playerclass != null)
+			{
+				Iterator<PowerResistance> i = ep.getActivePowers(PowerResistance.class).iterator();
+				while(!e.isCanceled() && i.hasNext())
 				{
-					Iterator<PowerResistance> i = ep.getActivePowers(PowerResistance.class).iterator();
-					while(!e.isCanceled() && i.hasNext())
+					PowerResistance power = i.next();
+					System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; " + power);
+					if(power.damagetypes.contains(e.source))
 					{
-						PowerResistance power = i.next();
-						System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; " + power);
-						if(power.damagetypes.contains(e.source))
+						if(power.resistance == 1F)
 						{
-							if(power.resistance == 1F)
-							{
-								e.setCanceled(true);
-							}
-							else
-							{
-								e.ammount *= 1 - power.resistance;
-							}
+							e.setCanceled(true);
+						}
+						else
+						{
+							e.ammount *= 1 - power.resistance;
 						}
 					}
-					playerclass.onTakeDamage(player, e.source, e.ammount);
 				}
+				playerclass.onTakeDamage(player, e.source, e.ammount);
 			}
 			if(e.source.getSourceOfDamage() instanceof EntityPlayer)
 			{
@@ -176,9 +204,9 @@ public class ClassHooks
 				{
 					playerclass.onDamageEntity(player, e.entity, e.source, e.ammount);
 				}
-			}
+			}*/
 		}
-	}*/
+	}
 
 	/**
 	 * Only triggered when entity uses the Task System

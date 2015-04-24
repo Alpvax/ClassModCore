@@ -85,7 +85,7 @@ public class CommandForceClass extends CommandBase
 			}
 			IPlayerClass pc = PlayerClassRegistry.getPlayerClass(cname);
 			do_change(pc, player, sender);
-			notifyOperators(sender, this, "command.changeclass.success", pc.getDisplayName(), player.getDisplayNameString());
+			notifyOperators(sender, this, "command.changeclass.success", new Object[]{pc.getDisplayName(), player.getDisplayNameString()});
 		}
 	}
 
@@ -108,11 +108,11 @@ public class CommandForceClass extends CommandBase
 	@Override
 	public List addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
 	{
-		if(args.length == 0)
+		if(args.length == 1)
 		{
 			return func_175762_a(args, PlayerClassRegistry.availableClasses(sender));
 		}
-		if(args.length == 1 && sender.canUseCommand(2, getName()))
+		if(args.length == 2 && sender.canUseCommand(2, getName()))
 		{
 			return getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames());
 		}

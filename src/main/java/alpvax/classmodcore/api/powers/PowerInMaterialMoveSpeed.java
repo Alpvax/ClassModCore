@@ -13,9 +13,10 @@ public class PowerInMaterialMoveSpeed extends PowerMoveSpeed
 {
 	private Material material;
 	
-	public PowerInMaterialMoveSpeed(String displayString)
+	public PowerInMaterialMoveSpeed(String displayString, float speedMultiplier, Material material)
 	{
-		super(displayString);
+		super(displayString, speedMultiplier);
+		this.material = material;
 	}
 
 	@Override
@@ -28,13 +29,6 @@ public class PowerInMaterialMoveSpeed extends PowerMoveSpeed
 	public boolean shouldReset(EntityPlayer player, Map<String, Object> additionalData)
 	{
 		return !player.isInsideOfMaterial(material);
-	}
-
-	@Override
-	public void initialise(Map<String, Object> additionalData)
-	{
-		super.initialise(additionalData);
-		material = (Material)additionalData.get("material");
 	}
 
 }

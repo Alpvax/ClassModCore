@@ -14,46 +14,38 @@ import net.minecraft.entity.player.EntityPlayer;
  */
 public class PowerMoveSpeed implements IPower
 {
-	private double multiplier;
+	private float multiplier;
 	private String display;
-
-	public PowerMoveSpeed()
-	{
-		this("");
-	}
-	public PowerMoveSpeed(String displayType)
+	
+	public PowerMoveSpeed(String displayType, float damageMult)
 	{
 		display = displayType;
+		multiplier = damageMult;
 	}
 	
 	@Override
-	public boolean shouldTrigger(EntityPlayer player, Map<String, Object> additionalData)
+	public boolean shouldTrigger(EntityPlayer player, Map<String, Object> instanceData)
 	{
 		return false;
 	}
 	
 	@Override
-	public boolean shouldReset(EntityPlayer player, Map<String, Object> additionalData)
+	public boolean shouldReset(EntityPlayer player, Map<String, Object> instanceData)
 	{
 		return false;
 	}
 
 	@Override
-	public boolean triggerPower(EntityPlayer player, Map<String, Object> additionalData)
+	public boolean triggerPower(EntityPlayer player, Map<String, Object> instanceData)
 	{
 		EntityHelper.applyAttributeModifier(player, SharedMonsterAttributes.movementSpeed, new AttributeModifier(ClassUtil.attModIDPower, "ClassModSpeedBoost", multiplier, 1), 2);
 		return true;
 	}
 
 	@Override
-	public void resetPower(EntityPlayer player, Map<String, Object> additionalData)
+	public void resetPower(EntityPlayer player, Map<String, Object> instanceData)
 	{
 		EntityHelper.removeAttributeModifier(player, SharedMonsterAttributes.movementSpeed, new AttributeModifier(ClassUtil.attModIDPower, "ClassModSpeedBoost", multiplier, 1), 2);
-	}
-
-	@Override
-	public void onTick(EntityPlayer player, Map<String, Object> additionalData)
-	{
 	}
 
 	@Override
@@ -61,14 +53,4 @@ public class PowerMoveSpeed implements IPower
 	{
 		return (display != null ? display + " " : "") + "Move Speed";
 	}
-
-	/* (non-Javadoc)
-	 * @see alpvax.classmodcore.api.powers.IPower#initialise(java.util.Map)
-	 */
-	@Override
-	public void initialise(Map<String, Object> additionalData)
-	{
-		multiplier = additionalData.containsKey("multiplier") ? ((Float)additionalData.get("multiplier")).floatValue() : 1.0F;
-	}
-
 }
