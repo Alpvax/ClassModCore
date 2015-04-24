@@ -5,9 +5,9 @@ import net.minecraft.util.DamageSource;
 
 public class PowerFireResist extends PowerResist
 {
-	public PowerFireResist()
+	public PowerFireResist(float multiplier)
 	{
-		super("Fire");
+		super("Fire", multiplier);
 	}
 
 	@Override
