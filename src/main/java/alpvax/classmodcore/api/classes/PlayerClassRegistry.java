@@ -23,7 +23,6 @@ import alpvax.classmodcore.api.permissions.IPlayerClassPermission;
 import alpvax.classmodcore.api.permissions.SimpleClassPermission;
 import alpvax.common.util.SaveHelper;
 
-
 public final class PlayerClassRegistry
 {
 	private static Map<String, IPlayerClass> idToClassMap = new HashMap<String, IPlayerClass>();
@@ -85,6 +84,7 @@ public final class PlayerClassRegistry
 
 	/**
 	 * Registers a default or null playerclass. Normally "Steve", who is nothing special. (Has no powers or attributes)
+	 * 
 	 * @param playerclass
 	 */
 	public static void registerNullClass(IPlayerClass playerclass)

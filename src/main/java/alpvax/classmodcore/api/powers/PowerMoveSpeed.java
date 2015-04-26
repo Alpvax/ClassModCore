@@ -2,11 +2,11 @@ package alpvax.classmodcore.api.powers;
 
 import java.util.Map;
 
-import alpvax.classmodcore.api.ClassUtil;
-import alpvax.common.util.EntityHelper;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
+import alpvax.classmodcore.api.ClassUtil;
+import alpvax.common.util.EntityHelper;
 
 /**
  * @author Alpvax
@@ -16,19 +16,19 @@ public class PowerMoveSpeed implements IPower
 {
 	private float multiplier;
 	private String display;
-	
+
 	public PowerMoveSpeed(String displayType, float damageMult)
 	{
 		display = displayType;
 		multiplier = damageMult;
 	}
-	
+
 	@Override
 	public boolean shouldTrigger(EntityPlayer player, Map<String, Object> instanceData)
 	{
 		return false;
 	}
-	
+
 	@Override
 	public boolean shouldReset(EntityPlayer player, Map<String, Object> instanceData)
 	{

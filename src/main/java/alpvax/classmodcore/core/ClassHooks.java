@@ -1,6 +1,7 @@
 package alpvax.classmodcore.core;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.client.Minecraft;
@@ -10,7 +11,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
@@ -19,6 +19,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import alpvax.classmodcore.api.classes.PlayerClassHelper;
 import alpvax.classmodcore.api.classes.PlayerClassInstance;
 import alpvax.classmodcore.api.events.ChangeClassEvent;
+import alpvax.classmodcore.api.powers.IPowerEventListener;
 import alpvax.classmodcore.api.powers.PowerInstance;
 import alpvax.classmodcore.api.powers.PowerResist;
 import alpvax.classmodcore.network.packets.TriggerPowerPacket;
@@ -43,16 +44,23 @@ public class ClassHooks
 		System.err.println("Player: " + e.entityPlayer.getDisplayNameString() + " has become a " + e.playerclass.getDisplayName());//XXX
 	}
 
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@SubscribeEvent
-	public void onEvent(LivingEvent e)
+	public void onEvent(LivingHurtEvent e)//TODO:Change to accept all living events
 	{
-		PlayerClassInstance pci = PlayerClassHelper.getPlayerClassInstance((EntityPlayer)e.entityLiving);
-		for(PowerInstance p : pci.getActivePowers(IPowerEventListener.class))
+		if(e.entityLiving instanceof EntityPlayer)
 		{
-			IPowerEventListener pow = ((IPowerEventListener)p.getPower());
-			if(p.isActive() && pow.getValidEvents().contains(e.getClass()))
+			EntityPlayer player = (EntityPlayer)e.entityLiving;
+			PlayerClassInstance pci = PlayerClassHelper.getPlayerClassInstance(player);
+			System.err.printf("Handling %s for [%s]%s%n", e.getClass().getName(), pci.getPlayerClass().getDisplayName(), player.getName());//XXX
+			List<PowerInstance> list = pci.getActivePowers(PowerResist.class);//TODO:IPowerEventListener.class);
+			System.err.printf("%d powers found%n", list.size());//XXX
+			for(PowerInstance p : list)
 			{
-				//TODO:e = pow.listenToEvent(e);
+				if(p.isActive())
+				{
+					((IPowerEventListener)p).listenToEvent(e, player);
+				}
 			}
 		}
 	}
@@ -157,7 +165,7 @@ public class ClassHooks
 		}
 	}*/
 
-	@SubscribeEvent
+	/*TODO?@SubscribeEvent
 	public void onPlayerHit(LivingHurtEvent e)
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -204,7 +212,7 @@ public class ClassHooks
 				{
 					playerclass.onDamageEntity(player, e.entity, e.source, e.ammount);
 				}
-			}*/
+			}*//*
 		}
 	}
 

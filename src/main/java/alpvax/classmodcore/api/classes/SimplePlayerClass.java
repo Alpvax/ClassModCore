@@ -5,9 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.entity.player.EntityPlayer;
 import alpvax.classmodcore.api.powers.PowerEntry;
-
 
 public abstract class SimplePlayerClass implements IPlayerClass
 {
@@ -121,10 +119,4 @@ public abstract class SimplePlayerClass implements IPlayerClass
 	{
 		return powers;
 	}
-
-	@Override
-	public abstract void setup(EntityPlayer player);
-
-	@Override
-	public abstract void reset(EntityPlayer player);
 }

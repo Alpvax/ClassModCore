@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import alpvax.classmodcore.api.classes.IPlayerClass;
 import alpvax.classmodcore.api.classes.PlayerClassHelper;
 
-
 /**
  * This event is fired on the server whenever a players class is changed.<br>
  * <br>

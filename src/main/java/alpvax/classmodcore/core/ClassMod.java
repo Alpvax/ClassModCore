@@ -1,6 +1,5 @@
 package alpvax.classmodcore.core;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -85,9 +84,8 @@ public class ClassMod
 	public void Init(FMLInitializationEvent event)
 	{
 		PlayerClassRegistry.registerNullClass(new SimplePlayerClass(""){
-			@Override public void setup(EntityPlayer player){}
-			@Override public void reset(EntityPlayer player){}
 		}.setDisplayName("Steve"));
+		KeyBindings.init();
 		proxy.registerClientHandlers();
 		proxy.registerRenderInformation();
 	}

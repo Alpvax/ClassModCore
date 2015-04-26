@@ -8,7 +8,6 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import alpvax.classmodcore.api.powers.PowerInstance;
 
-
 /**
  * This event is fired whenever a power is triggered.<br>
  * <br>

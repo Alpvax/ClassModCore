@@ -15,7 +15,6 @@ import alpvax.classmodcore.api.powers.IPower;
 import alpvax.classmodcore.api.powers.PowerEntry;
 import alpvax.classmodcore.api.powers.PowerInstance;
 
-
 public class PlayerClassInstance
 {
 	public final EntityPlayer player;
@@ -133,10 +132,16 @@ public class PlayerClassInstance
 
 	public List<PowerInstance> getActivePowers(Class<? extends IPower> powerclass)
 	{
+		if(powerclass == null)
+		{
+			powerclass = IPower.class;
+		}
 		List<PowerInstance> list = new ArrayList<PowerInstance>();
+		System.err.println("Num powers: " + powers.length);//XXX
 		for(PowerInstance p : powers)
 		{
-			if(p.isActive() && (powerclass == null || powerclass.isAssignableFrom(p.getPower().getClass())))
+			System.err.println(p.getPower().getDisplayName() + ": " + p.isActive());//XXX
+			if(p.isActive() && powerclass.isAssignableFrom(p.getPower().getClass()))
 			{
 				list.add(p);
 			}

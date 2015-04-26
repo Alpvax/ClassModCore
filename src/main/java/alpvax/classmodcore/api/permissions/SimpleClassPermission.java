@@ -4,7 +4,6 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.config.Property;
 
-
 /**
  * @author Alpvax
  *
@@ -21,8 +20,10 @@ public class SimpleClassPermission implements IPlayerClassPermission
 	@Override
 	public void setFromConfig(Property configProperty)
 	{
-		if(configProperty != null)//TODO:config
-		enabled = configProperty.getBoolean();
+		if(configProperty != null)
+		{
+			enabled = configProperty.getBoolean();
+		}
 	}
 
 	@Override

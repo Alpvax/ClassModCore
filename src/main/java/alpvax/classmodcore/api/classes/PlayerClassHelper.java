@@ -9,7 +9,6 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import alpvax.classmodcore.api.events.ChangeClassEvent;
 
-
 /**
  * @author Alpvax
  *
@@ -17,19 +16,20 @@ import alpvax.classmodcore.api.events.ChangeClassEvent;
 public class PlayerClassHelper
 {
 	/**
-	 *Change to true to provide waila support or custom renders
+	 * Change to true to provide waila support or custom renders
 	 */
 	//TODO: change
 	public static boolean PER_WORLD_CLASSES = false;
 
 	/**
-	 *Change to true to provide waila support or custom renders
+	 * Change to true to provide waila support or custom renders
 	 */
 	//TODO: change
 	public static boolean UPDATE_ALL_CLIENTS = false;
 
 	/**
 	 * Gets the class of the specified player. Will never return null, so to check if the class has been set use {@link #hasPlayerClass(EntityPlayer)}
+	 * 
 	 * @return the playerclass, or the default playerclass if the class has not been set yet
 	 */
 	public static PlayerClassInstance getPlayerClassInstance(EntityPlayer player)
@@ -39,6 +39,7 @@ public class PlayerClassHelper
 
 	/**
 	 * Gets the class of the specified player. Will never return null, so to check if the class has been set use {@link #hasPlayerClass(EntityPlayer)}
+	 * 
 	 * @return the playerclass, or the default playerclass if the class has not been set yet
 	 */
 	public static IPlayerClass getPlayerClass(EntityPlayer player)

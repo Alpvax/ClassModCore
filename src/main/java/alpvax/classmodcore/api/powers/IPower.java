@@ -4,7 +4,6 @@ import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-
 /**
  * @author Alpvax
  *
@@ -13,6 +12,7 @@ public interface IPower
 {
 	/**
 	 * Only needs an implementation if it is automatically triggered.
+	 * 
 	 * @param player the player this power is acting from
 	 * @param instanceData and additional data
 	 */
@@ -27,6 +27,7 @@ public interface IPower
 	/**
 	 * Called whenever the power is triggered (either automatically or manually)<br>
 	 * Also called to start continuous powers (i.e. for setting attributes)
+	 * 
 	 * @return true if the trigger was successful, cooldowns and durations will be adjusted
 	 */
 	public boolean triggerPower(EntityPlayer player, Map<String, Object> instanceData);

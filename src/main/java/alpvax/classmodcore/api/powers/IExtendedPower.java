@@ -2,9 +2,9 @@ package alpvax.classmodcore.api.powers;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-
 /**
  * An extended version of Ipowe which allows saving of additional data to NBT
+ * 
  * @author Alpvax
  *
  */

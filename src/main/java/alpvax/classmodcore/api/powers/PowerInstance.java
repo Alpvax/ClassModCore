@@ -19,7 +19,6 @@ import alpvax.classmodcore.api.events.ChangePowerStateEvent.ResetPowerForClassCh
 import alpvax.classmodcore.api.events.ChangePowerStateEvent.StartContinuousPowerEvent;
 import alpvax.classmodcore.api.events.ChangePowerStateEvent.TriggerPowerEvent;
 
-
 public class PowerInstance
 {
 	private final IPower power;
@@ -95,21 +94,21 @@ public class PowerInstance
 		return instanceData;
 	}
 
-	public void init(EntityPlayer player, Map<String, Object> instanceData)
+	public void init(EntityPlayer player)
 	{
 		if(type == EnumPowerType.CONTINUOUS)
 		{
-			MinecraftForge.EVENT_BUS.post(new StartContinuousPowerEvent(player, this, instanceData));
+			MinecraftForge.EVENT_BUS.post(new StartContinuousPowerEvent(player, this, data));
 			active = true;
-			power.triggerPower(player, instanceData);
+			power.triggerPower(player, data);
 		}
 	}
 
-	public void stop(EntityPlayer player, Map<String, Object> instanceData)
+	public void stop(EntityPlayer player)
 	{
-		MinecraftForge.EVENT_BUS.post(new ResetPowerForClassChangeEvent(player, this, instanceData));
+		MinecraftForge.EVENT_BUS.post(new ResetPowerForClassChangeEvent(player, this, data));
 		active = false;
-		power.resetPower(player, instanceData);
+		power.resetPower(player, data);
 	}
 
 	private boolean triggerPower(EntityPlayer player, Map<String, Object> instanceData)
@@ -147,12 +146,12 @@ public class PowerInstance
 		power.resetPower(player, instanceData);
 		return true;
 	}
-	
+
 	public int getCooldown()
 	{
 		return cooldown;
 	}
-	
+
 	public int getDurationRemaining()
 	{
 		return duration;

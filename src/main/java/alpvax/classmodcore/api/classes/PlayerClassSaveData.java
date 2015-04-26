@@ -12,7 +12,6 @@ import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.common.util.Constants.NBT;
 import alpvax.classmodcore.api.ClassUtil;
 
-
 /**
  * @author Alpvax
  *
@@ -20,7 +19,7 @@ import alpvax.classmodcore.api.ClassUtil;
 public class PlayerClassSaveData extends WorldSavedData
 {
 	private Map<String, PlayerClassInstance> data = new HashMap<String, PlayerClassInstance>();
-	
+
 	public PlayerClassSaveData()
 	{
 		this("PlayerClass");
@@ -63,7 +62,6 @@ public class PlayerClassSaveData extends WorldSavedData
 		}
 		pci.setPlayerClass(playerclass);
 	}
-
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbt)

@@ -12,7 +12,7 @@ import net.minecraft.entity.player.EntityPlayer;
 public class PowerInMaterialMoveSpeed extends PowerMoveSpeed
 {
 	private Material material;
-	
+
 	public PowerInMaterialMoveSpeed(String displayString, float speedMultiplier, Material material)
 	{
 		super(displayString, speedMultiplier);
