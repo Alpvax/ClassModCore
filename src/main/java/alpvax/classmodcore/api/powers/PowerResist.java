@@ -6,6 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
+
 public abstract class PowerResist implements IPowerEventListener<LivingHurtEvent>
 {
 	private float multiplier;

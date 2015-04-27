@@ -83,8 +83,7 @@ public class ClassMod
 	@EventHandler
 	public void Init(FMLInitializationEvent event)
 	{
-		PlayerClassRegistry.registerNullClass(new SimplePlayerClass(""){
-		}.setDisplayName("Steve"));
+		PlayerClassRegistry.registerNullClass(new SimplePlayerClass(""){}.setDisplayName("Steve"));
 		KeyBindings.init();
 		proxy.registerClientHandlers();
 		proxy.registerRenderInformation();

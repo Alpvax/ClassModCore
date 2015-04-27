@@ -3,6 +3,7 @@ package alpvax.classmodcore.api.powers;
 import java.util.HashMap;
 import java.util.Map;
 
+
 /**
  * @author Alpvax
  *

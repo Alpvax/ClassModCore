@@ -19,6 +19,7 @@ import alpvax.classmodcore.api.events.ChangePowerStateEvent.ResetPowerForClassCh
 import alpvax.classmodcore.api.events.ChangePowerStateEvent.StartContinuousPowerEvent;
 import alpvax.classmodcore.api.events.ChangePowerStateEvent.TriggerPowerEvent;
 
+
 public class PowerInstance
 {
 	private final IPower power;

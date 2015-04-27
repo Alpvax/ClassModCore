@@ -15,6 +15,7 @@ import alpvax.classmodcore.api.powers.IPower;
 import alpvax.classmodcore.api.powers.PowerEntry;
 import alpvax.classmodcore.api.powers.PowerInstance;
 
+
 public class PlayerClassInstance
 {
 	public final EntityPlayer player;

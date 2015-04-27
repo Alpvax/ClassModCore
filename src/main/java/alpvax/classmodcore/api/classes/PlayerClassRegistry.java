@@ -23,6 +23,7 @@ import alpvax.classmodcore.api.permissions.IPlayerClassPermission;
 import alpvax.classmodcore.api.permissions.SimpleClassPermission;
 import alpvax.common.util.SaveHelper;
 
+
 public final class PlayerClassRegistry
 {
 	private static Map<String, IPlayerClass> idToClassMap = new HashMap<String, IPlayerClass>();

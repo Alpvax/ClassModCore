@@ -7,6 +7,7 @@ import java.util.Map;
 
 import alpvax.classmodcore.api.powers.PowerEntry;
 
+
 public abstract class SimplePlayerClass implements IPlayerClass
 {
 	// **********PlayerClass Handling**********

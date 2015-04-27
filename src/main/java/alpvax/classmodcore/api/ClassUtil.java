@@ -9,6 +9,7 @@ import alpvax.common.mods.ModData;
 
 import com.google.common.collect.ImmutableList;
 
+
 public final class ClassUtil
 {
 	/*

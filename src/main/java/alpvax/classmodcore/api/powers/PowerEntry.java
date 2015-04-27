@@ -7,6 +7,7 @@ import static alpvax.classmodcore.api.powers.EnumPowerType.TOGGLED;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public abstract class PowerEntry
 {
 	public static final String KEY_COOLDOWN = "cooldown";

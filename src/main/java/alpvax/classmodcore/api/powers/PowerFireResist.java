@@ -3,6 +3,7 @@ package alpvax.classmodcore.api.powers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 
+
 public class PowerFireResist extends PowerResist
 {
 	public PowerFireResist(float multiplier)

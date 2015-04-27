@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import alpvax.classmodcore.api.ClassUtil;
 import alpvax.common.util.EntityHelper;
 
+
 /**
  * @author Alpvax
  *

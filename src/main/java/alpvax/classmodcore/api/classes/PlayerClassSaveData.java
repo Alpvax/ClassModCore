@@ -12,6 +12,7 @@ import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.common.util.Constants.NBT;
 import alpvax.classmodcore.api.ClassUtil;
 
+
 /**
  * @author Alpvax
  *

@@ -213,12 +213,12 @@ public class ClassHooks
 					playerclass.onDamageEntity(player, e.entity, e.source, e.ammount);
 				}
 			}*//*
-		}
-	}
+			}
+			}
 
-	/**
-			 * Only triggered when entity uses the Task System
-			 */
+			/**
+			* Only triggered when entity uses the Task System
+			*/
 	/*@SubscribeEvent
 	public void onTargetPlayer(LivingSetAttackTargetEvent e)
 	{

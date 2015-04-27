@@ -4,6 +4,7 @@ import java.util.List;
 
 import alpvax.classmodcore.api.powers.PowerEntry;
 
+
 /**
  * @author Alpvax
  *

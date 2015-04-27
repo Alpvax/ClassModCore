@@ -9,6 +9,7 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import alpvax.classmodcore.api.events.ChangeClassEvent;
 
+
 /**
  * @author Alpvax
  *
