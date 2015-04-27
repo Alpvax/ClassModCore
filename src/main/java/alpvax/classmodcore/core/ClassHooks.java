@@ -1,8 +1,6 @@
 package alpvax.classmodcore.core;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -10,18 +8,20 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import org.apache.logging.log4j.Level;
+
 import alpvax.classmodcore.api.classes.PlayerClassHelper;
 import alpvax.classmodcore.api.classes.PlayerClassInstance;
 import alpvax.classmodcore.api.events.ChangeClassEvent;
 import alpvax.classmodcore.api.powers.IPowerEventListener;
 import alpvax.classmodcore.api.powers.PowerInstance;
-import alpvax.classmodcore.api.powers.PowerResist;
 import alpvax.classmodcore.network.packets.TriggerPowerPacket;
 import alpvax.common.network.OpenGuiPacket;
 
@@ -41,19 +41,19 @@ public class ClassHooks
 	@SubscribeEvent
 	public void onChangeClass(ChangeClassEvent e)
 	{
-		System.err.println("Player: " + e.entityPlayer.getDisplayNameString() + " has become a " + e.playerclass.getDisplayName());//XXX
+		FMLLog.log(ModInfo.MOD_ID, Level.INFO, "Player: %s has become a %s", e.entityPlayer.getDisplayNameString(), e.playerclass.getDisplayName());
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@SubscribeEvent
-	public void onEvent(LivingHurtEvent e)//TODO:Change to accept all living events
+	public void onEvent(LivingEvent e)//TODO:Change to accept all living events
 	{
 		if(e.entityLiving instanceof EntityPlayer)
 		{
 			EntityPlayer player = (EntityPlayer)e.entityLiving;
 			PlayerClassInstance pci = PlayerClassHelper.getPlayerClassInstance(player);
 			System.err.printf("Handling %s for [%s]%s%n", e.getClass().getName(), pci.getPlayerClass().getDisplayName(), player.getName());//XXX
-			List<PowerInstance> list = pci.getActivePowers(PowerResist.class);//TODO:IPowerEventListener.class);
+			List<PowerInstance> list = pci.getActivePowers(IPowerEventListener.class);
 			System.err.printf("%d powers found%n", list.size());//XXX
 			for(PowerInstance p : list)
 			{
@@ -217,8 +217,8 @@ public class ClassHooks
 	}
 
 	/**
-	 * Only triggered when entity uses the Task System
-	 */
+			 * Only triggered when entity uses the Task System
+			 */
 	/*@SubscribeEvent
 	public void onTargetPlayer(LivingSetAttackTargetEvent e)
 	{

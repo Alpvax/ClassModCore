@@ -174,7 +174,6 @@ public class GuiClassSelect extends GuiScreen
 		private void addButton(int id, int colNum, int rowNum, int xGap, int yGap)
 		{
 			buttons.add(new GuiClassButton(id, pageAreaX + xGap + colNum * (GuiClassButton.btnWidth + xGap), pageAreaY + yGap + rowNum * (GuiClassButton.btnHeight + yGap), pageClasses.get(id)));
-			System.err.printf("Adding button (%1$s) at: %2$d,%3$d {%4$d + %5$d + %6$d(%7$d + %5$d), %8$d + %9$d + %10$d(%11$d + %9$d)};%n", pageClasses.get(id).getDisplayName(), buttons.get(id).xPosition, buttons.get(id).yPosition, pageAreaX, xGap, colNum, GuiClassButton.btnWidth, pageAreaY, yGap, rowNum, GuiClassButton.btnHeight);//XXX
 		}
 
 		public void draw(int mouseX, int mouseY)

@@ -54,7 +54,6 @@ public class ClassChangePacket implements IMessage
 		@Override
 		public IMessage onMessage(ClassChangePacket message, MessageContext ctx)
 		{
-			System.err.println("CLIENT: " + message.classID);//XXX
 			EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(message.username);
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(message.username + " has become a " + PlayerClassRegistry.getPlayerClass(message.classID).getDisplayName()));//XXX
 			PlayerClassHelper.setPlayerClass(PlayerClassRegistry.getPlayerClass(message.classID), player);
@@ -67,7 +66,6 @@ public class ClassChangePacket implements IMessage
 		@Override
 		public IMessage onMessage(ClassChangePacket message, MessageContext ctx)
 		{
-			System.err.println("SERVER: " + message.classID);//XXX
 			EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(message.username);
 			if(PlayerClassHelper.setPlayerClass(PlayerClassRegistry.getPlayerClass(message.classID), player, ctx.getServerHandler().playerEntity))
 			{
