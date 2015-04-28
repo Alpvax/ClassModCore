@@ -8,9 +8,12 @@ import static alpvax.classmodcore.api.ClassUtil.KEY_KEYBIND;
 import static alpvax.classmodcore.api.ClassUtil.KEY_SLOT;
 import static alpvax.classmodcore.api.ClassUtil.KEY_TICKSELAPSED;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,12 +22,14 @@ import alpvax.classmodcore.api.events.TogglePowerEvent.ResetPowerEvent;
 import alpvax.classmodcore.api.events.TogglePowerEvent.ResetPowerForClassChangeEvent;
 import alpvax.classmodcore.api.events.TogglePowerEvent.StartContinuousPowerEvent;
 import alpvax.classmodcore.api.events.TogglePowerEvent.TriggerPowerEvent;
+import alpvax.classmodcore.api.powers.IPower.IAOEPower;
 
 
 public class PowerInstance
 {
 	private final IPower power;
 	private final EnumPowerType type;
+	private EnumTargetType targetType;//TODO:make final
 	public final boolean manual;
 	private final int index;
 	private boolean dirty = false;
@@ -149,6 +154,32 @@ public class PowerInstance
 		power.resetPower(player, instanceData);
 		ticks = 0;
 		return true;
+	}
+
+	private List<Entity> getTargetEntities(EntityPlayer player, Map<String, Object> instanceData)
+	{
+		List<Entity> list = new ArrayList<Entity>();
+
+		switch(targetType)
+		{
+			case SELF:
+				if(power instanceof IAOEPower)
+				{
+					return ((IAOEPower)power).getTargetEntities(player, instanceData);
+				}
+				list.add(player);
+				break;
+			case OTHER:
+				/*TODO:get look target entity
+				Vec3 ray = player.getLookVec();
+				if(power instanceof IAOEPower)
+				{
+					return ((IAOEPower)power).getTargetEntities(player, instanceData);
+				}
+				player.worldObj.getE*/
+				break;
+		}
+		return list;
 	}
 
 	public int getCooldown()

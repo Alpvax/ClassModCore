@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Level;
 import alpvax.classmodcore.api.classes.PlayerClassHelper;
 import alpvax.classmodcore.api.classes.PlayerClassInstance;
 import alpvax.classmodcore.api.events.ChangeClassEvent;
-import alpvax.classmodcore.api.powers.IPowerEventListener;
+import alpvax.classmodcore.api.powers.IPower.IPowerEventListener;
 import alpvax.classmodcore.api.powers.PowerInstance;
 import alpvax.classmodcore.network.packets.TriggerPowerPacket;
 import alpvax.common.network.OpenGuiPacket;
@@ -217,8 +217,8 @@ public class ClassHooks
 			}
 
 			/**
-			* Only triggered when entity uses the Task System
-			*/
+			 * Only triggered when entity uses the Task System
+			 */
 	/*@SubscribeEvent
 	public void onTargetPlayer(LivingSetAttackTargetEvent e)
 	{

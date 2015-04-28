@@ -6,6 +6,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import alpvax.classmodcore.api.ClassUtil;
+import alpvax.classmodcore.api.powers.IPower.IToggledPower;
 import alpvax.common.util.EntityHelper;
 
 
@@ -13,7 +14,7 @@ import alpvax.common.util.EntityHelper;
  * @author Alpvax
  *
  */
-public class PowerMoveSpeed extends DummyPower implements IPower
+public class PowerMoveSpeed extends DummyPower implements IToggledPower
 {
 	private float multiplier;
 

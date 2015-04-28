@@ -4,6 +4,7 @@ import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
+import alpvax.classmodcore.api.powers.IPower.ITickingPower;
 
 /**
  * @author Alpvax
@@ -38,27 +39,4 @@ public abstract class PowerSelfDamage extends DummyPower implements ITickingPowe
 	}
 
 	protected abstract boolean shouldDamage(EntityPlayer player, int ticksElapsed, Map<String, Object> instanceData);
-
-	@Override
-	public boolean shouldTrigger(EntityPlayer player, Map<String, Object> instanceData)
-	{
-		return false;
-	}
-
-	@Override
-	public boolean shouldReset(EntityPlayer player, Map<String, Object> instanceData)
-	{
-		return false;
-	}
-
-	@Override
-	public boolean triggerPower(EntityPlayer player, Map<String, Object> instanceData)
-	{
-		return false;
-	}
-
-	@Override
-	public void resetPower(EntityPlayer player, Map<String, Object> instanceData)
-	{
-	}
 }

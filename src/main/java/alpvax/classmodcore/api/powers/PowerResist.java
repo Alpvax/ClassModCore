@@ -1,10 +1,9 @@
 package alpvax.classmodcore.api.powers;
 
-import java.util.Map;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import alpvax.classmodcore.api.powers.IPower.IPowerEventListener;
 
 
 public abstract class PowerResist extends DummyPower implements IPowerEventListener<LivingHurtEvent>
@@ -15,34 +14,6 @@ public abstract class PowerResist extends DummyPower implements IPowerEventListe
 	{
 		super(displayType, "Resistance");
 		multiplier = damageMult;
-	}
-
-	@Override
-	public boolean shouldTrigger(EntityPlayer player, Map<String, Object> additionalData)
-	{
-		return false;
-	}
-
-	@Override
-	public boolean shouldReset(EntityPlayer player, Map<String, Object> additionalData)
-	{
-		return false;
-	}
-
-	@Override
-	public boolean triggerPower(EntityPlayer player, Map<String, Object> additionalData)
-	{
-		/*DamageSource src = (DamageSource)additionalData.get("dsrc");
-		float amount = ((Float)additionalData.get("amount")).floatValue();
-		float amm1 = modifyDamage(src, player, amount);
-		additionalData.put("RESULT", amm1);
-		return amount == amm1;*/
-		return false;
-	}
-
-	@Override
-	public void resetPower(EntityPlayer player, Map<String, Object> additionalData)
-	{
 	}
 
 	public float modifyDamage(DamageSource src, EntityPlayer player, float amount)
