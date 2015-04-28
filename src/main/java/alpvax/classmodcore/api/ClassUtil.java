@@ -19,6 +19,7 @@ public final class ClassUtil
 	public static final String KEY_POWERS = "Powers";
 	public static final String KEY_SLOT = "Slot";
 	public static final String KEY_ACTIVE = "Active";
+	public static final String KEY_TICKSELAPSED = "ElapsedTicks";
 	public static final String KEY_CD = "Cooldown";
 	public static final String KEY_DUR = "Duration";
 	public static final String KEY_KEYBIND = "KeyIndex";

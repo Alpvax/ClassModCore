@@ -7,14 +7,13 @@ import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 
-public abstract class PowerResist implements IPowerEventListener<LivingHurtEvent>
+public abstract class PowerResist extends DummyPower implements IPowerEventListener<LivingHurtEvent>
 {
 	private float multiplier;
-	private String display;
 
 	public PowerResist(String displayType, float damageMult)
 	{
-		display = displayType;
+		super(displayType, "Resistance");
 		multiplier = damageMult;
 	}
 
@@ -44,12 +43,6 @@ public abstract class PowerResist implements IPowerEventListener<LivingHurtEvent
 	@Override
 	public void resetPower(EntityPlayer player, Map<String, Object> additionalData)
 	{
-	}
-
-	@Override
-	public String getDisplayName()
-	{
-		return (display != null ? display + " " : "") + "Resistance";
 	}
 
 	public float modifyDamage(DamageSource src, EntityPlayer player, float amount)

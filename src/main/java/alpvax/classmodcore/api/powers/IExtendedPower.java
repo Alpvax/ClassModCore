@@ -1,5 +1,7 @@
 package alpvax.classmodcore.api.powers;
 
+import java.util.Map;
+
 import net.minecraft.nbt.NBTTagCompound;
 
 
@@ -14,10 +16,10 @@ public interface IExtendedPower extends IPower
 	/**
 	 * Read additional data from NBT if necessary
 	 */
-	public void readFromNBT(NBTTagCompound nbt);
+	public void readFromNBT(NBTTagCompound nbt, Map<String, Object> instanceData);
 
 	/**
 	 * Write additional data to NBT if necessary
 	 */
-	public void writeToNBT(NBTTagCompound nbt);
+	public void writeToNBT(NBTTagCompound nbt, Map<String, Object> instanceData);
 }

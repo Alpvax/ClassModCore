@@ -13,14 +13,13 @@ import alpvax.common.util.EntityHelper;
  * @author Alpvax
  *
  */
-public class PowerMoveSpeed implements IPower
+public class PowerMoveSpeed extends DummyPower implements IPower
 {
 	private float multiplier;
-	private String display;
 
 	public PowerMoveSpeed(String displayType, float damageMult)
 	{
-		display = displayType;
+		super(displayType, "Move Speed");
 		multiplier = damageMult;
 	}
 
@@ -47,11 +46,5 @@ public class PowerMoveSpeed implements IPower
 	public void resetPower(EntityPlayer player, Map<String, Object> instanceData)
 	{
 		EntityHelper.removeAttributeModifier(player, SharedMonsterAttributes.movementSpeed, new AttributeModifier(ClassUtil.attModIDPower, "ClassModSpeedBoost", multiplier, 1), 2);
-	}
-
-	@Override
-	public String getDisplayName()
-	{
-		return (display != null ? display + " " : "") + "Move Speed";
 	}
 }

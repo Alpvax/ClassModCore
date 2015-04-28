@@ -6,6 +6,7 @@ import static alpvax.classmodcore.api.ClassUtil.KEY_DATA;
 import static alpvax.classmodcore.api.ClassUtil.KEY_DUR;
 import static alpvax.classmodcore.api.ClassUtil.KEY_KEYBIND;
 import static alpvax.classmodcore.api.ClassUtil.KEY_SLOT;
+import static alpvax.classmodcore.api.ClassUtil.KEY_TICKSELAPSED;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +34,7 @@ public class PowerInstance
 	private boolean active = false;
 	private int cooldown = 0;
 	private int duration = 0;
+	private int ticks = 0;
 	protected Map<String, Object> data;
 
 	protected PowerInstance(IPower power, EnumPowerType type, boolean manualTrigger, int index, Map<String, Object> additionalData)
@@ -61,7 +63,7 @@ public class PowerInstance
 		}
 		if(active && power instanceof ITickingPower)
 		{
-			((ITickingPower)power).onTick(player, data);
+			ticks = ((ITickingPower)power).onTick(player, ticks++, data);
 		}
 		if(type != EnumPowerType.CONTINUOUS)
 		{
@@ -145,6 +147,7 @@ public class PowerInstance
 		}
 		active = false;
 		power.resetPower(player, instanceData);
+		ticks = 0;
 		return true;
 	}
 
@@ -215,10 +218,14 @@ public class PowerInstance
 		{
 			keyIndex = nbt.getInteger(KEY_KEYBIND);
 		}
+		if(power instanceof ITickingPower)
+		{
+			ticks = nbt.getInteger(KEY_TICKSELAPSED);
+		}
 		if(power instanceof IExtendedPower)
 		{
 			NBTTagCompound tag = nbt.getCompoundTag(KEY_DATA);
-			((IExtendedPower)power).readFromNBT(tag);
+			((IExtendedPower)power).readFromNBT(tag, data);
 		}
 	}
 
@@ -238,10 +245,14 @@ public class PowerInstance
 		{
 			nbt.setInteger(KEY_KEYBIND, keyIndex);
 		}
+		if(power instanceof ITickingPower)
+		{
+			nbt.setInteger(KEY_TICKSELAPSED, keyIndex);
+		}
 		if(power instanceof IExtendedPower)
 		{
 			NBTTagCompound tag = new NBTTagCompound();
-			((IExtendedPower)power).writeToNBT(tag);
+			((IExtendedPower)power).writeToNBT(tag, data);
 			nbt.setTag(KEY_DATA, tag);
 		}
 		dirty = false;
