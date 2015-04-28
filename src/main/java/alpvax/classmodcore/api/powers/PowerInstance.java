@@ -14,10 +14,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants.NBT;
-import alpvax.classmodcore.api.events.ChangePowerStateEvent.ResetPowerEvent;
-import alpvax.classmodcore.api.events.ChangePowerStateEvent.ResetPowerForClassChangeEvent;
-import alpvax.classmodcore.api.events.ChangePowerStateEvent.StartContinuousPowerEvent;
-import alpvax.classmodcore.api.events.ChangePowerStateEvent.TriggerPowerEvent;
+import alpvax.classmodcore.api.events.TogglePowerEvent.ResetPowerEvent;
+import alpvax.classmodcore.api.events.TogglePowerEvent.ResetPowerForClassChangeEvent;
+import alpvax.classmodcore.api.events.TogglePowerEvent.StartContinuousPowerEvent;
+import alpvax.classmodcore.api.events.TogglePowerEvent.TriggerPowerEvent;
 
 
 public class PowerInstance
