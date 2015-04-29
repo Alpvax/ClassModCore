@@ -5,10 +5,19 @@ package alpvax.classmodcore.api.powers;
  * @author Alpvax
  *
  */
-public enum EnumTargetType
+public enum EnumPowerCastType
 {
+	/**
+	 * Targets the entity casting, or entities around caster
+	 */
 	SELF,
+	/**
+	 * Targets the entity looked at, or entities around the target entity
+	 */
 	OTHER,
+	/**
+	 * Targets entities around the targeted point
+	 */
 	POINT;
 
 

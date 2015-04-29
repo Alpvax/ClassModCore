@@ -16,20 +16,27 @@ import java.util.Map;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants.NBT;
 import alpvax.classmodcore.api.events.TogglePowerEvent.ResetPowerEvent;
 import alpvax.classmodcore.api.events.TogglePowerEvent.ResetPowerForClassChangeEvent;
 import alpvax.classmodcore.api.events.TogglePowerEvent.StartContinuousPowerEvent;
 import alpvax.classmodcore.api.events.TogglePowerEvent.TriggerPowerEvent;
-import alpvax.classmodcore.api.powers.IPower.IAOEPower;
+import alpvax.classmodcore.api.powers.IPower.IExtendedPower;
+import alpvax.classmodcore.api.powers.IPower.IMultiTargetPower;
+import alpvax.classmodcore.api.powers.IPower.ITargetedPower;
+import alpvax.classmodcore.api.powers.IPower.ITickingPower;
+import alpvax.common.util.EntityHelper;
+
+import com.google.common.base.Predicate;
 
 
 public class PowerInstance
 {
 	private final IPower power;
 	private final EnumPowerType type;
-	private EnumTargetType targetType;//TODO:make final
+	private EnumPowerCastType targetType;//TODO:make final
 	public final boolean manual;
 	private final int index;
 	private boolean dirty = false;
@@ -159,25 +166,31 @@ public class PowerInstance
 	private List<Entity> getTargetEntities(EntityPlayer player, Map<String, Object> instanceData)
 	{
 		List<Entity> list = new ArrayList<Entity>();
-
-		switch(targetType)
+		Predicate<Entity> filter = power instanceof ITargetedPower ? ((ITargetedPower)power).getEntityFilter(instanceData) : EntityHelper.EntitySelector.ALL;
+		if(targetType == EnumPowerCastType.SELF)
 		{
-			case SELF:
-				if(power instanceof IAOEPower)
-				{
-					return ((IAOEPower)power).getTargetEntities(player, instanceData);
-				}
-				list.add(player);
-				break;
-			case OTHER:
-				/*TODO:get look target entity
-				Vec3 ray = player.getLookVec();
-				if(power instanceof IAOEPower)
-				{
-					return ((IAOEPower)power).getTargetEntities(player, instanceData);
-				}
-				player.worldObj.getE*/
-				break;
+			if(power instanceof IMultiTargetPower)
+			{
+				return ((IMultiTargetPower)power).getTargetEntities(player, player.getPositionVector(), instanceData);
+			}
+			list.add(player);
+			return list;
+		}
+		//TODO:"viewdistance" limit (currently 160D=16 chunks)
+		MovingObjectPosition mop = EntityHelper.getLookingAt(player, 160D, filter);
+		if(targetType == EnumPowerCastType.OTHER)
+		{
+			double homing = power instanceof ITargetedPower ? ((ITargetedPower)power).homingRadius(instanceData) : 0D;
+			Entity e = EntityHelper.getClosestEntity(player.worldObj, mop, homing, filter);
+			if(power instanceof IMultiTargetPower)
+			{
+				return ((IMultiTargetPower)power).getTargetEntities(e, homing != 0D ? e.getPositionVector() : mop.hitVec, instanceData);
+			}
+			list.add(e);
+		}
+		else if(power instanceof IMultiTargetPower)
+		{
+			return ((IMultiTargetPower)power).getTargetEntities(null, mop.hitVec, instanceData);
 		}
 		return list;
 	}

@@ -9,6 +9,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
+import com.google.common.base.Predicate;
+
 
 /**
  * @author Alpvax
@@ -72,12 +74,24 @@ public interface IPower
 
 	/**
 	 * An extended version of IPower which affects multiple entities in an area
+	 * @param targetEntity the entity the target is centred on (i.e. the player for self-target, the entity hit by the MOP otherwise). may be null
 	 */
-	public interface IAOEPower extends IPower
+	public interface IMultiTargetPower extends IPower
 	{
-		public List<Entity> getTargetEntities(Entity target, Map<String, Object> instanceData);
+		public List<Entity> getTargetEntities(Entity e, Vec3 target, Map<String, Object> instanceData);
+	}
 
-		public List<Entity> getTargetEntities(Vec3 target, Map<String, Object> instanceData);
+	/**
+	 * An extended version of IPower which has additional entity targeting options
+	 */
+	public interface ITargetedPower extends IPower
+	{
+		public Predicate<Entity> getEntityFilter(Map<String, Object> instanceData);
+
+		/**
+		 * @return the radius to search for a nearby target. 0 means no homing, negative numbers indicate no limit
+		 */
+		public double homingRadius(Map<String, Object> instanceData);
 	}
 
 	/**
