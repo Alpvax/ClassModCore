@@ -5,7 +5,6 @@ import java.util.Map;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
@@ -28,7 +27,7 @@ public interface IPower
 	 */
 	public interface ITickingPower extends IPower
 	{
-		public int onTick(EntityPlayer player, int ticksElapsed, Map<String, Object> instanceData);
+		public void onTick(EntityPlayer player, int ticksActive);
 	}
 
 	/**
@@ -41,7 +40,7 @@ public interface IPower
 		 * @param instanceData and additional data
 		 * @return true if the power should be triggered automatically
 		 */
-		public boolean shouldTrigger(EntityPlayer player, Map<String, Object> instanceData);
+		public boolean shouldTrigger(EntityPlayer player);
 
 		/**
 		 * Called whenever the power is triggered (either automatically or manually)<br>
@@ -49,7 +48,7 @@ public interface IPower
 		 *
 		 * @return true if the trigger was successful, cooldowns and durations will be adjusted
 		 */
-		public boolean triggerPower(EntityPlayer player, Map<String, Object> instanceData);
+		public boolean triggerPower(EntityPlayer player);
 	}
 
 	/**
@@ -62,13 +61,13 @@ public interface IPower
 		 * Needs an implementation if it is automatically disabled, but not timed.
 		 * @return true if the power should be reset automatically
 		 */
-		public boolean shouldReset(EntityPlayer player, Map<String, Object> instanceData);
+		public boolean shouldReset(EntityPlayer player);
 
 		/**
 		 * Called whenever the power is reset (either automatically or manually)<br>
 		 * Needs an implementation if it is automatically disabled, or disabled after a timer.
 		 */
-		public void resetPower(EntityPlayer player, Map<String, Object> instanceData);
+		public void resetPower(EntityPlayer player, int ticksActive);
 	}
 
 
@@ -100,21 +99,5 @@ public interface IPower
 	public interface IPowerEventListener<T extends LivingEvent> extends IPower
 	{
 		public void listenToEvent(T e, EntityPlayer player);
-	}
-
-	/**
-	 * An extended version of IPower which allows saving of additional data to NBT
-	 */
-	public interface IExtendedPower extends IPower
-	{
-		/**
-		 * Read additional data from NBT if necessary
-		 */
-		public void readFromNBT(NBTTagCompound nbt, Map<String, Object> instanceData);
-
-		/**
-		 * Write additional data to NBT if necessary
-		 */
-		public void writeToNBT(NBTTagCompound nbt, Map<String, Object> instanceData);
 	}
 }

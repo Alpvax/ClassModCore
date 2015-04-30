@@ -1,7 +1,5 @@
 package alpvax.classmodcore.api.powers;
 
-import java.util.Map;
-
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,26 +23,26 @@ public class PowerMoveSpeed extends DummyPower implements IToggledPower
 	}
 
 	@Override
-	public boolean shouldTrigger(EntityPlayer player, Map<String, Object> instanceData)
+	public boolean shouldTrigger(EntityPlayer player)
 	{
 		return false;
 	}
 
 	@Override
-	public boolean shouldReset(EntityPlayer player, Map<String, Object> instanceData)
+	public boolean shouldReset(EntityPlayer player)
 	{
 		return false;
 	}
 
 	@Override
-	public boolean triggerPower(EntityPlayer player, Map<String, Object> instanceData)
+	public boolean triggerPower(EntityPlayer player)
 	{
 		EntityHelper.applyAttributeModifier(player, SharedMonsterAttributes.movementSpeed, new AttributeModifier(ClassUtil.attModIDPower, "ClassModSpeedBoost", multiplier, 1), 2);
 		return true;
 	}
 
 	@Override
-	public void resetPower(EntityPlayer player, Map<String, Object> instanceData)
+	public void resetPower(EntityPlayer player)
 	{
 		EntityHelper.removeAttributeModifier(player, SharedMonsterAttributes.movementSpeed, new AttributeModifier(ClassUtil.attModIDPower, "ClassModSpeedBoost", multiplier, 1), 2);
 	}

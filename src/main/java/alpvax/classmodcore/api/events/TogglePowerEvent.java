@@ -1,7 +1,5 @@
 package alpvax.classmodcore.api.events;
 
-import java.util.Map;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -27,29 +25,27 @@ import alpvax.classmodcore.api.powers.PowerInstance;
 public abstract class TogglePowerEvent extends PlayerEvent
 {
 	public final PowerInstance instance;
-	public Map<String, Object> instanceData;
 
-	public TogglePowerEvent(EntityPlayer player, PowerInstance powerInstance, Map<String, Object> instanceData)
+	public TogglePowerEvent(EntityPlayer player, PowerInstance powerInstance)
 	{
 		super(player);
 		instance = powerInstance;
-		this.instanceData = instanceData;
 	}
 
 	@Cancelable
 	public static class TriggerPowerEvent extends TogglePowerEvent
 	{
-		public TriggerPowerEvent(EntityPlayer player, PowerInstance powerInstance, Map<String, Object> instanceData)
+		public TriggerPowerEvent(EntityPlayer player, PowerInstance powerInstance)
 		{
-			super(player, powerInstance, instanceData);
+			super(player, powerInstance);
 		}
 	}
 
 	public static class StartContinuousPowerEvent extends TriggerPowerEvent
 	{
-		public StartContinuousPowerEvent(EntityPlayer player, PowerInstance powerInstance, Map<String, Object> instanceData)
+		public StartContinuousPowerEvent(EntityPlayer player, PowerInstance powerInstance)
 		{
-			super(player, powerInstance, instanceData);
+			super(player, powerInstance);
 		}
 	}
 
@@ -63,9 +59,9 @@ public abstract class TogglePowerEvent extends PlayerEvent
 	@Cancelable
 	public static class ResetPowerEvent extends TogglePowerEvent
 	{
-		public ResetPowerEvent(EntityPlayer player, PowerInstance powerInstance, Map<String, Object> instanceData)
+		public ResetPowerEvent(EntityPlayer player, PowerInstance powerInstance)
 		{
-			super(player, powerInstance, instanceData);
+			super(player, powerInstance);
 		}
 	}
 
@@ -76,11 +72,11 @@ public abstract class TogglePowerEvent extends PlayerEvent
 	 * <br>
 	 * {@link #power} contains the the power that is triggering, and cannot be modified.
 	 **/
-	public static class ResetPowerForClassChangeEvent extends ResetPowerEvent
+	public static class ResetContinuousPowerEvent extends ResetPowerEvent
 	{
-		public ResetPowerForClassChangeEvent(EntityPlayer player, PowerInstance powerInstance, Map<String, Object> instanceData)
+		public ResetContinuousPowerEvent(EntityPlayer player, PowerInstance powerInstance)
 		{
-			super(player, powerInstance, instanceData);
+			super(player, powerInstance);
 		}
 	}
 }

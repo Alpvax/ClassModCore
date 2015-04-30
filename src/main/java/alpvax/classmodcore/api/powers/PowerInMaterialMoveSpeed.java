@@ -1,7 +1,5 @@
 package alpvax.classmodcore.api.powers;
 
-import java.util.Map;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -21,13 +19,13 @@ public class PowerInMaterialMoveSpeed extends PowerMoveSpeed
 	}
 
 	@Override
-	public boolean shouldTrigger(EntityPlayer player, Map<String, Object> additionalData)
+	public boolean shouldTrigger(EntityPlayer player)
 	{
 		return player.isInsideOfMaterial(material);
 	}
 
 	@Override
-	public boolean shouldReset(EntityPlayer player, Map<String, Object> additionalData)
+	public boolean shouldReset(EntityPlayer player)
 	{
 		return !player.isInsideOfMaterial(material);
 	}

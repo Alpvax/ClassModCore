@@ -1,7 +1,5 @@
 package alpvax.classmodcore.api.powers;
 
-import java.util.Map;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
@@ -22,7 +20,7 @@ public class PowerInMaterialSelfDamage extends PowerSelfDamage
 	}
 
 	@Override
-	protected boolean shouldDamage(EntityPlayer player, int ticksElapsed, Map<String, Object> instanceData)
+	protected boolean shouldDamage(EntityPlayer player)
 	{
 		return player.isInsideOfMaterial(material);
 	}

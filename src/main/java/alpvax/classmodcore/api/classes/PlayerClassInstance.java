@@ -103,7 +103,7 @@ public class PlayerClassInstance
 	{
 		if(index >= 0 && index < manualIndexes.size())
 		{
-			powers[manualIndexes.get(index).intValue()].togglePower(player, null);
+			powers[manualIndexes.get(index).intValue()].togglePower(player);
 		}
 	}
 

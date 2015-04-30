@@ -2,167 +2,152 @@ package alpvax.classmodcore.api.powers;
 
 import static alpvax.classmodcore.api.ClassUtil.KEY_ACTIVE;
 import static alpvax.classmodcore.api.ClassUtil.KEY_CD;
-import static alpvax.classmodcore.api.ClassUtil.KEY_DATA;
 import static alpvax.classmodcore.api.ClassUtil.KEY_DUR;
-import static alpvax.classmodcore.api.ClassUtil.KEY_KEYBIND;
-import static alpvax.classmodcore.api.ClassUtil.KEY_SLOT;
 import static alpvax.classmodcore.api.ClassUtil.KEY_TICKSELAPSED;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants.NBT;
+import alpvax.classmodcore.api.events.TogglePowerEvent.ResetContinuousPowerEvent;
 import alpvax.classmodcore.api.events.TogglePowerEvent.ResetPowerEvent;
-import alpvax.classmodcore.api.events.TogglePowerEvent.ResetPowerForClassChangeEvent;
 import alpvax.classmodcore.api.events.TogglePowerEvent.StartContinuousPowerEvent;
 import alpvax.classmodcore.api.events.TogglePowerEvent.TriggerPowerEvent;
-import alpvax.classmodcore.api.powers.IPower.IExtendedPower;
-import alpvax.classmodcore.api.powers.IPower.IMultiTargetPower;
-import alpvax.classmodcore.api.powers.IPower.ITargetedPower;
 import alpvax.classmodcore.api.powers.IPower.ITickingPower;
-import alpvax.common.util.EntityHelper;
-
-import com.google.common.base.Predicate;
+import alpvax.classmodcore.api.powers.IPower.IToggledPower;
+import alpvax.classmodcore.api.powers.IPower.ITriggeredPower;
+import alpvax.classmodcore.api.util.PowerVariable;
 
 
 public class PowerInstance
 {
 	private final IPower power;
-	private final EnumPowerType type;
-	private EnumPowerCastType targetType;//TODO:make final
-	public final boolean manual;
-	private final int index;
-	private boolean dirty = false;
-	private int keyIndex;
-	private int maxCD;
-	private int maxDur;
-	private boolean active = false;
-	private int cooldown = 0;
-	private int duration = 0;
-	private int ticks = 0;
-	protected Map<String, Object> data;
+	//private final EnumPowerType type;
+	private final EnumPowerCastType targetType;
+	public final boolean passive;
 
-	protected PowerInstance(IPower power, EnumPowerType type, boolean manualTrigger, int index, Map<String, Object> additionalData)
+	private final PowerVariable cooldown = new PowerVariable(0);
+	private final PowerVariable duration = new PowerVariable(0);
+	private int ticksActive = 0;
+	private boolean active = false;
+
+	private boolean dirty = false;
+
+	protected PowerInstance(IPower power, EnumPowerCastType targetType, boolean isAutomatic, Map<String, Object> data)
 	{
 		this.power = power;
-		this.type = type;
-		this.index = index;
-		data = additionalData;
-		manual = !active && manualTrigger;
-		maxCD = data.containsKey(PowerEntry.KEY_COOLDOWN) ? ((Integer)data.get(PowerEntry.KEY_COOLDOWN)).intValue() : -1;
-		maxDur = data.containsKey(PowerEntry.KEY_DURATION) ? ((Integer)data.get(PowerEntry.KEY_DURATION)).intValue() : -1;
+		this.targetType = targetType;
+		passive = isAutomatic;
+
+		cooldown.setModifier((Integer)data.get(PowerEntry.KEY_COOLDOWN));
+		duration.setModifier((Integer)data.get(PowerEntry.KEY_DURATION));
 	}
 
 	public void tickPower(EntityPlayer player)
 	{
-		if(hasDuration() && duration > 0)
+		boolean flag = false;
+		if(duration.tick())
 		{
-			if(--duration < 0)
+			if(duration.value() <= 0)
 			{
-				duration = 0;
-				if(type != EnumPowerType.CONTINUOUS)
-				{
-					resetPower(player, data);
-				}
+				duration.setValue(0);
+				flag |= resetPower(player);
+			}
+			flag = true;
+		}
+		if(active)
+		{
+			ticksActive++;
+			if(power instanceof ITickingPower)
+			{
+				((ITickingPower)power).onTick(player, ticksActive + 1);
+			}
+			flag = true;
+		}
+		flag |= cooldown.tick();
+		if(passive && canTrigger())
+		{
+			if(!active && ((ITriggeredPower)power).shouldTrigger(player))
+			{
+				flag |= triggerPower(player);
+			}
+			if(active && power instanceof IToggledPower && ((IToggledPower)power).shouldReset(player))
+			{
+				flag |= resetPower(player);
 			}
 		}
-		if(active && power instanceof ITickingPower)
-		{
-			ticks = ((ITickingPower)power).onTick(player, ticks++, data);
-		}
-		if(type != EnumPowerType.CONTINUOUS)
-		{
-			if(cooldown > 0)
-			{
-				cooldown--;
-			}
-			if(!manual)
-			{
-				if(!active && power.shouldTrigger(player, data))
-				{
-					triggerPower(player, data);
-				}
-				if(active && type == EnumPowerType.TOGGLED && power.shouldReset(player, data))
-				{
-					resetPower(player, data);
-				}
-			}
-		}
-		dirty = true;
+		dirty = flag;
 	}
 
-	public Map<String, Object> togglePower(EntityPlayer player, Map<String, Object> instanceData)
+	public void togglePower(EntityPlayer player)
 	{
-		if(instanceData == null)
-		{
-			instanceData = new HashMap<String, Object>();
-		}
-		instanceData.putAll(data);
-		dirty = active ? resetPower(player, instanceData) : triggerPower(player, instanceData);
-		return instanceData;
+		dirty = active ? resetPower(player) : triggerPower(player);
 	}
 
 	public void init(EntityPlayer player)
 	{
-		if(type == EnumPowerType.CONTINUOUS)
+		if(power instanceof ITriggeredPower)
 		{
-			MinecraftForge.EVENT_BUS.post(new StartContinuousPowerEvent(player, this, data));
+			MinecraftForge.EVENT_BUS.post(new StartContinuousPowerEvent(player, this));
 			active = true;
-			power.triggerPower(player, data);
+			((ITriggeredPower)power).triggerPower(player);
 		}
 	}
 
 	public void stop(EntityPlayer player)
 	{
-		MinecraftForge.EVENT_BUS.post(new ResetPowerForClassChangeEvent(player, this, data));
-		active = false;
-		power.resetPower(player, data);
+		if(power instanceof IToggledPower)
+		{
+			MinecraftForge.EVENT_BUS.post(new ResetContinuousPowerEvent(player, this));
+			active = false;
+			((IToggledPower)power).resetPower(player, ticksActive);
+		}
 	}
 
-	private boolean triggerPower(EntityPlayer player, Map<String, Object> instanceData)
+	private boolean triggerPower(EntityPlayer player)
 	{
 		if(!canTrigger())
 		{
 			return false;
 		}
-		int c = cooldown;
-		int d = duration;
-		cooldown += maxCD;
-		duration += maxDur;
-		TriggerPowerEvent e = new TriggerPowerEvent(player, this, instanceData);
-		if(MinecraftForge.EVENT_BUS.post(e) || !power.triggerPower(player, instanceData))
+		int c = cooldown.apply();
+		int d = duration.apply();
+		TriggerPowerEvent e = new TriggerPowerEvent(player, this);
+		if(MinecraftForge.EVENT_BUS.post(e) || !((ITriggeredPower)power).triggerPower(player))
 		{
-			cooldown = c;
-			duration = d;
+			cooldown.setValue(c);
+			duration.setValue(d);
 			return false;
 		}
-		if(type != EnumPowerType.INSTANT)
+		if(duration.exists() || power instanceof IToggledPower)
 		{
 			active = true;
 		}
 		return true;
 	}
 
-	private boolean resetPower(EntityPlayer player, Map<String, Object> instanceData)
+	private boolean resetPower(EntityPlayer player)
 	{
-		ResetPowerEvent e = new ResetPowerEvent(player, this, instanceData);
-		if(MinecraftForge.EVENT_BUS.post(e))
+		if(!canReset())
 		{
 			return false;
 		}
+		int c = cooldown.apply();
+		ResetPowerEvent e = new ResetPowerEvent(player, this);
+		if(MinecraftForge.EVENT_BUS.post(e))
+		{
+			cooldown.setValue(c);
+			return false;
+		}
 		active = false;
-		power.resetPower(player, instanceData);
-		ticks = 0;
+		((IToggledPower)power).resetPower(player, ticksActive);
+		ticksActive = 0;
 		return true;
 	}
 
+	/*TODO:is this needed?
 	private List<Entity> getTargetEntities(EntityPlayer player, Map<String, Object> instanceData)
 	{
 		List<Entity> list = new ArrayList<Entity>();
@@ -193,16 +178,16 @@ public class PowerInstance
 			return ((IMultiTargetPower)power).getTargetEntities(null, mop.hitVec, instanceData);
 		}
 		return list;
-	}
+	}*/
 
 	public int getCooldown()
 	{
-		return cooldown;
+		return cooldown.value();
 	}
 
 	public int getDurationRemaining()
 	{
-		return duration;
+		return duration.value();
 	}
 
 	public boolean isActive()
@@ -212,27 +197,12 @@ public class PowerInstance
 
 	public boolean canTrigger()
 	{
-		return type != EnumPowerType.CONTINUOUS && cooldown < 1;
+		return (!cooldown.exists() || cooldown.value() <= 0) && power instanceof ITriggeredPower;
 	}
 
-	private boolean hasDuration()
+	public boolean canReset()
 	{
-		return maxDur >= 0;
-	}
-
-	private boolean hasCooldown()
-	{
-		return maxCD > 0;
-	}
-
-	public boolean setKeybind(int keyIndex)
-	{
-		if(manual)
-		{
-			this.keyIndex = keyIndex;
-			return true;
-		}
-		return false;
+		return (!cooldown.exists() || cooldown.value() <= 0) && power instanceof IToggledPower;
 	}
 
 	public IPower getPower()
@@ -240,9 +210,9 @@ public class PowerInstance
 		return power;
 	}
 
-	public EnumPowerType getPowerType()
+	public EnumPowerCastType getCastType()
 	{
-		return type;
+		return targetType;
 	}
 
 	public void readFromNBT(NBTTagCompound nbt)
@@ -252,52 +222,32 @@ public class PowerInstance
 		active = nbt.getBoolean(KEY_ACTIVE);
 		if(nbt.hasKey(KEY_DUR, NBT.TAG_ANY_NUMERIC))
 		{
-			duration = nbt.getInteger(KEY_DUR);
+			duration.setValue(nbt.getInteger(KEY_DUR));
 		}
 		if(nbt.hasKey(KEY_CD, NBT.TAG_ANY_NUMERIC))
 		{
-			cooldown = nbt.getInteger(KEY_CD);
+			cooldown.setValue(nbt.getInteger(KEY_CD));
 		}
-		if(nbt.hasKey(KEY_KEYBIND))
+		if(active)
 		{
-			keyIndex = nbt.getInteger(KEY_KEYBIND);
-		}
-		if(power instanceof ITickingPower)
-		{
-			ticks = nbt.getInteger(KEY_TICKSELAPSED);
-		}
-		if(power instanceof IExtendedPower)
-		{
-			NBTTagCompound tag = nbt.getCompoundTag(KEY_DATA);
-			((IExtendedPower)power).readFromNBT(tag, data);
+			ticksActive = nbt.getInteger(KEY_TICKSELAPSED);
 		}
 	}
 
 	public void writeToNBT(NBTTagCompound nbt)
 	{
-		nbt.setInteger(KEY_SLOT, index);
 		nbt.setBoolean(KEY_ACTIVE, active);
-		if(hasDuration())
+		if(duration.exists())
 		{
-			nbt.setInteger(KEY_DUR, duration);
+			nbt.setInteger(KEY_DUR, duration.value());
 		}
-		if(hasCooldown())
+		if(cooldown.exists())
 		{
-			nbt.setInteger(KEY_CD, cooldown);
+			nbt.setInteger(KEY_CD, cooldown.value());
 		}
-		if(manual)
+		if(active)
 		{
-			nbt.setInteger(KEY_KEYBIND, keyIndex);
-		}
-		if(power instanceof ITickingPower)
-		{
-			nbt.setInteger(KEY_TICKSELAPSED, keyIndex);
-		}
-		if(power instanceof IExtendedPower)
-		{
-			NBTTagCompound tag = new NBTTagCompound();
-			((IExtendedPower)power).writeToNBT(tag, data);
-			nbt.setTag(KEY_DATA, tag);
+			nbt.setInteger(KEY_TICKSELAPSED, ticksActive);
 		}
 		dirty = false;
 	}
