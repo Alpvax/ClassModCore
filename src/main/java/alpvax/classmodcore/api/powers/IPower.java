@@ -46,7 +46,7 @@ public interface IPower
 		/**
 		 * Called whenever the power is triggered (either automatically or manually)<br>
 		 * Also called to start continuous powers (i.e. for setting attributes)
-		 * 
+		 *
 		 * @return true if the trigger was successful, cooldowns and durations will be adjusted
 		 */
 		public boolean triggerPower(EntityPlayer player, Map<String, Object> instanceData);
@@ -74,7 +74,7 @@ public interface IPower
 
 	/**
 	 * An extended version of IPower which affects multiple entities in an area
-	 * @param targetEntity the entity the target is centred on (i.e. the player for self-target, the entity hit by the MOP otherwise). may be null
+	 * @param targetEntity the entity the target is centred on (i.e. the player for self-target, the entity hit by the MOP or null if point target)
 	 */
 	public interface IMultiTargetPower extends IPower
 	{
