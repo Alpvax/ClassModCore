@@ -6,8 +6,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
@@ -46,14 +46,14 @@ public class ClassHooks
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@SubscribeEvent
-	public void onEvent(LivingEvent e)//TODO:Change to accept all living events
+	public void onEvent(LivingHurtEvent e)//TODO:Change to accept all living events
 	{
 		if(e.entityLiving instanceof EntityPlayer)
 		{
 			EntityPlayer player = (EntityPlayer)e.entityLiving;
 			PlayerClassInstance pci = PlayerClassHelper.getPlayerClassInstance(player);
 			System.err.printf("Handling %s for [%s]%s%n", e.getClass().getName(), pci.getPlayerClass().getDisplayName(), player.getName());//XXX
-			List<PowerInstance> list = pci.getActivePowers(IPowerEventListener.class);
+			List<PowerInstance> list = pci.getPowers(IPowerEventListener.class);
 			System.err.printf("%d powers found%n", list.size());//XXX
 			for(PowerInstance p : list)
 			{
@@ -146,7 +146,7 @@ public class ClassHooks
 
 	/*
 	 * @SubscribeEvent public void onPlayerMine(HarvestCheck e) { ExtendedPlayer ep = ExtendedPlayer.get(e.entityPlayer); if(!e.isCanceled() && e.success == false && ep.hasPlayerClass()) { System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; HarvestCheck"); Iterator<PowerMine> i = ep.getActivePowers(PowerMine.class).iterator(); while(e.success == false && i.hasNext()) { PowerMine power = i.next(); System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; " + power); //PowerMine p = (PowerMine)power; if(MinecraftForge.getBlockHarvestLevel(e.block, -1, power.tool) <= power.level) { e.success = true; } } } }
-	 * 
+	 *
 	 * @SubscribeEvent public void onPlayerDig(BreakSpeed e) { ExtendedPlayer ep = ExtendedPlayer.get(e.entityPlayer); if(!e.isCanceled() && ep.hasPlayerClass()) { Iterator<PowerMineSpeed> i = ep.getActivePowers(PowerMineSpeed.class).iterator(); while(i.hasNext()) { PowerMineSpeed power = i.next(); System.out.println("Side: " + FMLCommonHandler.instance().getEffectiveSide() + "; " + power); for(int j = 0; j < power.tools.size(); j++) { if(AlpFieldAccessor.getToolEffectiveness().contains(Arrays.asList(e.block, e.metadata, power.tools.get(j)))) { e.newSpeed *= power.digSpeed; } } } } }
 	 */
 
@@ -217,8 +217,8 @@ public class ClassHooks
 			}
 
 			/**
-			 * Only triggered when entity uses the Task System
-			 */
+			* Only triggered when entity uses the Task System
+			*/
 	/*@SubscribeEvent
 	public void onTargetPlayer(LivingSetAttackTargetEvent e)
 	{

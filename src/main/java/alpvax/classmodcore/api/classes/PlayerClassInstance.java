@@ -11,8 +11,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
+import alpvax.classmodcore.api.ClassUtil;
 import alpvax.classmodcore.api.powers.IPower;
 import alpvax.classmodcore.api.powers.PowerEntry;
+import alpvax.classmodcore.api.powers.PowerEntry.PlayerTriggeredPowerEntry;
 import alpvax.classmodcore.api.powers.PowerInstance;
 
 
@@ -21,7 +23,7 @@ public class PlayerClassInstance
 	public final EntityPlayer player;
 	private IPlayerClass playerclass = null;
 	private PowerInstance[] powers = new PowerInstance[0];
-	private List<Integer> manualIndexes;
+	private int[] manualIndexes;
 	private boolean dirty = false;
 
 	public PlayerClassInstance(EntityPlayer player)
@@ -43,6 +45,8 @@ public class PlayerClassInstance
 			{
 				power.stop(player);
 			}
+			powers = new PowerInstance[0];
+			manualIndexes = new int[ClassUtil.maxNumActivePowers];
 			List<PowerEntry> list = playerclass.getPowers();
 			if(list != null)
 			{
@@ -50,15 +54,18 @@ public class PlayerClassInstance
 				powers = new PowerInstance[num];
 				for(int i = 0; i < num; i++)
 				{
-					powers[i] = list.get(i).createInstance(i);
-					powers[i].init(player);
-					if(powers[i].setKeybind(i))
+					PowerEntry e = list.get(i);
+					powers[i] = e.createInstance();
+					if(e.triggerInstantly())
 					{
-						manualIndexes.add(Integer.valueOf(i++));
+						powers[i].init(player);
+					}
+					if(e instanceof PlayerTriggeredPowerEntry)
+					{
+						manualIndexes[((PlayerTriggeredPowerEntry)e).index] = i;
 					}
 				}
 			}
-			powers = new PowerInstance[0];
 			dirty = true;
 		}
 	}
@@ -88,10 +95,11 @@ public class PlayerClassInstance
 		{
 			nbt.setString(KEY_ID, playerclass.getClassID());
 			NBTTagList list = new NBTTagList();
-			for(PowerInstance power : powers)
+			for(int i = 0; i < powers.length; i++)
 			{
 				NBTTagCompound tag = new NBTTagCompound();
-				power.writeToNBT(tag);
+				powers[i].writeToNBT(tag);
+				tag.setInteger(KEY_SLOT, i);
 				list.appendTag(tag);
 			}
 			nbt.setTag(KEY_POWERS, list);
@@ -101,9 +109,9 @@ public class PlayerClassInstance
 
 	public void togglePower(int index)
 	{
-		if(index >= 0 && index < manualIndexes.size())
+		if(index >= 0 && index < manualIndexes.length)
 		{
-			powers[manualIndexes.get(index).intValue()].togglePower(player);
+			powers[manualIndexes[index]].togglePower(player);
 		}
 	}
 
@@ -131,18 +139,14 @@ public class PlayerClassInstance
 		return false;
 	}
 
-	public List<PowerInstance> getActivePowers(Class<? extends IPower> powerclass)
+	public List<PowerInstance> getPowers(Class<? extends IPower> powerclass)
 	{
-		if(powerclass == null)
-		{
-			powerclass = IPower.class;
-		}
 		List<PowerInstance> list = new ArrayList<PowerInstance>();
 		System.err.println("Num powers: " + powers.length);//XXX
 		for(PowerInstance p : powers)
 		{
 			System.err.println(p.getPower().getDisplayName() + ": " + p.isActive());//XXX
-			if(p.isActive() && powerclass.isAssignableFrom(p.getPower().getClass()))
+			if(powerclass == null || powerclass.isAssignableFrom(p.getPower().getClass()))
 			{
 				list.add(p);
 			}

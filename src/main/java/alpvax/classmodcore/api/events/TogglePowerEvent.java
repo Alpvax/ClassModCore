@@ -72,9 +72,9 @@ public abstract class TogglePowerEvent extends PlayerEvent
 	 * <br>
 	 * {@link #power} contains the the power that is triggering, and cannot be modified.
 	 **/
-	public static class ResetContinuousPowerEvent extends ResetPowerEvent
+	public static class ResetPowerForClassChangeEvent extends ResetPowerEvent
 	{
-		public ResetContinuousPowerEvent(EntityPlayer player, PowerInstance powerInstance)
+		public ResetPowerForClassChangeEvent(EntityPlayer player, PowerInstance powerInstance)
 		{
 			super(player, powerInstance);
 		}

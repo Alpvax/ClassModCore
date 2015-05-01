@@ -12,9 +12,6 @@ import com.google.common.collect.ImmutableList;
 
 public final class ClassUtil
 {
-	/*
-	 * public static final String modID = "classmodcore"; public static final String modName = "Player Class Mod"; public static final String modVersion ="0.1.164";
-	 */
 	public static final String KEY_ID = "Id";
 	public static final String KEY_POWERS = "Powers";
 	public static final String KEY_SLOT = "Slot";
@@ -22,19 +19,13 @@ public final class ClassUtil
 	public static final String KEY_TICKSELAPSED = "ElapsedTicks";
 	public static final String KEY_CD = "Cooldown";
 	public static final String KEY_DUR = "Duration";
-	public static final String KEY_KEYBIND = "KeyIndex";
-	public static final String KEY_DATA = "Data";
 	public static final String KEY_CLASSES = "PlayerClasses";
 	public static final String KEY_PLAYER = "Player";
-
-	public static final String BASE_TAG = "PlayerClass";
-	public static final String CLASS_TAG = "ID";
-	public static final String POWER_TAG = "Powers";
-	public static final String PWR_SLOT_TAG = "Slot";
 
 	public static final ImmutableList<String> nullKeys = new ImmutableList.Builder<String>().add("", "null", "none").build();
 
 	public static UUID attModIDPower;
+	public static int maxNumActivePowers = 4;//TODO:dynamic
 
 	// public static UUID nightvisionAttID;
 

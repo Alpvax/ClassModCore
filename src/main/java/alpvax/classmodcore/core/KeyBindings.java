@@ -8,6 +8,8 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import org.lwjgl.input.Keyboard;
 
+import alpvax.classmodcore.api.ClassUtil;
+
 
 public class KeyBindings
 {
@@ -23,5 +25,6 @@ public class KeyBindings
 		{
 			ClientRegistry.registerKeyBinding(kb);
 		}
+		ClassUtil.maxNumActivePowers = powerBindings.size();
 	}
 }

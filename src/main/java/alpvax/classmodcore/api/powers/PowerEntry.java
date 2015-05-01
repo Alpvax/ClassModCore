@@ -1,28 +1,23 @@
 package alpvax.classmodcore.api.powers;
 
-import static alpvax.classmodcore.api.powers.EnumPowerType.CONTINUOUS;
-import static alpvax.classmodcore.api.powers.EnumPowerType.INSTANT;
-import static alpvax.classmodcore.api.powers.EnumPowerType.TOGGLED;
-
 import java.util.HashMap;
 import java.util.Map;
 
 
-public abstract class PowerEntry
+public class PowerEntry
 {
 	public static final String KEY_COOLDOWN = "cooldown";
 	public static final String KEY_DURATION = "duration";
+	public static final String KEY_TRIGGERINDEX = "triggerKey";
 
 	private final IPower power;
-	private EnumPowerType type;
-	private boolean manual;
+	private boolean passive = true;
+	private boolean active = false;
 	protected Map<String, Object> data = new HashMap<String, Object>();
 
-	protected PowerEntry(IPower power, EnumPowerType type)
+	public PowerEntry(IPower power)
 	{
 		this.power = power;
-		this.type = type;
-		manual = false;
 	}
 
 	public PowerEntry addData(String key, Object data)
@@ -31,55 +26,47 @@ public abstract class PowerEntry
 		return this;
 	}
 
-	public void setPlayerActivated()
+	public PowerEntry setCooldown(int i)
 	{
-		manual = type != CONTINUOUS;
+		return addData(KEY_COOLDOWN, Integer.valueOf(i));
 	}
 
-	public PowerInstance createInstance(int index)
+	public PowerEntry setDuration(int i)
 	{
-		return new PowerInstance(power, type, manual, index, data);
+		return addData(KEY_DURATION, Integer.valueOf(i));
 	}
 
-	public static class Passive extends PowerEntry
+	public PowerEntry disableAutomaticActivation()
 	{
-		public Passive(IPower power)
+		passive = false;
+		return this;
+	}
+
+	public PowerEntry setStartActive()
+	{
+		active = true;
+		return this;
+	}
+
+	public boolean triggerInstantly()
+	{
+		return active;
+	}
+
+	public PowerInstance createInstance()
+	{
+		return new PowerInstance(power, passive, data);
+	}
+
+	public static class PlayerTriggeredPowerEntry extends PowerEntry
+	{
+		public final int index;
+
+		public PlayerTriggeredPowerEntry(IPower power, int keybindIndex)
 		{
-			super(power, CONTINUOUS);
+			super(power);
+			index = keybindIndex;
 		}
-	}
 
-	protected static abstract class Active extends PowerEntry
-	{
-		public Active(IPower power, EnumPowerType type, int cooldown)
-		{
-			super(power, type);
-			addData(KEY_COOLDOWN, Integer.valueOf(cooldown));
-		}
-	}
-
-	public static class Instant extends Active
-	{
-		public Instant(IPower power, int cooldown)
-		{
-			super(power, INSTANT, cooldown);
-		}
-	}
-
-	public static class Toggle extends Active
-	{
-		public Toggle(IPower power, int cooldown)
-		{
-			super(power, TOGGLED, cooldown);
-		}
-	}
-
-	public static class Timed extends Active
-	{
-		public Timed(IPower power, int cooldown, int duration)
-		{
-			super(power, TOGGLED, cooldown);
-			addData(KEY_DURATION, Integer.valueOf(duration));
-		}
 	}
 }

@@ -11,8 +11,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants.NBT;
-import alpvax.classmodcore.api.events.TogglePowerEvent.ResetContinuousPowerEvent;
 import alpvax.classmodcore.api.events.TogglePowerEvent.ResetPowerEvent;
+import alpvax.classmodcore.api.events.TogglePowerEvent.ResetPowerForClassChangeEvent;
 import alpvax.classmodcore.api.events.TogglePowerEvent.StartContinuousPowerEvent;
 import alpvax.classmodcore.api.events.TogglePowerEvent.TriggerPowerEvent;
 import alpvax.classmodcore.api.powers.IPower.ITickingPower;
@@ -25,7 +25,7 @@ public class PowerInstance
 {
 	private final IPower power;
 	//private final EnumPowerType type;
-	private final EnumPowerCastType targetType;
+	//private final EnumPowerCastType targetType;
 	public final boolean passive;
 
 	private final PowerVariable cooldown = new PowerVariable(0);
@@ -35,10 +35,10 @@ public class PowerInstance
 
 	private boolean dirty = false;
 
-	protected PowerInstance(IPower power, EnumPowerCastType targetType, boolean isAutomatic, Map<String, Object> data)
+	protected PowerInstance(IPower power/*, EnumPowerCastType targetType*/, boolean isAutomatic, Map<String, Object> data)
 	{
 		this.power = power;
-		this.targetType = targetType;
+		//this.targetType = targetType;
 		passive = isAutomatic;
 
 		cooldown.setModifier((Integer)data.get(PowerEntry.KEY_COOLDOWN));
@@ -88,20 +88,22 @@ public class PowerInstance
 
 	public void init(EntityPlayer player)
 	{
+		active = true;
 		if(power instanceof ITriggeredPower)
 		{
 			MinecraftForge.EVENT_BUS.post(new StartContinuousPowerEvent(player, this));
-			active = true;
+			//active = true;
 			((ITriggeredPower)power).triggerPower(player);
 		}
 	}
 
 	public void stop(EntityPlayer player)
 	{
+		active = false;
 		if(power instanceof IToggledPower)
 		{
-			MinecraftForge.EVENT_BUS.post(new ResetContinuousPowerEvent(player, this));
-			active = false;
+			MinecraftForge.EVENT_BUS.post(new ResetPowerForClassChangeEvent(player, this));
+			//active = false;
 			((IToggledPower)power).resetPower(player, ticksActive);
 		}
 	}
@@ -210,10 +212,10 @@ public class PowerInstance
 		return power;
 	}
 
-	public EnumPowerCastType getCastType()
+	/*public EnumPowerCastType getCastType()
 	{
 		return targetType;
-	}
+	}*/
 
 	public void readFromNBT(NBTTagCompound nbt)
 	{

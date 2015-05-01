@@ -42,7 +42,7 @@ public class PowerMoveSpeed extends DummyPower implements IToggledPower
 	}
 
 	@Override
-	public void resetPower(EntityPlayer player)
+	public void resetPower(EntityPlayer player, int ticksActive)
 	{
 		EntityHelper.removeAttributeModifier(player, SharedMonsterAttributes.movementSpeed, new AttributeModifier(ClassUtil.attModIDPower, "ClassModSpeedBoost", multiplier, 1), 2);
 	}
