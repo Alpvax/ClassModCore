@@ -80,12 +80,15 @@ public class PlayerClassInstance
 
 	public void readFromNBT(NBTTagCompound nbt)
 	{
-		setPlayerClass(nbt.getString(KEY_ID));
-		NBTTagList list = nbt.getTagList(KEY_POWERS, NBT.TAG_COMPOUND);
-		for(int i = 0; i < list.tagCount(); i++)
+		if(nbt.hasKey(KEY_ID))
 		{
-			NBTTagCompound tag = list.getCompoundTagAt(i);
-			powers[tag.getInteger(KEY_SLOT)].readFromNBT(tag);
+			setPlayerClass(nbt.getString(KEY_ID));
+			NBTTagList list = nbt.getTagList(KEY_POWERS, NBT.TAG_COMPOUND);
+			for(int i = 0; i < list.tagCount(); i++)
+			{
+				NBTTagCompound tag = list.getCompoundTagAt(i);
+				powers[tag.getInteger(KEY_SLOT)].readFromNBT(tag);
+			}
 		}
 	}
 
@@ -142,10 +145,8 @@ public class PlayerClassInstance
 	public List<PowerInstance> getPowers(Class<? extends IPower> powerclass)
 	{
 		List<PowerInstance> list = new ArrayList<PowerInstance>();
-		System.err.println("Num powers: " + powers.length);//XXX
 		for(PowerInstance p : powers)
 		{
-			System.err.println(p.getPower().getDisplayName() + ": " + p.isActive());//XXX
 			if(powerclass == null || powerclass.isAssignableFrom(p.getPower().getClass()))
 			{
 				list.add(p);

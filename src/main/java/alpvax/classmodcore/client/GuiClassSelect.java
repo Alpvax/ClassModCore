@@ -2,6 +2,7 @@ package alpvax.classmodcore.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
@@ -138,9 +139,9 @@ public class GuiClassSelect extends GuiScreen
 
 	/*
 	 * private int getNumForPage() { return Math.min(PlayerClassRegistry.allowedClasses.size() - page * selectGUIMaxC * selectGUIMaxR, selectGUIMaxC * selectGUIMaxR); }
-	 * 
+	 *
 	 * private int getNumRows() { return (int)Math.ceil((float)getNumForPage() / (float)selectGUIMaxC); }
-	 * 
+	 *
 	 * private int getNumForRow(int row) { return Math.min(getNumForPage() - row * selectGUIMaxC, selectGUIMaxC); }
 	 */
 
@@ -157,6 +158,15 @@ public class GuiClassSelect extends GuiScreen
 		{
 			System.err.printf("Total screen size: %dx%d; Page area: %d+%dx%d+%d;%n", width, height, pageAreaWidth, pageAreaX, pageAreaHeight, pageAreaY);
 			pageClasses = classes;
+			pageClasses.sort(new Comparator<IPlayerClass>(){
+				@Override
+				//Sort by display name, then id
+				public int compare(IPlayerClass pc1, IPlayerClass pc2)
+				{
+					int i = pc1.getDisplayName().compareToIgnoreCase(pc2.getDisplayName());
+					return i != 0 ? i : pc1.getClassID().compareToIgnoreCase(pc2.getClassID());
+				}
+			});
 			int numR = (maxColumns + pageClasses.size() - 1) / maxColumns;
 			int gapY = (pageAreaHeight - numR * GuiClassButton.btnHeight) / (numR + 1);
 			int i = 0;

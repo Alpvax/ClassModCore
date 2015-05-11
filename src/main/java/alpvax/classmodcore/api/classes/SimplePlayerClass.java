@@ -32,9 +32,9 @@ public abstract class SimplePlayerClass implements IPlayerClass
 	/** Nightvision level 1 = potion */
 	//public float nightVision = 0F;
 
-	public SimplePlayerClass(String name)
+	public SimplePlayerClass(String id)
 	{
-		classID = name;
+		classID = id;
 	}
 
 	/*public void onUpdate(EntityPlayer player)
@@ -89,7 +89,12 @@ public abstract class SimplePlayerClass implements IPlayerClass
 	@Override
 	public String getDisplayName()
 	{
-		return displayName == null ? classID.substring(classID.lastIndexOf('.')) : displayName;
+		if(displayName == null)
+		{
+			int i = classID.lastIndexOf('.');
+			return i >= 0 ? classID.substring(i + 1) : classID;
+		}
+		return displayName;
 	}
 
 	/*public ResourceLocation getIcon()

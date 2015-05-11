@@ -6,8 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
@@ -19,6 +20,7 @@ import org.apache.logging.log4j.Level;
 
 import alpvax.classmodcore.api.classes.PlayerClassHelper;
 import alpvax.classmodcore.api.classes.PlayerClassInstance;
+import alpvax.classmodcore.api.classes.PlayerClassRegistry;
 import alpvax.classmodcore.api.events.ChangeClassEvent;
 import alpvax.classmodcore.api.powers.IPower.IPowerEventListener;
 import alpvax.classmodcore.api.powers.PowerInstance;
@@ -28,13 +30,26 @@ import alpvax.common.network.OpenGuiPacket;
 
 public class ClassHooks
 {
+	private static String lastSaveName = null;
+
 	@SubscribeEvent
 	public void onLogIn(PlayerLoggedInEvent e)
 	{
-		System.err.println("Player " + e.player.getDisplayNameString() + " has logged in as a " + PlayerClassHelper.getPlayerClass(e.player).getDisplayName());//XXX
+		FMLLog.log(ModInfo.MOD_ID, Level.INFO, "Player %s has logged in as a %s", e.player.getDisplayNameString(), PlayerClassHelper.getPlayerClass(e.player).getDisplayName());
 		if(!PlayerClassHelper.hasPlayerClass(e.player))
 		{
 			ClassMod.packetHandler.sendTo(new OpenGuiPacket(ModInfo.MOD_ID, 0), (EntityPlayerMP)e.player);
+		}
+	}
+
+	@SubscribeEvent
+	public void onWorldChange(WorldEvent.Load e)
+	{
+		String name = e.world.getSaveHandler().getWorldDirectoryName();
+		if(!name.equals(lastSaveName))
+		{
+			PlayerClassRegistry.setClassStates();
+			lastSaveName = name;
 		}
 	}
 
@@ -46,20 +61,19 @@ public class ClassHooks
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@SubscribeEvent
-	public void onEvent(LivingHurtEvent e)//TODO:Change to accept all living events
+	public void onEvent(LivingEvent e)
 	{
 		if(e.entityLiving instanceof EntityPlayer)
 		{
 			EntityPlayer player = (EntityPlayer)e.entityLiving;
 			PlayerClassInstance pci = PlayerClassHelper.getPlayerClassInstance(player);
-			System.err.printf("Handling %s for [%s]%s%n", e.getClass().getName(), pci.getPlayerClass().getDisplayName(), player.getName());//XXX
 			List<PowerInstance> list = pci.getPowers(IPowerEventListener.class);
-			System.err.printf("%d powers found%n", list.size());//XXX
 			for(PowerInstance p : list)
 			{
-				if(p.isActive())
+				IPowerEventListener power = (IPowerEventListener)p.getPower();
+				if(power.getEventClass().isAssignableFrom(e.getClass()))
 				{
-					((IPowerEventListener)p).listenToEvent(e, player);
+					power.listenToEvent(e, player);
 				}
 			}
 		}
@@ -217,8 +231,8 @@ public class ClassHooks
 			}
 
 			/**
-			* Only triggered when entity uses the Task System
-			*/
+			 * Only triggered when entity uses the Task System
+			 */
 	/*@SubscribeEvent
 	public void onTargetPlayer(LivingSetAttackTargetEvent e)
 	{

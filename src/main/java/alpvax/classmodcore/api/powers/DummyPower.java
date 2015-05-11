@@ -11,7 +11,12 @@ public abstract class DummyPower implements IPower
 
 	public DummyPower(String displayType, String displaySuffix)
 	{
-		display = (displayType == null || displayType == "" ? "" : displayType + " ") + displaySuffix;
+		this((displayType == null || displayType == "" ? "" : displayType + " ") + displaySuffix);
+	}
+
+	public DummyPower(String displayString)
+	{
+		display = displayString;
 	}
 
 	@Override

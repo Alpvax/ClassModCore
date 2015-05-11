@@ -99,5 +99,10 @@ public interface IPower
 	public interface IPowerEventListener<T extends LivingEvent> extends IPower
 	{
 		public void listenToEvent(T e, EntityPlayer player);
+
+		/**
+		 * Needs to return the Event Class to listen to
+		 */
+		public Class<T> getEventClass();
 	}
 }

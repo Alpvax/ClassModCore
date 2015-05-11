@@ -18,7 +18,7 @@ import alpvax.classmodcore.api.events.TogglePowerEvent.TriggerPowerEvent;
 import alpvax.classmodcore.api.powers.IPower.ITickingPower;
 import alpvax.classmodcore.api.powers.IPower.IToggledPower;
 import alpvax.classmodcore.api.powers.IPower.ITriggeredPower;
-import alpvax.classmodcore.api.util.PowerVariable;
+import alpvax.classmodcore.api.util.TickingVariable;
 
 
 public class PowerInstance
@@ -28,8 +28,8 @@ public class PowerInstance
 	//private final EnumPowerCastType targetType;
 	public final boolean passive;
 
-	private final PowerVariable cooldown = new PowerVariable(0);
-	private final PowerVariable duration = new PowerVariable(0);
+	private final TickingVariable cooldown = new TickingVariable(0);
+	private final TickingVariable duration = new TickingVariable(0);
 	private int ticksActive = 0;
 	private boolean active = false;
 
@@ -48,26 +48,22 @@ public class PowerInstance
 	public void tickPower(EntityPlayer player)
 	{
 		boolean flag = false;
+		//Disable if duration ended
 		if(duration.tick())
 		{
-			if(duration.value() <= 0)
-			{
-				duration.setValue(0);
-				flag |= resetPower(player);
-			}
-			flag = true;
+			flag |= resetPower(player);
 		}
 		if(active)
 		{
 			ticksActive++;
 			if(power instanceof ITickingPower)
 			{
-				((ITickingPower)power).onTick(player, ticksActive + 1);
+				((ITickingPower)power).onTick(player, ticksActive);
 			}
 			flag = true;
 		}
 		flag |= cooldown.tick();
-		if(passive && canTrigger())
+		if(passive && power instanceof ITriggeredPower)
 		{
 			if(!active && ((ITriggeredPower)power).shouldTrigger(player))
 			{
@@ -182,7 +178,7 @@ public class PowerInstance
 		return list;
 	}*/
 
-	public int getCooldown()
+	public int getCooldownRemaining()
 	{
 		return cooldown.value();
 	}
@@ -254,9 +250,6 @@ public class PowerInstance
 		dirty = false;
 	}
 
-	/**
-	 * @return
-	 */
 	public boolean isDirty()
 	{
 		return dirty;

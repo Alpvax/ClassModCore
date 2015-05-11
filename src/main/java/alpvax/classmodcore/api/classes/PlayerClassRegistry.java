@@ -9,7 +9,6 @@ import java.util.Map;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
@@ -77,15 +76,16 @@ public final class PlayerClassRegistry
 
 	private static void do_register(String classID, IPlayerClass playerclass, IPlayerClassPermission permission)
 	{
-		System.err.println("Mod: \"" + Loader.instance().activeModContainer().getModId() + "\" is registering " + playerclass.getDisplayName() + " with ID \"" + playerclass.getClassID() + "\"");//XXX
+		String modID = Loader.instance().activeModContainer().getModId();
+		FMLLog.log("ClassMod", Level.INFO, "Mod: \"%1$s\" is registering " + (classID.equals("") ? " a null class: \"%2$s\"" : "\"%2$s\" with ID \"%3$s\""), modID, playerclass.getDisplayName(), playerclass.getClassID());
 		idToClassMap.put(classID, playerclass);
-		modIDMap.put(classID, Loader.instance().activeModContainer().getModId());
+		modIDMap.put(classID, modID);
 		classStates.put(classID, permission);
 	}
 
 	/**
 	 * Registers a default or null playerclass. Normally "Steve", who is nothing special. (Has no powers or attributes)
-	 * 
+	 *
 	 * @param playerclass
 	 */
 	public static void registerNullClass(IPlayerClass playerclass)
@@ -123,7 +123,7 @@ public final class PlayerClassRegistry
 
 	public static ResourceLocation getClassImage(String classID)
 	{
-		return new ResourceLocation(PlayerClassRegistry.modIDMap.get(classID) + ":textures/classes/" + (classID.length() < 1 ? "steve" : classID.replace(".", "/")) + ".png");
+		return new ResourceLocation(PlayerClassRegistry.modIDMap.get(classID) + ":textures/playerclasses/" + (classID.length() < 1 ? "steve" : classID.replace(".", "/")) + ".png");
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -163,44 +163,27 @@ public final class PlayerClassRegistry
 
 	public static void setClassStates()
 	{
-		Configuration[] c = SaveHelper.getConfigs("ClassMod", "Classes.cfg");
-		Configuration defConfig = c[0];
-		defConfig.load();
-		Configuration config = c[1];
-		if(config != null)
-		{
-			config.load();
-		}
 		Iterator<String> i = idToClassMap.keySet().iterator();
 		while(i.hasNext())
 		{
 			String classID = i.next();
+			if(classID.equals(""))
+			{
+				continue;
+			}
+			int index = classID.lastIndexOf(".");
+			String group = index >= 0 ? classID.substring(0, index) : "";
+			String id = index >= 0 ? classID.substring(index + 1) : classID;
+			Property p = SaveHelper.getProperty("ClassMod", "Classes.cfg", group, id, Boolean.TRUE.toString(), "Is " + idToClassMap.get(classID).getDisplayName() + " enabled?", Property.Type.BOOLEAN);
 			if(classStates.get(classID) == null)
 			{
-				classStates.put(classID, new SimpleClassPermission(getProperty(classID, defConfig, config).getBoolean(true)));
+				classStates.put(classID, new SimpleClassPermission(p.getBoolean()));
 			}
 			else
 			{
-				classStates.get(classID).setFromConfig(getProperty(classID, defConfig, config));
+				classStates.get(classID).setFromConfig(p);
 			}
 		}
-		if(config != null)
-		{
-			config.save();
-		}
-		else
-		{
-			defConfig.save();
-		}
 		DONE = true;
-	}
-
-	private static Property getProperty(String classID, Configuration defConfig, Configuration config)
-	{
-		int i = classID.lastIndexOf('.');
-		String category = i >= 0 ? classID.substring(0, i) : "";
-		String key = classID.substring(i + 1);
-		Property p = defConfig.getCategory(category).get(key);
-		return config != null ? config.getCategory(category).get(key) : p;
 	}
 }

@@ -1,13 +1,16 @@
 package alpvax.classmodcore.command;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import alpvax.classmodcore.api.classes.IPlayerClass;
 import alpvax.classmodcore.api.classes.PlayerClassHelper;
 import alpvax.classmodcore.core.ClassMod;
+import alpvax.classmodcore.core.ModInfo;
+import alpvax.common.network.OpenGuiPacket;
 
 
 public class CommandChangeClass extends CommandForceClass
@@ -23,10 +26,12 @@ public class CommandChangeClass extends CommandForceClass
 	{
 		if(args.length < 1)
 		{
-			if(sender.getEntityWorld().isRemote)
+			Entity e = sender.getCommandSenderEntity();
+			if(e != null && e instanceof EntityPlayer)
 			{
-				EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-				player.openGui(ClassMod.instance, 0, player.worldObj, (int)player.posX, (int)player.posY, (int)player.posZ);
+				EntityPlayer player = (EntityPlayer)e;
+				ClassMod.packetHandler.sendTo(new OpenGuiPacket(ModInfo.MOD_ID, 0), (EntityPlayerMP)player);
+				//player.openGui(ClassMod.instance, 0, player.worldObj, (int)player.posX, (int)player.posY, (int)player.posZ);
 			}
 			else
 			{

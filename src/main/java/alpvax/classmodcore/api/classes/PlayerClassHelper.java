@@ -30,7 +30,7 @@ public class PlayerClassHelper
 
 	/**
 	 * Gets the class of the specified player. Will never return null, so to check if the class has been set use {@link #hasPlayerClass(EntityPlayer)}
-	 * 
+	 *
 	 * @return the playerclass, or the default playerclass if the class has not been set yet
 	 */
 	public static PlayerClassInstance getPlayerClassInstance(EntityPlayer player)
@@ -40,7 +40,7 @@ public class PlayerClassHelper
 
 	/**
 	 * Gets the class of the specified player. Will never return null, so to check if the class has been set use {@link #hasPlayerClass(EntityPlayer)}
-	 * 
+	 *
 	 * @return the playerclass, or the default playerclass if the class has not been set yet
 	 */
 	public static IPlayerClass getPlayerClass(EntityPlayer player)
@@ -77,7 +77,6 @@ public class PlayerClassHelper
 		{
 			return false;
 		}
-		System.err.println("Now to save the data");//XXX
 		data.setPlayerClass(player, playerclass);
 		data.markDirty();
 		return true;

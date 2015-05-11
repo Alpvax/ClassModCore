@@ -36,12 +36,10 @@ public final class ClassUtil
 
 	public static void init(File configDir)
 	{
-		Configuration config = new Configuration(new File(configDir, "ClassMod.util"));
+		Configuration config = new Configuration(new File(configDir, "ClassMod.cfg"));
 		config.load();
-		attModIDPower = UUID.fromString(config.get("UUIDs", "Attribute Modifier ID for power changes", UUID.randomUUID().toString()).getString());
-		// nightvisionAttID = UUID.fromString(config.get("UUIDs",
-		// "ID for nightvision Attribute",
-		// UUID.randomUUID().toString()).getString());
+		attModIDPower = UUID.fromString(config.get("Rules.UUIDs", "AttMod", UUID.randomUUID().toString(), "Unique ID for any attribute modifiers used by powers").getString());
+		// nightvisionAttID = UUID.fromString(config.get("UUIDs", "Nightvision", UUID.randomUUID().toString(), "Unique ID for nightvision attribute modifiers").getString());
 		config.save();
 	}
 }
