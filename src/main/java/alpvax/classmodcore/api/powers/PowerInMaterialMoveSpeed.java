@@ -21,13 +21,13 @@ public class PowerInMaterialMoveSpeed extends PowerMoveSpeed
 	@Override
 	public boolean shouldTrigger(EntityPlayer player)
 	{
-		return player.isInsideOfMaterial(material);
+		return player.worldObj.isMaterialInBB(player.getEntityBoundingBox(), material);
 	}
 
 	@Override
 	public boolean shouldReset(EntityPlayer player)
 	{
-		return !player.isInsideOfMaterial(material);
+		return !player.worldObj.isMaterialInBB(player.getEntityBoundingBox(), material);
 	}
 
 }

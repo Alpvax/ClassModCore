@@ -67,6 +67,10 @@ public class ClassHooks
 		{
 			EntityPlayer player = (EntityPlayer)e.entityLiving;
 			PlayerClassInstance pci = PlayerClassHelper.getPlayerClassInstance(player);
+			if(pci == null)
+			{
+				return;
+			}
 			List<PowerInstance> list = pci.getPowers(IPowerEventListener.class);
 			for(PowerInstance p : list)
 			{

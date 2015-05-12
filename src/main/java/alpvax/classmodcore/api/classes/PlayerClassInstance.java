@@ -26,7 +26,12 @@ public class PlayerClassInstance
 	private int[] manualIndexes;
 	private boolean dirty = false;
 
-	public PlayerClassInstance(EntityPlayer player)
+	public static PlayerClassInstance create(EntityPlayer player)
+	{
+		return player != null ? new PlayerClassInstance(player) : null;
+	}
+
+	private PlayerClassInstance(EntityPlayer player)
 	{
 		this.player = player;
 	}

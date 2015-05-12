@@ -9,6 +9,7 @@ import java.util.Map;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StringUtils;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
@@ -94,18 +95,22 @@ public final class PlayerClassRegistry
 		{
 			FMLLog.log("ClassMod", Level.WARN, new IllegalArgumentException(), "Failed to register null PlayerClass: playerclass cannot be null.");
 		}
+		if(!StringUtils.isNullOrEmpty(playerclass.getClassID()))
+		{
+			FMLLog.log("ClassMod", Level.WARN, new IllegalArgumentException(), "Failed to register null PlayerClass: playerclass id must be null or empty string, detected \"%s\".", playerclass.getClassID());
+		}
 		IPlayerClassPermission nullPerm = new IPlayerClassPermission(){
 
 			@Override
 			public boolean isAvailableInGui(EntityPlayer player)
 			{
-				return true;
+				return false;
 			}
 
 			@Override
 			public boolean isAvailableForCommand(ICommandSender commandSender)
 			{
-				return true;
+				return false;
 			}
 
 			@Override

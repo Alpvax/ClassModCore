@@ -31,6 +31,15 @@ public abstract class PowerResist extends DummyPower implements IPowerEventListe
 		{
 			e.ammount *= multiplier;
 			System.err.printf("New amount: %f%n", e.ammount);//XXX
+			if(e.ammount < 0)
+			{
+				player.heal(-1 * e.ammount);
+			}
+			//Threshold of 0.2 (tenth of a heart)
+			if(e.ammount < 0.2F)
+			{
+				e.setCanceled(true);
+			}
 		}
 	}
 

@@ -22,7 +22,7 @@ public class PowerInMaterialSelfDamage extends PowerSelfDamage
 	@Override
 	protected boolean shouldDamage(EntityPlayer player)
 	{
-		return player.isInsideOfMaterial(material);
+		return player.worldObj.isMaterialInBB(player.getEntityBoundingBox(), material);
 	}
 
 }

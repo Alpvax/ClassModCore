@@ -17,7 +17,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import alpvax.classmodcore.api.ClassUtil;
 import alpvax.classmodcore.api.classes.PlayerClassRegistry;
 import alpvax.classmodcore.api.classes.SimplePlayerClass;
-import alpvax.classmodcore.api.permissions.SimpleClassPermission;
 import alpvax.classmodcore.command.CommandChangeClass;
 import alpvax.classmodcore.network.CommonProxy;
 import alpvax.classmodcore.network.packets.ClassChangePacket;
@@ -65,6 +64,8 @@ public class ClassMod
 
 		ClassUtil.init(new File(event.getModConfigurationDirectory(), "ClassMod"));
 
+		PlayerClassRegistry.registerNullClass(new SimplePlayerClass(""){}.setDisplayName("Steve"));
+
 		/*selectGUIMaxC = ClassMod.defaultConfig.get("GUI", "Columns", 4).getInt();
 		selectGUIMaxR = ClassMod.defaultConfig.get("GUI", "Rows", 1).getInt();
 
@@ -85,11 +86,6 @@ public class ClassMod
 	@EventHandler
 	public void Init(FMLInitializationEvent event)
 	{
-		PlayerClassRegistry.registerNullClass(new SimplePlayerClass(""){}.setDisplayName("Steve"));
-		for(int i = 0; i < 15; i++)
-		{
-			PlayerClassRegistry.registerPlayerClass(new SimplePlayerClass("GuiTest." + i){}, new SimpleClassPermission(true));
-		}
 		KeyBindings.init();
 		proxy.registerClientHandlers();
 		proxy.registerRenderInformation();

@@ -51,7 +51,10 @@ public class TriggerPowerPacket implements IMessage
 		public IMessage onMessage(TriggerPowerPacket message, MessageContext ctx)
 		{
 			PlayerClassInstance pci = PlayerClassHelper.getPlayerClassInstance(MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(message.username));
-			pci.togglePower(message.index);
+			if(pci != null)
+			{
+				pci.togglePower(message.index);
+			}
 			return null;
 		}
 	}

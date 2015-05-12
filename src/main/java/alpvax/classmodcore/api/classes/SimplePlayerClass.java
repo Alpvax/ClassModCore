@@ -15,22 +15,22 @@ public abstract class SimplePlayerClass implements IPlayerClass
 	private final String classID;
 	private String displayName;
 
-	//TODO:attributes
-	/** Jump height in blocks */
-	//public float jumpHeight = 1F;
-	/** Movement speed multiplier */
-	//public float speedModifier = 1F;
-	/** Maximum health multiplier */
-	//public float healthModifier = 1F;
-	/** Knockback resistance (1 = immune) */
-	//public float knockResist = 0F;
-	/** Reach extension (default 4.5 in s,a. 5 in c). Added to base value */
-	//public float reachModifier = 0F;
-	/** Should show player names */
-	//public float trackDistance = 0.0F;
-	//public float trackDistanceSneak = -1.0F;
-	/** Nightvision level 1 = potion */
-	//public float nightVision = 0F;
+	/*TODO:attributes
+	/** Jump height in blocks
+	public float jumpHeight = 1F;
+	/** Movement speed multiplier
+	public float speedModifier = 1F;
+	/** Maximum health multiplier
+	public float healthModifier = 1F;
+	/** Knockback resistance (1 = immune)
+	public float knockResist = 0F;
+	/** Reach extension (default 4.5 in s,a. 5 in c). Added to base value
+	public float reachModifier = 0F;
+	/** Should show player names
+	public float trackDistance = 0.0F;
+	public float trackDistanceSneak = -1.0F;
+	/** Nightvision level 1 = potion
+	public float nightVision = 0F;*/
 
 	public SimplePlayerClass(String id)
 	{
