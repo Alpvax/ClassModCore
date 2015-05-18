@@ -26,11 +26,9 @@ public abstract class PowerResist extends DummyPower implements IPowerEventListe
 	@Override
 	public void listenToEvent(LivingHurtEvent e, EntityPlayer player)
 	{
-		System.err.printf("Recieved %s{%s, %s, %f}%n", e.getClass().getName(), player, e.source, e.ammount);//XXX
 		if(shouldModify(e.source, (EntityPlayer)e.entityLiving))
 		{
 			e.ammount *= multiplier;
-			System.err.printf("New amount: %f%n", e.ammount);//XXX
 			if(e.ammount < 0)
 			{
 				player.heal(-1 * e.ammount);
