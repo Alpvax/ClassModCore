@@ -21,6 +21,7 @@ public final class ClassUtil
 	public static final String KEY_DUR = "Duration";
 	public static final String KEY_CLASSES = "PlayerClasses";
 	public static final String KEY_PLAYER = "Player";
+	public static final String KEY_EXTENDED = "ExtendedData";
 
 	public static final ImmutableList<String> nullKeys = new ImmutableList.Builder<String>().add("", "null", "none").build();
 

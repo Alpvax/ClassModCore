@@ -1,6 +1,7 @@
 package alpvax.classmodcore.api.classes;
 
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
@@ -8,6 +9,8 @@ import net.minecraft.world.storage.MapStorage;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import alpvax.classmodcore.api.events.ChangeClassEvent;
+import alpvax.classmodcore.api.powers.PowerInstance;
+import alpvax.classmodcore.api.powers.PowerOblivious;
 
 
 /**
@@ -40,7 +43,7 @@ public class PlayerClassHelper
 
 	/**
 	 * Gets the class of the specified player. Will never return null, so to check if the class has been set use {@link #hasPlayerClass(EntityPlayer)}
-	 *
+	 * (Will return null if an error is caused by being unable to find the player)
 	 * @return the playerclass, or the default playerclass if the class has not been set yet
 	 */
 	public static IPlayerClass getPlayerClass(EntityPlayer player)
@@ -48,6 +51,11 @@ public class PlayerClassHelper
 		return getPlayerClass(player.worldObj, player.getName());
 	}
 
+	/**
+	 * Gets the class of the specified player. Will never return null, so to check if the class has been set use {@link #hasPlayerClass(EntityPlayer)}
+	 * (Will return null if an error is caused by being unable to find the player)
+	 * @return the playerclass, or the default playerclass if the class has not been set yet
+	 */
 	public static IPlayerClass getPlayerClass(World world, String name)
 	{
 		IPlayerClass pc = getSaveData(world).getPlayerClass(name).getPlayerClass();
@@ -92,5 +100,20 @@ public class PlayerClassHelper
 			m.setData(data.mapName, data);
 		}
 		return data;
+	}
+
+	public static boolean isOblivious(EntityPlayer player, EntityLivingBase entity)
+	{
+		if(hasPlayerClass(player))
+		{
+			for(PowerInstance<PowerOblivious> p : getPlayerClassInstance(player).getPowers(PowerOblivious.class))
+			{
+				if(!p.getPower().canEntityTargetPlayer(entity, player))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

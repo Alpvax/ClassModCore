@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
+import alpvax.classmodcore.api.powers.IPower;
 import alpvax.classmodcore.api.powers.PowerInstance;
 
 
@@ -22,28 +23,28 @@ import alpvax.classmodcore.api.powers.PowerInstance;
  * <br>
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
-public abstract class TogglePowerEvent extends PlayerEvent
+public abstract class TogglePowerEvent<T extends IPower> extends PlayerEvent
 {
-	public final PowerInstance instance;
+	public final PowerInstance<T> instance;
 
-	public TogglePowerEvent(EntityPlayer player, PowerInstance powerInstance)
+	public TogglePowerEvent(EntityPlayer player, PowerInstance<T> powerInstance)
 	{
 		super(player);
 		instance = powerInstance;
 	}
 
 	@Cancelable
-	public static class TriggerPowerEvent extends TogglePowerEvent
+	public static class TriggerPowerEvent<T extends IPower> extends TogglePowerEvent<T>
 	{
-		public TriggerPowerEvent(EntityPlayer player, PowerInstance powerInstance)
+		public TriggerPowerEvent(EntityPlayer player, PowerInstance<T> powerInstance)
 		{
 			super(player, powerInstance);
 		}
 	}
 
-	public static class StartContinuousPowerEvent extends TriggerPowerEvent
+	public static class StartContinuousPowerEvent<T extends IPower> extends TriggerPowerEvent<T>
 	{
-		public StartContinuousPowerEvent(EntityPlayer player, PowerInstance powerInstance)
+		public StartContinuousPowerEvent(EntityPlayer player, PowerInstance<T> powerInstance)
 		{
 			super(player, powerInstance);
 		}
@@ -57,9 +58,9 @@ public abstract class TogglePowerEvent extends PlayerEvent
 	 * {@link #power} contains the the power that is triggering, and cannot be modified.
 	 **/
 	@Cancelable
-	public static class ResetPowerEvent extends TogglePowerEvent
+	public static class ResetPowerEvent<T extends IPower> extends TogglePowerEvent<T>
 	{
-		public ResetPowerEvent(EntityPlayer player, PowerInstance powerInstance)
+		public ResetPowerEvent(EntityPlayer player, PowerInstance<T> powerInstance)
 		{
 			super(player, powerInstance);
 		}
@@ -72,9 +73,9 @@ public abstract class TogglePowerEvent extends PlayerEvent
 	 * <br>
 	 * {@link #power} contains the the power that is triggering, and cannot be modified.
 	 **/
-	public static class ResetPowerForClassChangeEvent extends ResetPowerEvent
+	public static class ResetPowerForClassChangeEvent<T extends IPower> extends ResetPowerEvent<T>
 	{
-		public ResetPowerForClassChangeEvent(EntityPlayer player, PowerInstance powerInstance)
+		public ResetPowerForClassChangeEvent(EntityPlayer player, PowerInstance<T> powerInstance)
 		{
 			super(player, powerInstance);
 		}

@@ -26,6 +26,10 @@ public abstract class PowerPackAggro extends DummyPower implements IPowerEventLi
 		if(e.source.getEntity() instanceof EntityLivingBase)
 		{
 			EntityLivingBase target = (EntityLivingBase)e.source.getEntity();
+			if(target == player)
+			{
+				return;
+			}
 			@SuppressWarnings("unchecked")
 			Iterator<EntityLiving> iterator = player.worldObj.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(player.posX, player.posY, player.posZ, player.posX + 1.0D, player.posY + 1.0D, player.posZ + 1.0D).expand(2 * radius, 2 * radius, 2 * radius)).iterator();
 
@@ -33,10 +37,9 @@ public abstract class PowerPackAggro extends DummyPower implements IPowerEventLi
 			{
 				EntityLiving entity = iterator.next();
 
-				if(entity.getAttackTarget() == null && player.getDistanceSqToEntity(entity) <= radius * radius && shouldAggro(entity, target))
+				if(entity != target && entity.getAttackTarget() == null && player.getDistanceSqToEntity(entity) <= radius * radius && shouldAggro(entity, target))
 				{
-					entity.setAttackTarget(target);
-					entity.setRevengeTarget(target);
+					setTarget(entity, target);
 				}
 			}
 		}
@@ -46,6 +49,12 @@ public abstract class PowerPackAggro extends DummyPower implements IPowerEventLi
 	public Class<LivingAttackEvent> getEventClass()
 	{
 		return LivingAttackEvent.class;
+	}
+
+	public void setTarget(EntityLiving entity, EntityLivingBase target)
+	{
+		entity.setAttackTarget(target);
+		entity.setRevengeTarget(target);
 	}
 
 	public abstract boolean shouldAggro(EntityLiving entity, EntityLivingBase target);

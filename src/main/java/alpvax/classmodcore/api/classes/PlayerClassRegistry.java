@@ -128,7 +128,7 @@ public final class PlayerClassRegistry
 
 	public static ResourceLocation getClassImage(String classID)
 	{
-		return new ResourceLocation(PlayerClassRegistry.modIDMap.get(classID) + ":textures/playerclasses/" + (classID.length() < 1 ? "steve" : classID.replace(".", "/")) + ".png");
+		return new ResourceLocation(PlayerClassRegistry.modIDMap.get(classID).toLowerCase() + ":textures/playerclasses/" + (classID.length() < 1 ? "steve" : classID.replace(".", "/")) + ".png");
 	}
 
 	@SideOnly(Side.CLIENT)

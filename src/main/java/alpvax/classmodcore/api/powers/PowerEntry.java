@@ -53,9 +53,9 @@ public class PowerEntry
 		return active;
 	}
 
-	public PowerInstance createInstance()
+	public PowerInstance<IPower> createInstance()
 	{
-		return new PowerInstance(power, passive, data);
+		return new PowerInstance<IPower>(power, passive, data);
 	}
 
 	public static class PlayerTriggeredPowerEntry extends PowerEntry

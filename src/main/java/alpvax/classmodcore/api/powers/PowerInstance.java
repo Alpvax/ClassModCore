@@ -3,6 +3,7 @@ package alpvax.classmodcore.api.powers;
 import static alpvax.classmodcore.api.ClassUtil.KEY_ACTIVE;
 import static alpvax.classmodcore.api.ClassUtil.KEY_CD;
 import static alpvax.classmodcore.api.ClassUtil.KEY_DUR;
+import static alpvax.classmodcore.api.ClassUtil.KEY_EXTENDED;
 import static alpvax.classmodcore.api.ClassUtil.KEY_TICKSELAPSED;
 
 import java.util.Map;
@@ -15,15 +16,16 @@ import alpvax.classmodcore.api.events.TogglePowerEvent.ResetPowerEvent;
 import alpvax.classmodcore.api.events.TogglePowerEvent.ResetPowerForClassChangeEvent;
 import alpvax.classmodcore.api.events.TogglePowerEvent.StartContinuousPowerEvent;
 import alpvax.classmodcore.api.events.TogglePowerEvent.TriggerPowerEvent;
+import alpvax.classmodcore.api.powers.IPower.IExtendedPower;
 import alpvax.classmodcore.api.powers.IPower.ITickingPower;
 import alpvax.classmodcore.api.powers.IPower.IToggledPower;
 import alpvax.classmodcore.api.powers.IPower.ITriggeredPower;
 import alpvax.classmodcore.api.util.TickingVariable;
 
 
-public class PowerInstance
+public class PowerInstance<T extends IPower>
 {
-	private final IPower power;
+	private final T power;
 	//private final EnumPowerType type;
 	//private final EnumPowerCastType targetType;
 	public final boolean passive;
@@ -35,7 +37,7 @@ public class PowerInstance
 
 	private boolean dirty = false;
 
-	protected PowerInstance(IPower power/*, EnumPowerCastType targetType*/, boolean isAutomatic, Map<String, Object> data)
+	protected PowerInstance(T power/*, EnumPowerCastType targetType*/, boolean isAutomatic, Map<String, Object> data)
 	{
 		this.power = power;
 		//this.targetType = targetType;
@@ -87,7 +89,7 @@ public class PowerInstance
 		active = true;
 		if(power instanceof ITriggeredPower)
 		{
-			MinecraftForge.EVENT_BUS.post(new StartContinuousPowerEvent(player, this));
+			MinecraftForge.EVENT_BUS.post(new StartContinuousPowerEvent<T>(player, this));
 			//active = true;
 			((ITriggeredPower)power).triggerPower(player);
 		}
@@ -98,7 +100,7 @@ public class PowerInstance
 		active = false;
 		if(power instanceof IToggledPower)
 		{
-			MinecraftForge.EVENT_BUS.post(new ResetPowerForClassChangeEvent(player, this));
+			MinecraftForge.EVENT_BUS.post(new ResetPowerForClassChangeEvent<T>(player, this));
 			//active = false;
 			((IToggledPower)power).resetPower(player, ticksActive);
 		}
@@ -112,7 +114,7 @@ public class PowerInstance
 		}
 		int c = cooldown.apply();
 		int d = duration.apply();
-		TriggerPowerEvent e = new TriggerPowerEvent(player, this);
+		TriggerPowerEvent<T> e = new TriggerPowerEvent<T>(player, this);
 		if(MinecraftForge.EVENT_BUS.post(e) || !((ITriggeredPower)power).triggerPower(player))
 		{
 			cooldown.setValue(c);
@@ -133,7 +135,7 @@ public class PowerInstance
 			return false;
 		}
 		int c = cooldown.apply();
-		ResetPowerEvent e = new ResetPowerEvent(player, this);
+		ResetPowerEvent<T> e = new ResetPowerEvent<T>(player, this);
 		if(MinecraftForge.EVENT_BUS.post(e))
 		{
 			cooldown.setValue(c);
@@ -203,7 +205,7 @@ public class PowerInstance
 		return (!cooldown.exists() || cooldown.value() <= 0) && power instanceof IToggledPower;
 	}
 
-	public IPower getPower()
+	public T getPower()
 	{
 		return power;
 	}
@@ -230,6 +232,10 @@ public class PowerInstance
 		{
 			ticksActive = nbt.getInteger(KEY_TICKSELAPSED);
 		}
+		if(power instanceof IExtendedPower && nbt.hasKey(KEY_EXTENDED))
+		{
+			((IExtendedPower)power).readFromNBT(nbt.getCompoundTag(KEY_EXTENDED));
+		}
 	}
 
 	public void writeToNBT(NBTTagCompound nbt)
@@ -246,6 +252,12 @@ public class PowerInstance
 		if(active)
 		{
 			nbt.setInteger(KEY_TICKSELAPSED, ticksActive);
+		}
+		if(power instanceof IExtendedPower)
+		{
+			NBTTagCompound tag = new NBTTagCompound();
+			((IExtendedPower)power).writeToNBT(tag);
+			nbt.setTag(KEY_EXTENDED, tag);
 		}
 		dirty = false;
 	}

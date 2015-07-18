@@ -35,14 +35,23 @@ public class PlayerClassSaveData extends WorldSavedData
 
 	public PlayerClassInstance getPlayerClass(String name)
 	{
+		PlayerClassInstance pci = null;
 		if(hasPlayerClass(name))
 		{
-			return data.get(name);
+			pci = data.get(name);
 		}
 		EntityPlayer player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(name);
-		if(player != null)
+		if(pci != null)
 		{
-			PlayerClassInstance pci = PlayerClassInstance.create(player);
+			if(pci.player == null && player != null)
+			{
+				pci.player = player;
+			}
+			return pci;
+		}
+		else if(player != null)
+		{
+			pci = new PlayerClassInstance(player);
 			data.put(name, pci);
 			markDirty();
 			return pci;
@@ -69,7 +78,7 @@ public class PlayerClassSaveData extends WorldSavedData
 		PlayerClassInstance pci = getPlayerClass(player.getName());
 		if(pci == null)
 		{
-			pci = PlayerClassInstance.create(player);
+			pci = new PlayerClassInstance(player);
 		}
 		pci.setPlayerClass(playerclass);
 	}
@@ -82,7 +91,7 @@ public class PlayerClassSaveData extends WorldSavedData
 		{
 			NBTTagCompound tag = list.getCompoundTagAt(i);
 			String name = tag.getString(ClassUtil.KEY_PLAYER);
-			PlayerClassInstance pci = PlayerClassInstance.create(MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(name));
+			PlayerClassInstance pci = new PlayerClassInstance(MinecraftServer.getServer().getConfigurationManager().getPlayerByUsername(name));
 			if(pci != null)
 			{
 				pci.readFromNBT(tag);

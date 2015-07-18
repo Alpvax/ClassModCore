@@ -71,7 +71,7 @@ public class ClassHooks
 			{
 				return;
 			}
-			List<PowerInstance> list = pci.getPowers(IPowerEventListener.class);
+			List<PowerInstance<IPowerEventListener>> list = pci.getPowers(IPowerEventListener.class);
 			for(PowerInstance p : list)
 			{
 				IPowerEventListener power = (IPowerEventListener)p.getPower();
@@ -235,8 +235,8 @@ public class ClassHooks
 			}
 
 			/**
-			 * Only triggered when entity uses the Task System
-			 */
+			* Only triggered when entity uses the Task System
+			*/
 	/*@SubscribeEvent
 	public void onTargetPlayer(LivingSetAttackTargetEvent e)
 	{

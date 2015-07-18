@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
@@ -104,5 +105,15 @@ public interface IPower
 		 * Needs to return the Event Class to listen to
 		 */
 		public Class<T> getEventClass();
+	}
+
+	/**
+	 * An extended version of IPower which saves additional data
+	 */
+	public interface IExtendedPower extends IPower
+	{
+		public void readFromNBT(NBTTagCompound nbt);
+
+		public void writeToNBT(NBTTagCompound nbt);
 	}
 }

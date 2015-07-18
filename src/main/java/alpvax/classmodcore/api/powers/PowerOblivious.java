@@ -1,6 +1,5 @@
 package alpvax.classmodcore.api.powers;
 
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -29,5 +28,5 @@ public abstract class PowerOblivious extends DummyPower
 		super("Oblivious to ", entity);
 	}
 
-	public abstract boolean canEntityTargetPlayer(EntityLiving entity, EntityPlayer player);
+	public abstract boolean canEntityTargetPlayer(EntityLivingBase entity, EntityPlayer player);
 }

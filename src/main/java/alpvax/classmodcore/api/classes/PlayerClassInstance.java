@@ -20,18 +20,13 @@ import alpvax.classmodcore.api.powers.PowerInstance;
 
 public class PlayerClassInstance
 {
-	public final EntityPlayer player;
+	public EntityPlayer player;
 	private IPlayerClass playerclass = null;
-	private PowerInstance[] powers = new PowerInstance[0];
+	private PowerInstance<?>[] powers = new PowerInstance[0];
 	private int[] manualIndexes;
 	private boolean dirty = false;
 
-	public static PlayerClassInstance create(EntityPlayer player)
-	{
-		return player != null ? new PlayerClassInstance(player) : null;
-	}
-
-	private PlayerClassInstance(EntityPlayer player)
+	public PlayerClassInstance(EntityPlayer player)
 	{
 		this.player = player;
 	}
@@ -46,7 +41,7 @@ public class PlayerClassInstance
 		if(this.playerclass != playerclass)
 		{
 			this.playerclass = playerclass;
-			for(PowerInstance power : powers)
+			for(PowerInstance<?> power : powers)
 			{
 				power.stop(player);
 			}
@@ -77,7 +72,7 @@ public class PlayerClassInstance
 
 	public void tick()
 	{
-		for(PowerInstance p : powers)
+		for(PowerInstance<?> p : powers)
 		{
 			p.tickPower(player);
 		}
@@ -137,7 +132,7 @@ public class PlayerClassInstance
 		{
 			return true;
 		}
-		for(PowerInstance p : powers)
+		for(PowerInstance<?> p : powers)
 		{
 			if(p.isDirty())
 			{
@@ -147,14 +142,14 @@ public class PlayerClassInstance
 		return false;
 	}
 
-	public List<PowerInstance> getPowers(Class<? extends IPower> powerclass)
+	public <T extends IPower>List<PowerInstance<T>> getPowers(Class<T> powerclass)
 	{
-		List<PowerInstance> list = new ArrayList<PowerInstance>();
-		for(PowerInstance p : powers)
+		List<PowerInstance<T>> list = new ArrayList<PowerInstance<T>>();
+		for(PowerInstance<?> p : powers)
 		{
 			if(powerclass == null || powerclass.isAssignableFrom(p.getPower().getClass()))
 			{
-				list.add(p);
+				list.add((PowerInstance<T>)p);
 			}
 		}
 		return list;
